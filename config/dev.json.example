@@ -1,0 +1,17 @@
+{
+  "FIREBASE_PROJECT_ID": "your-development-project-id",
+  "FIREBASE_MESSAGING_SENDER_ID": "your-development-sender-id",
+  "FIREBASE_STORAGE_BUCKET": "your-development-storage-bucket",
+  "FIREBASE_AUTH_DOMAIN": "your-development-auth-domain",
+  "FIREBASE_WEB_API_KEY": "your-development-web-api-key",
+  "FIREBASE_WEB_APP_ID": "your-development-web-app-id",
+  "FIREBASE_WEB_MEASUREMENT_ID": "your-development-web-measurement-id",
+  "FIREBASE_ANDROID_API_KEY": "your-development-android-api-key",
+  "FIREBASE_ANDROID_APP_ID": "your-development-android-app-id",
+  "FIREBASE_IOS_API_KEY": "your-development-ios-api-key",
+  "FIREBASE_IOS_APP_ID": "your-development-ios-app-id",
+  "FIREBASE_IOS_BUNDLE_ID": "com.example.travelbuddy.dev",
+  "SENTRY_DSN": "your-development-sentry-dsn",
+  "APP_NAME": "TravelBuddy Dev",
+  "ENVIRONMENT": "development"
+}
