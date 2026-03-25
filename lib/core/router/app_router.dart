@@ -13,25 +13,20 @@ GoRouter appRouter(Ref ref) {
   return GoRouter(
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true,
-    observers: [
-      TalkerRouteObserver(AppLogger.talker),
-    ],
+    observers: [TalkerRouteObserver(AppLogger.talker)],
 
     // TODO: Add redirect logic in Step 2 (Auth) based on auth state + onboarding flags.
     // redirect: (context, state) { ... },
-
     routes: [
       GoRoute(
         path: RoutePaths.splash,
         name: RouteNames.splash,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Splash'),
+        builder: (context, state) => const PlaceholderScreen(title: 'Splash'),
       ),
       GoRoute(
         path: RoutePaths.auth,
         name: RouteNames.auth,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Auth'),
+        builder: (context, state) => const PlaceholderScreen(title: 'Auth'),
       ),
       GoRoute(
         path: RoutePaths.onboardingProfile,
@@ -54,8 +49,7 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: RoutePaths.home,
         name: RouteNames.home,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Home'),
+        builder: (context, state) => const PlaceholderScreen(title: 'Home'),
       ),
       GoRoute(
         path: RoutePaths.tripDetail,

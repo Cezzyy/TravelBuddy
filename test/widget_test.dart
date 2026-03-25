@@ -6,9 +6,7 @@ import 'package:travelbuddy/app.dart';
 
 void main() {
   testWidgets('App smoke test — renders without crashing', (tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(child: App()),
-    );
+    await tester.pumpWidget(const ProviderScope(child: App()));
     await tester.pumpAndSettle();
 
     // Verify the splash placeholder screen renders
