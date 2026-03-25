@@ -23,15 +23,15 @@ help:
 setup:
 	@echo "Setting up TravelBuddy..."
 	@if [ ! -f config/dev.json ]; then \
-		cp config/dev.json.example config/dev.json; \
+		cp config/dev.example.json config/dev.json; \
 		echo "Created config/dev.json - Please update with your credentials"; \
 	fi
 	@if [ ! -f config/staging.json ]; then \
-		cp config/staging.json.example config/staging.json; \
+		cp config/staging.example.json config/staging.json; \
 		echo "Created config/staging.json - Please update with your credentials"; \
 	fi
 	@if [ ! -f config/prod.json ]; then \
-		cp config/prod.json.example config/prod.json; \
+		cp config/prod.example.json config/prod.json; \
 		echo "Created config/prod.json - Please update with your credentials"; \
 	fi
 	@echo "Setup complete! Update your config/*.json files with actual credentials."
