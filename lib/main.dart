@@ -8,9 +8,7 @@ import 'config/app_config.dart';
 import 'core/logging/app_logger.dart';
 import 'firebase_options.dart';
 import 'shared/data/app_db.dart';
-
-/// Global database instance — will be replaced by Riverpod provider later.
-late final AppDatabase database;
+import 'shared/data/providers/database_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +17,7 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   AppLogger.talker.info('Firebase initialized');
 
-  database = AppDatabase();
+  final database = AppDatabase();
   AppLogger.talker.info('Drift database initialized');
 
   await SentryFlutter.init(
@@ -27,7 +25,6 @@ Future<void> main() async {
       options.dsn = AppConfig.sentryDsn;
       options.environment = AppConfig.environment;
       options.tracesSampleRate = AppConfig.isProduction ? 0.2 : 1.0;
-      // Don't send events if DSN is empty (local dev without Sentry)
       options.beforeSend = (event, hint) {
         if (AppConfig.sentryDsn.isEmpty) return null;
         return event;
@@ -35,6 +32,7 @@ Future<void> main() async {
     },
     appRunner: () => runApp(
       ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(database)],
         observers: [
           TalkerRiverpodObserver(
             talker: AppLogger.talker,
