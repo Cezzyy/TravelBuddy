@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'config/app_config.dart';
 import 'firebase_options.dart';
+import 'shared/data/app_db.dart';
+
+/// Global database instance — will be replaced by Riverpod provider later.
+late final AppDatabase database;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +14,10 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
+  // Initialize Drift local database
+  database = AppDatabase();
+
   runApp(const MyApp());
 }
 
