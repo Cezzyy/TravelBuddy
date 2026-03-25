@@ -10,8 +10,10 @@ class Users extends Table {
   TextColumn get photoUrl => text().nullable()();
 
   // Onboarding gates
-  BoolColumn get isProfileComplete => boolean().withDefault(const Constant(false))();
-  BoolColumn get hasAgreedToRules => boolean().withDefault(const Constant(false))();
+  BoolColumn get isProfileComplete =>
+      boolean().withDefault(const Constant(false))();
+  BoolColumn get hasAgreedToRules =>
+      boolean().withDefault(const Constant(false))();
 
   // Timestamps
   DateTimeColumn get createdAt => dateTime()();

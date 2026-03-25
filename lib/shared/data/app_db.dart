@@ -14,14 +14,16 @@ import 'sync_queue.dart';
 
 part 'app_db.g.dart';
 
-@DriftDatabase(tables: [
-  Users,
-  UserPreferences,
-  Trips,
-  TripCollaborators,
-  ItineraryItems,
-  SyncQueue,
-])
+@DriftDatabase(
+  tables: [
+    Users,
+    UserPreferences,
+    Trips,
+    TripCollaborators,
+    ItineraryItems,
+    SyncQueue,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase._internal(super.e);
 

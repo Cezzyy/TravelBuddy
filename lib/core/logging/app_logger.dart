@@ -15,9 +15,7 @@ class AppLogger {
   /// get forwarded to both console and Sentry.
   static void init() {
     _talker = TalkerFlutter.init(
-      settings: TalkerSettings(
-        useConsoleLogs: true,
-      ),
+      settings: TalkerSettings(useConsoleLogs: true),
       observer: _SentryTalkerObserver(),
     );
 
@@ -30,10 +28,7 @@ class AppLogger {
 class _SentryTalkerObserver extends TalkerObserver {
   @override
   void onError(TalkerError err) {
-    Sentry.captureException(
-      err.error,
-      stackTrace: err.stackTrace,
-    );
+    Sentry.captureException(err.error, stackTrace: err.stackTrace);
     super.onError(err);
   }
 

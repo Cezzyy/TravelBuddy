@@ -48,29 +48,29 @@ class DefaultFirebaseOptions {
   }
 
   static FirebaseOptions get web => FirebaseOptions(
-        apiKey: AppConfig.firebaseWebApiKey,
-        appId: AppConfig.firebaseWebAppId,
-        messagingSenderId: AppConfig.firebaseMessagingSenderId,
-        projectId: AppConfig.firebaseProjectId,
-        authDomain: AppConfig.firebaseAuthDomain,
-        storageBucket: AppConfig.firebaseStorageBucket,
-        measurementId: AppConfig.firebaseWebMeasurementId,
-      );
+    apiKey: AppConfig.firebaseWebApiKey,
+    appId: AppConfig.firebaseWebAppId,
+    messagingSenderId: AppConfig.firebaseMessagingSenderId,
+    projectId: AppConfig.firebaseProjectId,
+    authDomain: AppConfig.firebaseAuthDomain,
+    storageBucket: AppConfig.firebaseStorageBucket,
+    measurementId: AppConfig.firebaseWebMeasurementId,
+  );
 
   static FirebaseOptions get android => FirebaseOptions(
-        apiKey: AppConfig.firebaseAndroidApiKey,
-        appId: AppConfig.firebaseAndroidAppId,
-        messagingSenderId: AppConfig.firebaseMessagingSenderId,
-        projectId: AppConfig.firebaseProjectId,
-        storageBucket: AppConfig.firebaseStorageBucket,
-      );
+    apiKey: AppConfig.firebaseAndroidApiKey,
+    appId: AppConfig.firebaseAndroidAppId,
+    messagingSenderId: AppConfig.firebaseMessagingSenderId,
+    projectId: AppConfig.firebaseProjectId,
+    storageBucket: AppConfig.firebaseStorageBucket,
+  );
 
   static FirebaseOptions get ios => FirebaseOptions(
-        apiKey: AppConfig.firebaseIosApiKey,
-        appId: AppConfig.firebaseIosAppId,
-        messagingSenderId: AppConfig.firebaseMessagingSenderId,
-        projectId: AppConfig.firebaseProjectId,
-        storageBucket: AppConfig.firebaseStorageBucket,
-        iosBundleId: AppConfig.firebaseIosBundleId,
-      );
+    apiKey: AppConfig.firebaseIosApiKey,
+    appId: AppConfig.firebaseIosAppId,
+    messagingSenderId: AppConfig.firebaseMessagingSenderId,
+    projectId: AppConfig.firebaseProjectId,
+    storageBucket: AppConfig.firebaseStorageBucket,
+    iosBundleId: AppConfig.firebaseIosBundleId,
+  );
 }

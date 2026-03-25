@@ -16,9 +16,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppLogger.init();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   AppLogger.talker.info('Firebase initialized');
 
   database = AppDatabase();

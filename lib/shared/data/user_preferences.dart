@@ -11,9 +11,12 @@ class UserPreferences extends Table {
   TextColumn get userId => text().unique().references(Users, #id)();
 
   // Preference fields
-  TextColumn get travelStyle => text().nullable()(); // adventure, relaxation, cultural
-  TextColumn get budgetLevel => text().nullable()(); // budget, mid-range, luxury
-  TextColumn get preferredActivities => text().nullable()(); // JSON-encoded list
+  TextColumn get travelStyle =>
+      text().nullable()(); // adventure, relaxation, cultural
+  TextColumn get budgetLevel =>
+      text().nullable()(); // budget, mid-range, luxury
+  TextColumn get preferredActivities =>
+      text().nullable()(); // JSON-encoded list
 
   // Timestamps
   DateTimeColumn get updatedAt => dateTime()();

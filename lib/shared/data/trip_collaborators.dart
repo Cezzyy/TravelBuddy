@@ -21,6 +21,6 @@ class TripCollaborators extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {tripId, userId},
-      ];
+    {tripId, userId},
+  ];
 }
