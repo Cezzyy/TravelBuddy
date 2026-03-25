@@ -6,20 +6,23 @@ import 'package:talker_flutter/talker_flutter.dart';
 class AppLogger {
   AppLogger._();
 
-  static late final Talker _talker;
+  static Talker? _instance;
 
   /// Access the Talker instance anywhere in the app.
-  static Talker get talker => _talker;
+  /// Auto-initializes with defaults if [init] hasn't been called (e.g. in tests).
+  static Talker get talker => _instance ??= Talker();
 
   /// Initialize Talker with a Sentry observer so errors automatically
   /// get forwarded to both console and Sentry.
   static void init() {
-    _talker = TalkerFlutter.init(
+    if (_instance != null) return; // Already initialized
+
+    _instance = TalkerFlutter.init(
       settings: TalkerSettings(useConsoleLogs: true),
       observer: _SentryTalkerObserver(),
     );
 
-    _talker.info('AppLogger initialized');
+    _instance!.info('AppLogger initialized');
   }
 }
 
