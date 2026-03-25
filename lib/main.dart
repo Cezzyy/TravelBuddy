@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:talker_riverpod_logger/talker_riverpod_logger.dart';
+
 import 'config/app_config.dart';
+import 'core/logging/app_logger.dart';
 import 'firebase_options.dart';
 import 'shared/data/app_db.dart';
 
@@ -9,16 +14,44 @@ late final AppDatabase database;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppLogger.init();
 
-  // Initialize Firebase with unified config
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  AppLogger.talker.info('Firebase initialized');
 
-  // Initialize Drift local database
   database = AppDatabase();
+  AppLogger.talker.info('Drift database initialized');
 
-  runApp(const MyApp());
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = AppConfig.sentryDsn;
+      options.environment = AppConfig.environment;
+      options.tracesSampleRate = AppConfig.isProduction ? 0.2 : 1.0;
+      // Don't send events if DSN is empty (local dev without Sentry)
+      options.beforeSend = (event, hint) {
+        if (AppConfig.sentryDsn.isEmpty) return null;
+        return event;
+      };
+    },
+    appRunner: () => runApp(
+      ProviderScope(
+        observers: [
+          TalkerRiverpodObserver(
+            talker: AppLogger.talker,
+            settings: TalkerRiverpodLoggerSettings(
+              printProviderAdded: true,
+              printProviderUpdated: true,
+              printProviderDisposed: true,
+              printProviderFailed: true,
+            ),
+          ),
+        ],
+        child: const MyApp(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
