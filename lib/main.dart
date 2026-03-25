@@ -9,6 +9,7 @@ import 'core/logging/app_logger.dart';
 import 'firebase_options.dart';
 import 'shared/data/app_db.dart';
 import 'shared/data/providers/database_provider.dart';
+import 'app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,38 +45,8 @@ Future<void> main() async {
             ),
           ),
         ],
-        child: const MyApp(),
+        child: const App(),
       ),
     ),
   );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppConfig.appName,
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('${AppConfig.appName} - ${AppConfig.environment}'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'TravelBuddy',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Text('Environment: ${AppConfig.environment}'),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
