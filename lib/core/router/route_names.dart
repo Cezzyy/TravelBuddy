@@ -3,6 +3,7 @@
 abstract class RoutePaths {
   static const splash = '/';
   static const auth = '/auth';
+  static const authEmail = '/auth/email';
   static const onboardingProfile = '/onboarding/profile';
   static const onboardingPreferences = '/onboarding/preferences';
   static const onboardingRules = '/onboarding/rules';
@@ -13,6 +14,7 @@ abstract class RoutePaths {
 abstract class RouteNames {
   static const splash = 'splash';
   static const auth = 'auth';
+  static const authEmail = 'auth-email';
   static const onboardingProfile = 'onboarding-profile';
   static const onboardingPreferences = 'onboarding-preferences';
   static const onboardingRules = 'onboarding-rules';

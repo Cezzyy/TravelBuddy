@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/router/route_names.dart';
 import '../../../core/theme/app_colors.dart';
 
 /// Auth screen with an auto-scrolling image slideshow on top
@@ -256,89 +258,106 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(28, 28, 28, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Drag handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(2),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Top section: handle + headings
+                    Column(
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceVariant,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Get Started',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Sign in to plan your next adventure',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Middle section: buttons
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Column(
+                        children: [
+                          // ── Google button ──
+                          _SignInButton(
+                            onPressed: () {
+                              // TODO: Implement Google Sign-In
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Google Sign-In — coming soon'),
+                                ),
+                              );
+                            },
+                            icon: Icons.g_mobiledata_rounded,
+                            iconSize: 28,
+                            label: 'Continue with Google',
+                            backgroundColor: Colors.white,
+                            foregroundColor: AppColors.textPrimary,
+                            borderColor: AppColors.surfaceVariant,
+                          ),
+                          const SizedBox(height: 14),
+                          // ── Email button ──
+                          _SignInButton(
+                            onPressed: () {
+                              context.goNamed(RouteNames.authEmail);
+                            },
+                            icon: Icons.email_outlined,
+                            iconSize: 22,
+                            label: 'Continue with Email',
+                            backgroundColor: AppColors.accent,
+                            foregroundColor: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Bottom section: terms
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: Text(
+                        'By continuing, you agree to our Terms of Service\nand Privacy Policy',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textSecondary.withValues(alpha: 0.7),
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-
-            const Text(
-              'Get Started',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Sign in to plan your next adventure',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-            ),
-
-            const Spacer(),
-
-            // ── Google button ──
-            _SignInButton(
-              onPressed: () {
-                // TODO: Implement Google Sign-In
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Google Sign-In — coming soon')),
-                );
-              },
-              icon: Icons.g_mobiledata_rounded,
-              iconSize: 28,
-              label: 'Continue with Google',
-              backgroundColor: Colors.white,
-              foregroundColor: AppColors.textPrimary,
-              borderColor: AppColors.surfaceVariant,
-            ),
-
-            const SizedBox(height: 14),
-
-            // ── Email button ──
-            _SignInButton(
-              onPressed: () {
-                // TODO: Implement Email Sign-In
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Email Sign-In — coming soon')),
-                );
-              },
-              icon: Icons.email_outlined,
-              iconSize: 22,
-              label: 'Continue with Email',
-              backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
-            ),
-
-            const Spacer(),
-
-            // Terms
-            Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: Text(
-                'By continuing, you agree to our Terms of Service\nand Privacy Policy',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textSecondary.withValues(alpha: 0.7),
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

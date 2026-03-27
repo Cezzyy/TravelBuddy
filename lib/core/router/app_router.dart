@@ -6,6 +6,7 @@ import 'package:talker_flutter/talker_flutter.dart';
 import '../logging/app_logger.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
+import '../../features/auth/presentation/email_auth_screen.dart';
 import 'placeholder_screen.dart';
 import 'route_names.dart';
 
@@ -50,6 +51,31 @@ GoRouter appRouter(Ref ref) {
         name: RouteNames.auth,
         pageBuilder: (context, state) =>
             _fadeTransitionPage(key: state.pageKey, child: const AuthScreen()),
+        routes: [
+          GoRoute(
+            path: 'email',
+            name: RouteNames.authEmail,
+            pageBuilder: (context, state) => CustomTransitionPage<void>(
+              key: state.pageKey,
+              child: const EmailAuthScreen(),
+              transitionDuration: const Duration(milliseconds: 350),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    final slide =
+                        Tween<Offset>(
+                          begin: const Offset(0, 1),
+                          end: Offset.zero,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeOutCubic,
+                          ),
+                        );
+                    return SlideTransition(position: slide, child: child);
+                  },
+            ),
+          ),
+        ],
       ),
       GoRoute(
         path: RoutePaths.onboardingProfile,
