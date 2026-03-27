@@ -12,8 +12,7 @@ class EmailAuthScreen extends StatefulWidget {
   State<EmailAuthScreen> createState() => _EmailAuthScreenState();
 }
 
-class _EmailAuthScreenState extends State<EmailAuthScreen>
-    with SingleTickerProviderStateMixin {
+class _EmailAuthScreenState extends State<EmailAuthScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -22,32 +21,20 @@ class _EmailAuthScreenState extends State<EmailAuthScreen>
   bool _isSignUp = true;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
-
-  late final AnimationController _entryController;
-  late final Animation<Offset> _slideUp;
-  late final Animation<double> _fadeIn;
+  bool _ready = false;
 
   @override
   void initState() {
     super.initState();
-    _entryController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-    _slideUp = Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero)
-        .animate(
-          CurvedAnimation(parent: _entryController, curve: Curves.easeOutCubic),
-        );
-    _fadeIn = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _entryController, curve: Curves.easeIn));
-    _entryController.forward();
+    // Defer heavy content by one frame so the route slide animation
+    // plays on a lightweight shell first — eliminates first-open jank.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() => _ready = true);
+    });
   }
 
   @override
   void dispose() {
-    _entryController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -68,20 +55,20 @@ class _EmailAuthScreenState extends State<EmailAuthScreen>
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SlideTransition(
-          position: _slideUp,
-          child: FadeTransition(
-            opacity: _fadeIn,
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: _buildHeader(context)),
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: _buildForm(context),
-                ),
-              ],
-            ),
-          ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: _ready
+              ? CustomScrollView(
+                  key: const ValueKey('content'),
+                  slivers: [
+                    SliverToBoxAdapter(child: _buildHeader(context)),
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _buildForm(context),
+                    ),
+                  ],
+                )
+              : const SizedBox.shrink(key: ValueKey('placeholder')),
         ),
       ),
     );
