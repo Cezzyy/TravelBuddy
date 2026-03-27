@@ -1,12 +1,31 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../logging/app_logger.dart';
+import '../../features/auth/presentation/splash_screen.dart';
+import '../../features/auth/presentation/auth_screen.dart';
 import 'placeholder_screen.dart';
 import 'route_names.dart';
 
 part 'app_router.g.dart';
+
+/// Shared fade transition for smooth screen changes.
+CustomTransitionPage<void> _fadeTransitionPage({
+  required LocalKey key,
+  required Widget child,
+  Duration duration = const Duration(milliseconds: 500),
+}) {
+  return CustomTransitionPage<void>(
+    key: key,
+    child: child,
+    transitionDuration: duration,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(opacity: animation, child: child);
+    },
+  );
+}
 
 @riverpod
 GoRouter appRouter(Ref ref) {
@@ -21,12 +40,16 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: RoutePaths.splash,
         name: RouteNames.splash,
-        builder: (context, state) => const PlaceholderScreen(title: 'Splash'),
+        pageBuilder: (context, state) => _fadeTransitionPage(
+          key: state.pageKey,
+          child: const SplashScreen(),
+        ),
       ),
       GoRoute(
         path: RoutePaths.auth,
         name: RouteNames.auth,
-        builder: (context, state) => const PlaceholderScreen(title: 'Auth'),
+        pageBuilder: (context, state) =>
+            _fadeTransitionPage(key: state.pageKey, child: const AuthScreen()),
       ),
       GoRoute(
         path: RoutePaths.onboardingProfile,
