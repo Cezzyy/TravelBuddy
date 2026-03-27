@@ -97,7 +97,11 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     _slideshowEntryController.forward();
     _entryController.forward();
 
-    // Auto-advance slideshow every 3.5s — always forward
+    _startSlideshow();
+  }
+
+  void _startSlideshow() {
+    _slideshowTimer?.cancel();
     _slideshowTimer = Timer.periodic(const Duration(milliseconds: 3500), (_) {
       if (!mounted) return;
       _rawPage++;
@@ -109,9 +113,14 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     });
   }
 
+  void _stopSlideshow() {
+    _slideshowTimer?.cancel();
+    _slideshowTimer = null;
+  }
+
   @override
   void dispose() {
-    _slideshowTimer?.cancel();
+    _stopSlideshow();
     _pageController.dispose();
     _entryController.dispose();
     _slideshowEntryController.dispose();
@@ -328,7 +337,10 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                           // ── Email button ──
                           _SignInButton(
                             onPressed: () {
-                              context.goNamed(RouteNames.authEmail);
+                              _stopSlideshow();
+                              context.push(RoutePaths.authEmail).then((_) {
+                                if (mounted) _startSlideshow();
+                              });
                             },
                             icon: Icons.email_outlined,
                             iconSize: 22,
