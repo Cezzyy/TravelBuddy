@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/validators.dart';
 
 /// Email sign-in / sign-up screen with email, password, confirm password.
 /// Toggles between Login and Sign Up modes.
@@ -150,13 +151,7 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                 hintText: 'you@example.com',
                 prefixIcon: Icon(Icons.email_outlined),
               ),
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Email is required';
-                if (!v.contains('@') || !v.contains('.')) {
-                  return 'Enter a valid email';
-                }
-                return null;
-              },
+              validator: Validators.email,
             ),
             SizedBox(height: fieldSpacing),
 
@@ -180,11 +175,7 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                       setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
-              validator: (v) {
-                if (v == null || v.isEmpty) return 'Password is required';
-                if (v.length < 6) return 'At least 6 characters';
-                return null;
-              },
+              validator: Validators.password,
             ),
 
             // Confirm password (sign-up only)
@@ -207,12 +198,10 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                         setState(() => _obscureConfirm = !_obscureConfirm),
                   ),
                 ),
-                validator: (v) {
-                  if (v != _passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
+                validator: (v) => Validators.confirmPassword(
+                  v,
+                  _passwordController.text,
+                ),
               ),
             ],
 
