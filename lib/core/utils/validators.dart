@@ -91,8 +91,11 @@ abstract class Validators {
     return null;
   }
 
-  static String? minLength(String? value, int min,
-      {String fieldName = 'This field'}) {
+  static String? minLength(
+    String? value,
+    int min, {
+    String fieldName = 'This field',
+  }) {
     if (value == null || value.isEmpty) {
       return '$fieldName is required';
     }
@@ -104,8 +107,11 @@ abstract class Validators {
     return null;
   }
 
-  static String? maxLength(String? value, int max,
-      {String fieldName = 'This field'}) {
+  static String? maxLength(
+    String? value,
+    int max, {
+    String fieldName = 'This field',
+  }) {
     if (value != null && value.length > max) {
       return '$fieldName must not exceed $max characters';
     }

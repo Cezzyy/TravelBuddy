@@ -4,9 +4,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../logging/app_logger.dart';
+import '../../features/auth/data/auth_repository.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
 import '../../features/auth/presentation/email_auth_screen.dart';
+import '../../features/home/presentation/home_screen.dart';
 import 'placeholder_screen.dart';
 import 'route_names.dart';
 
@@ -35,8 +37,25 @@ GoRouter appRouter(Ref ref) {
     debugLogDiagnostics: true,
     observers: [TalkerRouteObserver(AppLogger.talker)],
 
-    // TODO: Add redirect logic in Step 2 (Auth) based on auth state + onboarding flags.
-    // redirect: (context, state) { ... },
+    // Redirect logic based on auth state
+    redirect: (context, state) {
+      // Don't redirect if already on splash or auth screens
+      if (state.matchedLocation == RoutePaths.splash ||
+          state.matchedLocation.startsWith(RoutePaths.auth)) {
+        return null;
+      }
+
+      // Check if user is authenticated
+      final authRepo = ref.read(authRepositoryProvider);
+      final isAuthenticated = authRepo.currentUser != null;
+
+      // If not authenticated and trying to access protected routes, redirect to auth
+      if (!isAuthenticated && state.matchedLocation != RoutePaths.auth) {
+        return RoutePaths.auth;
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: RoutePaths.splash,
@@ -98,7 +117,7 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: RoutePaths.home,
         name: RouteNames.home,
-        builder: (context, state) => const PlaceholderScreen(title: 'Home'),
+        builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
         path: RoutePaths.tripDetail,

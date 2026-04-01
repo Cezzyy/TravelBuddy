@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/validators.dart';
+import 'providers/auth_provider.dart';
 
 /// Email sign-in / sign-up screen with email, password, confirm password.
 /// Toggles between Login and Sign Up modes.
-class EmailAuthScreen extends StatefulWidget {
+class EmailAuthScreen extends ConsumerStatefulWidget {
   const EmailAuthScreen({super.key});
 
   @override
-  State<EmailAuthScreen> createState() => _EmailAuthScreenState();
+  ConsumerState<EmailAuthScreen> createState() => _EmailAuthScreenState();
 }
 
-class _EmailAuthScreenState extends State<EmailAuthScreen> {
+class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -43,18 +45,43 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  void _submit() async {
     setState(() => _autoValidate = true);
     if (!_formKey.currentState!.validate()) return;
-    // TODO: Implement Firebase email auth
-    final action = _isSignUp ? 'Sign Up' : 'Login';
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$action — coming soon')));
+
+    final controller = ref.read(emailAuthControllerProvider.notifier);
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    try {
+      if (_isSignUp) {
+        await controller.signUp(email: email, password: password);
+      } else {
+        await controller.signIn(email: email, password: password);
+      }
+      
+      // Check if auth was successful
+      if (mounted && ref.read(emailAuthControllerProvider).hasValue) {
+        // Navigate to home on success
+        context.go('/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(emailAuthControllerProvider);
+    final isLoading = authState.isLoading;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -63,11 +90,14 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
           child: _ready
               ? CustomScrollView(
                   key: const ValueKey('content'),
+                  physics: isLoading
+                      ? const NeverScrollableScrollPhysics()
+                      : null,
                   slivers: [
                     SliverToBoxAdapter(child: _buildHeader(context)),
                     SliverFillRemaining(
                       hasScrollBody: false,
-                      child: _buildForm(context),
+                      child: _buildForm(context, isLoading),
                     ),
                   ],
                 )
@@ -107,7 +137,7 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
     );
   }
 
-  Widget _buildForm(BuildContext context) {
+  Widget _buildForm(BuildContext context, bool isLoading) {
     final screenHeight = MediaQuery.sizeOf(context).height;
     final topSpacing = screenHeight * 0.03;
     final fieldSpacing = screenHeight * 0.018;
@@ -210,8 +240,9 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                     ),
                     _buildRequirement(
                       'One special character (!@#\$%^&*)',
-                      _passwordController.text
-                          .contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]')),
+                      _passwordController.text.contains(
+                        RegExp(r'[!@#$%^&*(),.?":{}|<>]'),
+                      ),
                     ),
                   ],
                 ),
@@ -238,10 +269,8 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                         setState(() => _obscureConfirm = !_obscureConfirm),
                   ),
                 ),
-                validator: (v) => Validators.confirmPassword(
-                  v,
-                  _passwordController.text,
-                ),
+                validator: (v) =>
+                    Validators.confirmPassword(v, _passwordController.text),
               ),
             ],
 
@@ -249,7 +278,7 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
 
             // Submit button
             ElevatedButton(
-              onPressed: _submit,
+              onPressed: isLoading ? null : _submit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
@@ -257,14 +286,26 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-              ),
-              child: Text(
-                _isSignUp ? 'Create Account' : 'Log In',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                disabledBackgroundColor: AppColors.primary.withValues(
+                  alpha: 0.6,
                 ),
               ),
+              child: isLoading
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text(
+                      _isSignUp ? 'Create Account' : 'Log In',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
 
             const Spacer(),

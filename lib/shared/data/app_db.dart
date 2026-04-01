@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
+import 'package:drift_sqflite/drift_sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'users.dart';
@@ -57,8 +54,11 @@ class AppDatabase extends _$AppDatabase {
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'travelbuddy.sqlite'));
-    return NativeDatabase.createInBackground(file);
+    await getApplicationDocumentsDirectory();
+    // Use sqflite for better cross-platform support
+    return SqfliteQueryExecutor.inDatabaseFolder(
+      path: 'travelbuddy.sqlite',
+      logStatements: true,
+    );
   });
 }

@@ -1,27 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_names.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../auth/data/auth_repository.dart';
 
-///Splash screen with app name and loading indicator.
-class SplashScreen extends StatefulWidget {
+/// Splash screen with app name and loading indicator.
+/// Checks auth state and navigates accordingly.
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigate();
+    _checkAuthAndNavigate();
   }
 
-  Future<void> _navigate() async {
+  Future<void> _checkAuthAndNavigate() async {
     await Future.delayed(const Duration(milliseconds: 2000));
-    if (mounted) context.goNamed(RouteNames.auth);
+
+    if (!mounted) return;
+
+    // Check current auth state
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = authRepository.currentUser;
+
+    if (!mounted) return;
+
+    if (user != null) {
+      // User is logged in, go to home
+      context.goNamed(RouteNames.home);
+    } else {
+      // User is not logged in, go to auth
+      context.goNamed(RouteNames.auth);
+    }
   }
 
   @override
