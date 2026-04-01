@@ -23,6 +23,7 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _ready = false;
+  bool _autoValidate = false;
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
   }
 
   void _submit() {
+    setState(() => _autoValidate = true);
     if (!_formKey.currentState!.validate()) return;
     // TODO: Implement Firebase email auth
     final action = _isSignUp ? 'Sign Up' : 'Login';
@@ -115,6 +117,9 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 28),
       child: Form(
         key: _formKey,
+        autovalidateMode: _autoValidate
+            ? AutovalidateMode.onUserInteraction
+            : AutovalidateMode.disabled,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -176,7 +181,42 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                 ),
               ),
               validator: Validators.password,
+              onChanged: _isSignUp ? (_) => setState(() {}) : null,
             ),
+
+            // Password requirements (sign-up only)
+            if (_isSignUp) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildRequirement(
+                      'At least 8 characters',
+                      _passwordController.text.length >= 8,
+                    ),
+                    _buildRequirement(
+                      'One uppercase letter',
+                      _passwordController.text.contains(RegExp(r'[A-Z]')),
+                    ),
+                    _buildRequirement(
+                      'One lowercase letter',
+                      _passwordController.text.contains(RegExp(r'[a-z]')),
+                    ),
+                    _buildRequirement(
+                      'One number',
+                      _passwordController.text.contains(RegExp(r'[0-9]')),
+                    ),
+                    _buildRequirement(
+                      'One special character (!@#\$%^&*)',
+                      _passwordController.text
+                          .contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]')),
+                    ),
+                  ],
+                ),
+              ),
+            ],
 
             // Confirm password (sign-up only)
             if (_isSignUp) ...[
@@ -260,6 +300,29 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildRequirement(String text, bool isMet) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        children: [
+          Icon(
+            isMet ? Icons.check_circle : Icons.circle_outlined,
+            size: 16,
+            color: isMet ? AppColors.success : AppColors.textSecondary,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: isMet ? AppColors.success : AppColors.textSecondary,
+            ),
+          ),
+        ],
       ),
     );
   }
