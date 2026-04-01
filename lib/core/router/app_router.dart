@@ -53,7 +53,7 @@ CustomTransitionPage<void> _fadeTransitionPage({
 @riverpod
 GoRouter appRouter(Ref ref) {
   final authRepo = ref.watch(authRepositoryProvider);
-  
+
   return GoRouter(
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true,

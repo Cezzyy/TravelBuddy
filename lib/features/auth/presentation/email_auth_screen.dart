@@ -59,7 +59,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
       } else {
         await controller.signIn(email: email, password: password);
       }
-      
+
       // Check if auth was successful
       if (mounted && ref.read(emailAuthControllerProvider).hasValue) {
         // Navigate to home on success

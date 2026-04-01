@@ -9,12 +9,12 @@ import '../../data/user_repository.dart';
 final currentUserProvider = StreamProvider<User?>((ref) {
   final authRepo = ref.watch(authRepositoryProvider);
   final userRepo = ref.watch(userRepositoryProvider);
-  
+
   final currentFirebaseUser = authRepo.currentUser;
-  
+
   if (currentFirebaseUser == null) {
     return Stream.value(null);
   }
-  
+
   return userRepo.watchLocalUser(currentFirebaseUser.uid);
 });
