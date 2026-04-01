@@ -52,6 +52,7 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.1
   firebase_auth: ^6.3.0
+  cloud_firestore: ^6.2.0
 
 dev_dependencies:
   sentry_dart_plugin: ^3.2.1

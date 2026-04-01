@@ -53,10 +53,10 @@ packages:
     dependency: transitive
     description:
       name: async
-      sha256: "758e6d74e971c3e5aceb4110bfd6698efc7f501675bcfe0c775459a8140750eb"
+      sha256: e2eb0491ba5ddb6177742d2da23904574082139b07c1e33b8503b9f46f3e1a37
       url: "https://pub.dev"
     source: hosted
-    version: "2.13.0"
+    version: "2.13.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -161,6 +161,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
+  cloud_firestore:
+    dependency: "direct main"
+    description:
+      name: cloud_firestore
+      sha256: "2e0a07b9905375fa17fba82ee1cd70df592907691e2f25a629823a021e49c1a2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.0"
+  cloud_firestore_platform_interface:
+    dependency: transitive
+    description:
+      name: cloud_firestore_platform_interface
+      sha256: b82a35eb6a1bde9569df372f933fc5a01bcddef58c993d78f78c31d111fcd080
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.1.0"
+  cloud_firestore_web:
+    dependency: transitive
+    description:
+      name: cloud_firestore_web
+      sha256: "96bb9aec40d026b88737c1c426972ec435cac6b8d0f21af8eebb84fc09f100da"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.0"
   code_assets:
     dependency: transitive
     description:
@@ -596,10 +620,10 @@ packages:
     dependency: transitive
     description:
       name: package_info_plus
-      sha256: f69da0d3189a4b4ceaeb1a3defb0f329b3b352517f52bed4290f83d4f06bc08d
+      sha256: "468c26b4254ab01979fa5e4a98cb343ea3631b9acee6f21028997419a80e1a20"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.0"
+    version: "9.0.1"
   package_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -764,10 +788,10 @@ packages:
     dependency: transitive
     description:
       name: sentry
-      sha256: a49b4fb1cba576fe216347dc2a0e6d76076fb998e6012857db96f991c23b7b3c
+      sha256: "288aee3d35f252ac0dc3a4b0accbbe7212fa2867604027f2cc5bc65334afd743"
       url: "https://pub.dev"
     source: hosted
-    version: "9.15.0"
+    version: "9.16.0"
   sentry_dart_plugin:
     dependency: "direct dev"
     description:
@@ -780,18 +804,18 @@ packages:
     dependency: "direct main"
     description:
       name: sentry_flutter
-      sha256: "25150030c93bd1d4b727ab61cfb09e99121c69ce90fa820bb9ca16dab433e43a"
+      sha256: f9e87d5895cc437902aa2b081727ee7e46524fe7cc2e1910f535480a3eeb8bed
       url: "https://pub.dev"
     source: hosted
-    version: "9.15.0"
+    version: "9.16.0"
   share_plus:
     dependency: transitive
     description:
       name: share_plus
-      sha256: "14c8860d4de93d3a7e53af51bff479598c4e999605290756bbbe45cf65b37840"
+      sha256: "223873d106614442ea6f20db5a038685cc5b32a2fba81cdecaefbbae0523f7fa"
       url: "https://pub.dev"
     source: hosted
-    version: "12.0.1"
+    version: "12.0.2"
   share_plus_platform_interface:
     dependency: transitive
     description:
