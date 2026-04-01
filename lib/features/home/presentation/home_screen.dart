@@ -29,10 +29,7 @@ class HomeScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout_rounded),
-            onPressed: () async {
-              final controller = ref.read(emailAuthControllerProvider.notifier);
-              await controller.signOut();
-            },
+            onPressed: () => _showLogoutDialog(context, ref),
             tooltip: 'Sign Out',
           ),
         ],
@@ -53,6 +50,33 @@ class HomeScreen extends ConsumerWidget {
         label: const Text('New Trip'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              final controller = ref.read(emailAuthControllerProvider.notifier);
+              await controller.signOut();
+            },
+            child: const Text(
+              'Sign Out',
+              style: TextStyle(color: AppColors.error),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -13,6 +15,24 @@ import 'placeholder_screen.dart';
 import 'route_names.dart';
 
 part 'app_router.g.dart';
+
+/// Helper class to refresh GoRouter when auth state changes
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.listen((_) {
+      notifyListeners();
+    });
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
 
 /// Shared fade transition for smooth screen changes.
 CustomTransitionPage<void> _fadeTransitionPage({
@@ -32,26 +52,32 @@ CustomTransitionPage<void> _fadeTransitionPage({
 
 @riverpod
 GoRouter appRouter(Ref ref) {
+  final authRepo = ref.watch(authRepositoryProvider);
+  
   return GoRouter(
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true,
     observers: [TalkerRouteObserver(AppLogger.talker)],
+    refreshListenable: GoRouterRefreshStream(authRepo.authStateChanges()),
 
     // Redirect logic based on auth state
     redirect: (context, state) {
-      // Don't redirect if already on splash or auth screens
-      if (state.matchedLocation == RoutePaths.splash ||
-          state.matchedLocation.startsWith(RoutePaths.auth)) {
+      final isAuthenticated = authRepo.currentUser != null;
+      final isOnSplash = state.matchedLocation == RoutePaths.splash;
+      final isOnAuth = state.matchedLocation.startsWith(RoutePaths.auth);
+
+      if (isOnSplash) {
         return null;
       }
 
-      // Check if user is authenticated
-      final authRepo = ref.read(authRepositoryProvider);
-      final isAuthenticated = authRepo.currentUser != null;
-
-      // If not authenticated and trying to access protected routes, redirect to auth
-      if (!isAuthenticated && state.matchedLocation != RoutePaths.auth) {
+      if (!isAuthenticated && !isOnAuth) {
+        AppLogger.talker.debug('Redirecting to auth: user not authenticated');
         return RoutePaths.auth;
+      }
+
+      if (isAuthenticated && isOnAuth) {
+        AppLogger.talker.debug('Redirecting to home: user authenticated');
+        return RoutePaths.home;
       }
 
       return null;
