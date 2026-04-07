@@ -68,6 +68,10 @@ class MockUserRepository implements UserRepository {
   Future<UserPreference?> getUserPreferences(String userId) async => null;
 
   @override
+  Stream<UserPreference?> watchUserPreferences(String userId) =>
+      Stream.value(null);
+
+  @override
   Future<void> updateUserPreferences({
     required String userId,
     String? travelStyle,

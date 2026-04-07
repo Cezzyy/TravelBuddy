@@ -26,7 +26,8 @@ class EmailAuthController extends _$EmailAuthController {
     final authRepo = ref.read(authRepositoryProvider);
     final userRepo = ref.read(userRepositoryProvider);
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+
+    final result = await AsyncValue.guard(() async {
       // Sign in with Firebase
       final credential = await authRepo.signInWithEmail(
         email: email,
@@ -38,6 +39,10 @@ class EmailAuthController extends _$EmailAuthController {
         await userRepo.syncUserFromAuth(credential.user!);
       }
     });
+
+    if (ref.mounted) {
+      state = result;
+    }
   }
 
   /// Sign up with email and password.
@@ -45,7 +50,8 @@ class EmailAuthController extends _$EmailAuthController {
     final authRepo = ref.read(authRepositoryProvider);
     final userRepo = ref.read(userRepositoryProvider);
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+
+    final result = await AsyncValue.guard(() async {
       // Create account with Firebase
       final credential = await authRepo.signUpWithEmail(
         email: email,
@@ -57,26 +63,43 @@ class EmailAuthController extends _$EmailAuthController {
         await userRepo.syncUserFromAuth(credential.user!);
       }
     });
+
+    if (ref.mounted) {
+      state = result;
+    }
   }
 
   Future<void> signInWithGoogle() async {
     final authRepo = ref.read(authRepositoryProvider);
     final userRepo = ref.read(userRepositoryProvider);
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+
+    final result = await AsyncValue.guard(() async {
       final credential = await authRepo.signInWithGoogle();
       if (credential.user != null) {
         await userRepo.syncUserFromAuth(credential.user!);
       }
     });
+
+    if (ref.mounted) {
+      state = result;
+    }
   }
 
   /// Sign out current user.
   Future<void> signOut() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repository = ref.read(authRepositoryProvider);
+    final repository = ref.read(authRepositoryProvider);
+
+    try {
       await repository.signOut();
-    });
+      if (ref.mounted) {
+        state = const AsyncData(null);
+      }
+    } catch (error, stackTrace) {
+      if (ref.mounted) {
+        state = AsyncError(error, stackTrace);
+      }
+    }
   }
 }

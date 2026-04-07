@@ -122,6 +122,25 @@ class UserRepository {
         .into(_db.users)
         .insert(companion, mode: drift.InsertMode.insertOrReplace);
 
+    // Sync preferences if they exist in Firestore
+    if (data['preferences'] != null) {
+      final prefs = data['preferences'] as Map<String, dynamic>;
+      final prefsCompanion = UserPreferencesCompanion.insert(
+        userId: userId,
+        travelStyle: drift.Value(prefs['travelStyle'] as String?),
+        budgetLevel: drift.Value(prefs['budgetLevel'] as String?),
+        preferredActivities: drift.Value(
+          prefs['preferredActivities'] as String?,
+        ),
+        updatedAt: _parseTimestamp(prefs['updatedAt']) ?? now,
+      );
+
+      await _db
+          .into(_db.userPreferences)
+          .insert(prefsCompanion, mode: drift.InsertMode.insertOrReplace);
+      AppLogger.talker.info('User preferences synced from Firestore');
+    }
+
     return (await getLocalUser(userId))!;
   }
 
@@ -234,6 +253,13 @@ class UserRepository {
     return await (_db.select(
       _db.userPreferences,
     )..where((p) => p.userId.equals(userId))).getSingleOrNull();
+  }
+
+  /// Stream of local user preferences.
+  Stream<UserPreference?> watchUserPreferences(String userId) {
+    return (_db.select(
+      _db.userPreferences,
+    )..where((p) => p.userId.equals(userId))).watchSingleOrNull();
   }
 
   /// Update user preferences locally and queue for sync.

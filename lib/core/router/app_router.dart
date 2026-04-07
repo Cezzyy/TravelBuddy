@@ -8,7 +8,7 @@ import 'package:talker_flutter/talker_flutter.dart';
 import '../logging/app_logger.dart';
 import '../layout/main_shell_screen.dart';
 import '../../features/auth/data/auth_repository.dart';
-import '../../features/auth/data/user_repository.dart';
+import '../../features/auth/presentation/providers/current_user_provider.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
 import '../../features/auth/presentation/email_auth_screen.dart';
@@ -16,6 +16,7 @@ import '../../features/guides/presentation/guides_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/onboarding/domain/onboarding_step.dart';
 import '../../features/onboarding/presentation/preferences_screen.dart';
+import '../../features/onboarding/presentation/providers/onboarding_provider.dart';
 import '../../features/onboarding/presentation/profile_setup_screen.dart';
 import '../../features/onboarding/presentation/rules_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
@@ -25,7 +26,7 @@ import 'route_names.dart';
 
 part 'app_router.g.dart';
 
-/// Helper class to refresh GoRouter when auth state changes
+/// Helper class to refresh GoRouter when a stream emits.
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
@@ -43,11 +44,37 @@ class GoRouterRefreshStream extends ChangeNotifier {
   }
 }
 
+/// Helper class to refresh GoRouter when Riverpod provider state changes.
+class GoRouterRefreshNotifier extends ChangeNotifier {
+  GoRouterRefreshNotifier(
+    Ref ref,
+    List<ProviderListenable> providers, {
+    Stream<dynamic>? stream,
+  }) {
+    for (final provider in providers) {
+      ref.listen(provider, (_, _) => notifyListeners());
+    }
+
+    if (stream != null) {
+      notifyListeners();
+      _subscription = stream.listen((_) => notifyListeners());
+    }
+  }
+
+  StreamSubscription<dynamic>? _subscription;
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+}
+
 /// Shared fade transition for smooth screen changes.
 CustomTransitionPage<void> _fadeTransitionPage({
   required LocalKey key,
   required Widget child,
-  Duration duration = const Duration(milliseconds: 500),
+  Duration duration = const Duration(milliseconds: 400),
 }) {
   return CustomTransitionPage<void>(
     key: key,
@@ -62,57 +89,53 @@ CustomTransitionPage<void> _fadeTransitionPage({
 @riverpod
 GoRouter appRouter(Ref ref) {
   final authRepo = ref.watch(authRepositoryProvider);
-  final userRepo = ref.watch(userRepositoryProvider);
+  final onboardingAsync = ref.watch(onboardingStatusProvider);
 
   return GoRouter(
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true,
     observers: [TalkerRouteObserver(AppLogger.talker)],
-    refreshListenable: GoRouterRefreshStream(authRepo.authStateChanges()),
+    refreshListenable: GoRouterRefreshNotifier(ref, [
+      currentUserProvider,
+      onboardingStatusProvider,
+    ], stream: authRepo.authStateChanges()),
 
-    // Redirect logic based on auth state
-    redirect: (context, state) async {
+    redirect: (context, state) {
       final firebaseUser = authRepo.currentUser;
       final isAuthenticated = firebaseUser != null;
-      final matchedLocation = state.matchedLocation;
-      final isOnAuth = matchedLocation.startsWith(RoutePaths.auth);
-      final isOnOnboarding = matchedLocation.startsWith('/onboarding');
+      final location = state.matchedLocation;
+      final isOnSplash = location == RoutePaths.splash;
+      final isOnAuth = location.startsWith(RoutePaths.auth);
+      final isOnOnboarding = location.startsWith('/onboarding');
 
       if (!isAuthenticated) {
-        if (isOnAuth || matchedLocation == RoutePaths.splash) {
-          return null;
-        }
-        AppLogger.talker.debug('Redirecting to auth: user not authenticated');
-        return RoutePaths.auth;
+        return isOnAuth ? null : RoutePaths.auth;
       }
 
-      final localUser =
-          await userRepo.getLocalUser(firebaseUser.uid) ??
-          await userRepo.syncUserFromAuth(firebaseUser);
-      final preferences = await userRepo.getUserPreferences(firebaseUser.uid);
-      final onboardingStep = resolveOnboardingStep(
-        user: localUser,
-        preferences: preferences,
-      );
+      if (onboardingAsync.isLoading) {
+        return isOnSplash ? null : RoutePaths.splash;
+      }
 
-      if (onboardingStep != OnboardingStep.complete) {
-        final onboardingPath = switch (onboardingStep) {
+      if (onboardingAsync.hasError) {
+        AppLogger.talker.warning(
+          'Onboarding provider error: ${onboardingAsync.error}',
+        );
+        return null;
+      }
+
+      final step = onboardingAsync.value!;
+
+      if (step != OnboardingStep.complete) {
+        final target = switch (step) {
           OnboardingStep.profile => RoutePaths.onboardingProfile,
           OnboardingStep.preferences => RoutePaths.onboardingPreferences,
           OnboardingStep.rules => RoutePaths.onboardingRules,
           OnboardingStep.complete => RoutePaths.home,
         };
-        if (matchedLocation != onboardingPath) {
-          AppLogger.talker.debug(
-            'Redirecting to onboarding step: $onboardingPath',
-          );
-          return onboardingPath;
-        }
-        return null;
+        return location != target ? target : null;
       }
 
-      if (matchedLocation == RoutePaths.splash || isOnAuth || isOnOnboarding) {
-        AppLogger.talker.debug('Redirecting to home: onboarding completed');
+      if (isOnSplash || isOnAuth || isOnOnboarding) {
         return RoutePaths.home;
       }
 
@@ -127,6 +150,8 @@ GoRouter appRouter(Ref ref) {
           child: const SplashScreen(),
         ),
       ),
+
+      // Auth
       GoRoute(
         path: RoutePaths.auth,
         name: RouteNames.auth,
@@ -158,21 +183,30 @@ GoRouter appRouter(Ref ref) {
           ),
         ],
       ),
+
       GoRoute(
         path: RoutePaths.onboardingProfile,
         name: RouteNames.onboardingProfile,
-        builder: (context, state) => const ProfileSetupScreen(),
+        pageBuilder: (context, state) => _fadeTransitionPage(
+          key: state.pageKey,
+          child: const ProfileSetupScreen(),
+        ),
       ),
       GoRoute(
         path: RoutePaths.onboardingPreferences,
         name: RouteNames.onboardingPreferences,
-        builder: (context, state) => const PreferencesScreen(),
+        pageBuilder: (context, state) => _fadeTransitionPage(
+          key: state.pageKey,
+          child: const PreferencesScreen(),
+        ),
       ),
       GoRoute(
         path: RoutePaths.onboardingRules,
         name: RouteNames.onboardingRules,
-        builder: (context, state) => const RulesScreen(),
+        pageBuilder: (context, state) =>
+            _fadeTransitionPage(key: state.pageKey, child: const RulesScreen()),
       ),
+
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             MainShellScreen(navigationShell: navigationShell),
@@ -182,7 +216,10 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: RoutePaths.home,
                 name: RouteNames.home,
-                builder: (context, state) => const HomeScreen(),
+                pageBuilder: (context, state) => _fadeTransitionPage(
+                  key: state.pageKey,
+                  child: const HomeScreen(),
+                ),
               ),
             ],
           ),
