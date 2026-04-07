@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../auth/presentation/providers/auth_provider.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 
 /// Home screen - Main dashboard for TravelBuddy.
@@ -14,70 +13,10 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final localUser = ref.watch(currentUserProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text(
-          'TravelBuddy',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: AppColors.primary,
-          ),
-        ),
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            onPressed: () => _showLogoutDialog(context, ref),
-            tooltip: 'Sign Out',
-          ),
-        ],
-      ),
-      body: localUser.when(
-        data: (user) => _buildContent(context, user),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Navigate to create trip screen
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Create Trip - Coming Soon')),
-          );
-        },
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('New Trip'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              final controller = ref.read(emailAuthControllerProvider.notifier);
-              await controller.signOut();
-            },
-            child: const Text(
-              'Sign Out',
-              style: TextStyle(color: AppColors.error),
-            ),
-          ),
-        ],
-      ),
+    return localUser.when(
+      data: (user) => _buildContent(context, user),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, _) => Center(child: Text('Error: $error')),
     );
   }
 

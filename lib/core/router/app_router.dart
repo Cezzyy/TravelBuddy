@@ -6,16 +6,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../logging/app_logger.dart';
+import '../layout/main_shell_screen.dart';
 import '../../features/auth/data/auth_repository.dart';
 import '../../features/auth/data/user_repository.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
 import '../../features/auth/presentation/email_auth_screen.dart';
+import '../../features/guides/presentation/guides_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/onboarding/domain/onboarding_step.dart';
 import '../../features/onboarding/presentation/preferences_screen.dart';
 import '../../features/onboarding/presentation/profile_setup_screen.dart';
 import '../../features/onboarding/presentation/rules_screen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
+import '../../features/trips/presentation/trips_screen.dart';
 import 'placeholder_screen.dart';
 import 'route_names.dart';
 
@@ -169,18 +173,57 @@ GoRouter appRouter(Ref ref) {
         name: RouteNames.onboardingRules,
         builder: (context, state) => const RulesScreen(),
       ),
-      GoRoute(
-        path: RoutePaths.home,
-        name: RouteNames.home,
-        builder: (context, state) => const HomeScreen(),
-      ),
-      GoRoute(
-        path: RoutePaths.tripDetail,
-        name: RouteNames.tripDetail,
-        builder: (context, state) {
-          final tripId = state.pathParameters['tripId']!;
-          return PlaceholderScreen(title: 'Trip: $tripId');
-        },
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            MainShellScreen(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.home,
+                name: RouteNames.home,
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.trips,
+                name: RouteNames.trips,
+                builder: (context, state) => const TripsScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':tripId',
+                    name: RouteNames.tripDetail,
+                    builder: (context, state) {
+                      final tripId = state.pathParameters['tripId']!;
+                      return PlaceholderScreen(title: 'Trip: $tripId');
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.guides,
+                name: RouteNames.guides,
+                builder: (context, state) => const GuidesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.profile,
+                name: RouteNames.profile,
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );

@@ -8,6 +8,9 @@ abstract class RoutePaths {
   static const onboardingPreferences = '/onboarding/preferences';
   static const onboardingRules = '/onboarding/rules';
   static const home = '/home';
+  static const trips = '/trips';
+  static const guides = '/guides';
+  static const profile = '/profile';
   static const tripDetail = '/trips/:tripId';
 }
 
@@ -19,5 +22,8 @@ abstract class RouteNames {
   static const onboardingPreferences = 'onboarding-preferences';
   static const onboardingRules = 'onboarding-rules';
   static const home = 'home';
+  static const trips = 'trips';
+  static const guides = 'guides';
+  static const profile = 'profile';
   static const tripDetail = 'trip-detail';
 }
