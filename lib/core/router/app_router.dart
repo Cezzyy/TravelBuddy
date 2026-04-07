@@ -7,10 +7,15 @@ import 'package:talker_flutter/talker_flutter.dart';
 
 import '../logging/app_logger.dart';
 import '../../features/auth/data/auth_repository.dart';
+import '../../features/auth/data/user_repository.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
 import '../../features/auth/presentation/email_auth_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/onboarding/domain/onboarding_step.dart';
+import '../../features/onboarding/presentation/preferences_screen.dart';
+import '../../features/onboarding/presentation/profile_setup_screen.dart';
+import '../../features/onboarding/presentation/rules_screen.dart';
 import 'placeholder_screen.dart';
 import 'route_names.dart';
 
@@ -53,6 +58,7 @@ CustomTransitionPage<void> _fadeTransitionPage({
 @riverpod
 GoRouter appRouter(Ref ref) {
   final authRepo = ref.watch(authRepositoryProvider);
+  final userRepo = ref.watch(userRepositoryProvider);
 
   return GoRouter(
     initialLocation: RoutePaths.splash,
@@ -61,22 +67,48 @@ GoRouter appRouter(Ref ref) {
     refreshListenable: GoRouterRefreshStream(authRepo.authStateChanges()),
 
     // Redirect logic based on auth state
-    redirect: (context, state) {
-      final isAuthenticated = authRepo.currentUser != null;
-      final isOnSplash = state.matchedLocation == RoutePaths.splash;
-      final isOnAuth = state.matchedLocation.startsWith(RoutePaths.auth);
+    redirect: (context, state) async {
+      final firebaseUser = authRepo.currentUser;
+      final isAuthenticated = firebaseUser != null;
+      final matchedLocation = state.matchedLocation;
+      final isOnAuth = matchedLocation.startsWith(RoutePaths.auth);
+      final isOnOnboarding = matchedLocation.startsWith('/onboarding');
 
-      if (isOnSplash) {
-        return null;
-      }
-
-      if (!isAuthenticated && !isOnAuth) {
+      if (!isAuthenticated) {
+        if (isOnAuth || matchedLocation == RoutePaths.splash) {
+          return null;
+        }
         AppLogger.talker.debug('Redirecting to auth: user not authenticated');
         return RoutePaths.auth;
       }
 
-      if (isAuthenticated && isOnAuth) {
-        AppLogger.talker.debug('Redirecting to home: user authenticated');
+      final localUser =
+          await userRepo.getLocalUser(firebaseUser.uid) ??
+          await userRepo.syncUserFromAuth(firebaseUser);
+      final preferences = await userRepo.getUserPreferences(firebaseUser.uid);
+      final onboardingStep = resolveOnboardingStep(
+        user: localUser,
+        preferences: preferences,
+      );
+
+      if (onboardingStep != OnboardingStep.complete) {
+        final onboardingPath = switch (onboardingStep) {
+          OnboardingStep.profile => RoutePaths.onboardingProfile,
+          OnboardingStep.preferences => RoutePaths.onboardingPreferences,
+          OnboardingStep.rules => RoutePaths.onboardingRules,
+          OnboardingStep.complete => RoutePaths.home,
+        };
+        if (matchedLocation != onboardingPath) {
+          AppLogger.talker.debug(
+            'Redirecting to onboarding step: $onboardingPath',
+          );
+          return onboardingPath;
+        }
+        return null;
+      }
+
+      if (matchedLocation == RoutePaths.splash || isOnAuth || isOnOnboarding) {
+        AppLogger.talker.debug('Redirecting to home: onboarding completed');
         return RoutePaths.home;
       }
 
@@ -125,20 +157,17 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: RoutePaths.onboardingProfile,
         name: RouteNames.onboardingProfile,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Profile Setup'),
+        builder: (context, state) => const ProfileSetupScreen(),
       ),
       GoRoute(
         path: RoutePaths.onboardingPreferences,
         name: RouteNames.onboardingPreferences,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Preferences'),
+        builder: (context, state) => const PreferencesScreen(),
       ),
       GoRoute(
         path: RoutePaths.onboardingRules,
         name: RouteNames.onboardingRules,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Rules & Regulations'),
+        builder: (context, state) => const RulesScreen(),
       ),
       GoRoute(
         path: RoutePaths.home,

@@ -59,12 +59,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
       } else {
         await controller.signIn(email: email, password: password);
       }
-
-      // Check if auth was successful
-      if (mounted && ref.read(emailAuthControllerProvider).hasValue) {
-        // Navigate to home on success
-        context.go('/home');
-      }
+      // Navigation is handled by GoRouter redirect on auth state change
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

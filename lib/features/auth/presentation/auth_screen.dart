@@ -1,19 +1,22 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/router/route_names.dart';
 import '../../../core/theme/app_colors.dart';
+import 'providers/auth_provider.dart';
 
 /// Auth screen with an auto-scrolling image slideshow on top
 /// and a rounded-corner card at the bottom with sign-in options.
-class AuthScreen extends StatefulWidget {
+class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
 
   @override
-  State<AuthScreen> createState() => _AuthScreenState();
+  ConsumerState<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
+class _AuthScreenState extends ConsumerState<AuthScreen>
+    with TickerProviderStateMixin {
   static const _kStartPage = 1000;
   final _pageController = PageController(initialPage: _kStartPage);
   int _realIndex = 0;
@@ -319,12 +322,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                           // ── Google button ──
                           _SignInButton(
                             onPressed: () {
-                              // TODO: Implement Google Sign-In
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Google Sign-In — coming soon'),
-                                ),
-                              );
+                              _handleGoogleSignIn();
                             },
                             icon: Icons.g_mobiledata_rounded,
                             iconSize: 28,
@@ -373,6 +371,19 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    final controller = ref.read(emailAuthControllerProvider.notifier);
+    try {
+      await controller.signInWithGoogle();
+      // Navigation is handled by GoRouter redirect on auth state change
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 }
 

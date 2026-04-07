@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/logging/app_logger.dart';
@@ -57,6 +58,25 @@ class AuthRepository {
       return credential;
     } on FirebaseAuthException catch (e, st) {
       AppLogger.talker.error('Sign up failed', e, st);
+      throw _handleAuthException(e);
+    }
+  }
+
+  Future<UserCredential> signInWithGoogle() async {
+    try {
+      AppLogger.talker.info('Attempting Google sign in');
+      final googleProvider = GoogleAuthProvider();
+
+      final credential = kIsWeb
+          ? await _auth.signInWithPopup(googleProvider)
+          : await _auth.signInWithProvider(googleProvider);
+
+      AppLogger.talker.info(
+        'Google sign in successful: ${credential.user?.uid}',
+      );
+      return credential;
+    } on FirebaseAuthException catch (e, st) {
+      AppLogger.talker.error('Google sign in failed', e, st);
       throw _handleAuthException(e);
     }
   }

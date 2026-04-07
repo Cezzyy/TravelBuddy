@@ -157,7 +157,7 @@ class UserRepository {
     AppLogger.talker.info('User profile updated locally');
 
     // Queue for sync
-    final payload = {
+    final payload = <String, dynamic>{
       'displayName': ?displayName,
       'photoUrl': ?photoUrl,
       'isProfileComplete': ?isProfileComplete,
@@ -284,7 +284,7 @@ class UserRepository {
     AppLogger.talker.info('User preferences updated locally');
 
     // Queue for Firestore sync
-    final payload = {
+    final payload = <String, dynamic>{
       'travelStyle': ?travelStyle,
       'budgetLevel': ?budgetLevel,
       'preferredActivities': ?preferredActivities,
