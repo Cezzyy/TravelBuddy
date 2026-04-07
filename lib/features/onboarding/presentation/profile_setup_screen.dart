@@ -117,7 +117,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                     Text(
                       'Tell us a bit about yourself to personalize your travel experience.',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                       textAlign: TextAlign.center,
                     ),
