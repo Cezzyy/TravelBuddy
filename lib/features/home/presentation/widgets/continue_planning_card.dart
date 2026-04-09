@@ -41,11 +41,7 @@ class ContinuePlanningCard extends StatelessWidget {
                 color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                iconData,
-                color: AppColors.primary,
-                size: 24,
-              ),
+              child: Icon(iconData, color: AppColors.primary, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -77,8 +73,9 @@ class ContinuePlanningCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: progress,
-                      backgroundColor:
-                          AppColors.textSecondary.withValues(alpha: 0.1),
+                      backgroundColor: AppColors.textSecondary.withValues(
+                        alpha: 0.1,
+                      ),
                       valueColor: const AlwaysStoppedAnimation<Color>(
                         AppColors.primary,
                       ),

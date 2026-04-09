@@ -20,9 +20,7 @@ class HomeScreen extends StatelessWidget {
         slivers: [
           // Hero Banner - Full width, no padding
           SliverToBoxAdapter(
-            child: HeroBanner(
-              onCreateTrip: () => _showComingSoon(context),
-            ),
+            child: HeroBanner(onCreateTrip: () => _showComingSoon(context)),
           ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
@@ -197,9 +195,7 @@ class HomeScreen extends StatelessWidget {
       SnackBar(
         content: const Text('Coming Soon'),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }

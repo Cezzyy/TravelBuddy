@@ -4,11 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 
 /// Hero banner with call-to-action for creating trips.
 class HeroBanner extends StatelessWidget {
-  const HeroBanner({
-    super.key,
-    required this.onCreateTrip,
-    this.imageUrl,
-  });
+  const HeroBanner({super.key, required this.onCreateTrip, this.imageUrl});
 
   final VoidCallback onCreateTrip;
   final String? imageUrl;
@@ -30,7 +26,7 @@ class HeroBanner extends StatelessWidget {
             width: double.infinity,
             height: double.infinity,
           ),
-          
+
           // Dark gradient overlay for text readability
           Container(
             decoration: BoxDecoration(
@@ -44,7 +40,7 @@ class HeroBanner extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Content positioned at bottom left
           Positioned(
             bottom: 16,
@@ -97,4 +93,3 @@ class HeroBanner extends StatelessWidget {
     );
   }
 }
-

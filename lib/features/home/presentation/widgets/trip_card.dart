@@ -55,7 +55,7 @@ class TripCard extends StatelessWidget {
                     ? Image.network(
                         coverImageUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                        errorBuilder: (_, _, _) => _buildPlaceholder(),
                       )
                     : _buildPlaceholder(),
               ),
@@ -114,8 +114,8 @@ class TripCard extends StatelessWidget {
                         daysUntil > 0
                             ? 'In $daysUntil days'
                             : daysUntil == 0
-                                ? 'Today'
-                                : 'Ongoing',
+                            ? 'Today'
+                            : 'Ongoing',
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
