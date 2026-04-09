@@ -21,7 +21,6 @@ import '../../features/onboarding/presentation/profile_setup_screen.dart';
 import '../../features/onboarding/presentation/rules_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/trips/presentation/trips_screen.dart';
-import 'placeholder_screen.dart';
 import 'route_names.dart';
 
 part 'app_router.g.dart';
@@ -229,16 +228,17 @@ GoRouter appRouter(Ref ref) {
                 path: RoutePaths.trips,
                 name: RouteNames.trips,
                 builder: (context, state) => const TripsScreen(),
-                routes: [
-                  GoRoute(
-                    path: ':tripId',
-                    name: RouteNames.tripDetail,
-                    builder: (context, state) {
-                      final tripId = state.pathParameters['tripId']!;
-                      return PlaceholderScreen(title: 'Trip: $tripId');
-                    },
-                  ),
-                ],
+                // TODO: Add trip detail route when screen is implemented
+                // routes: [
+                //   GoRoute(
+                //     path: ':tripId',
+                //     name: RouteNames.tripDetail,
+                //     builder: (context, state) {
+                //       final tripId = state.pathParameters['tripId']!;
+                //       return TripDetailScreen(tripId: tripId);
+                //     },
+                //   ),
+                // ],
               ),
             ],
           ),
