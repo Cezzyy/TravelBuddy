@@ -6,7 +6,13 @@ import 'users.dart';
 import 'user_preferences.dart';
 import 'trips.dart';
 import 'trip_collaborators.dart';
+import 'trip_invitations.dart';
 import 'itinerary_items.dart';
+import 'guides.dart';
+import 'guide_itinerary_items.dart';
+import 'guide_likes.dart';
+import 'guide_comments.dart';
+import 'trip_guide_references.dart';
 import 'sync_queue.dart';
 
 part 'app_db.g.dart';
@@ -17,7 +23,13 @@ part 'app_db.g.dart';
     UserPreferences,
     Trips,
     TripCollaborators,
+    TripInvitations,
     ItineraryItems,
+    Guides,
+    GuideItineraryItems,
+    GuideLikes,
+    GuideComments,
+    TripGuideReferences,
     SyncQueue,
   ],
 )
@@ -34,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
 
   // Bump this number whenever you change the schema, then add a migration.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -43,10 +55,18 @@ class AppDatabase extends _$AppDatabase {
         await m.createAll();
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        // Future migrations go here. Example:
-        // if (from < 2) {
-        //   await m.addColumn(trips, trips.someNewColumn);
-        // }
+        // Migration from v1 to v2: Add guides and invitation tables
+        if (from < 2) {
+          // Add new tables for guides system
+          await m.createTable(guides);
+          await m.createTable(guideItineraryItems);
+          await m.createTable(guideLikes);
+          await m.createTable(guideComments);
+          await m.createTable(tripGuideReferences);
+
+          // Add trip invitations table
+          await m.createTable(tripInvitations);
+        }
       },
     );
   }

@@ -2354,6 +2354,691 @@ class TripCollaboratorsCompanion extends UpdateCompanion<TripCollaborator> {
   }
 }
 
+class $TripInvitationsTable extends TripInvitations
+    with TableInfo<$TripInvitationsTable, TripInvitation> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TripInvitationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tripIdMeta = const VerificationMeta('tripId');
+  @override
+  late final GeneratedColumn<String> tripId = GeneratedColumn<String>(
+    'trip_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES trips (id)',
+    ),
+  );
+  static const VerificationMeta _invitedByUserIdMeta = const VerificationMeta(
+    'invitedByUserId',
+  );
+  @override
+  late final GeneratedColumn<String> invitedByUserId = GeneratedColumn<String>(
+    'invited_by_user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id)',
+    ),
+  );
+  static const VerificationMeta _invitedEmailMeta = const VerificationMeta(
+    'invitedEmail',
+  );
+  @override
+  late final GeneratedColumn<String> invitedEmail = GeneratedColumn<String>(
+    'invited_email',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _invitedUserIdMeta = const VerificationMeta(
+    'invitedUserId',
+  );
+  @override
+  late final GeneratedColumn<String> invitedUserId = GeneratedColumn<String>(
+    'invited_user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id)',
+    ),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+    'role',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('viewer'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _expiresAtMeta = const VerificationMeta(
+    'expiresAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> expiresAt = GeneratedColumn<DateTime>(
+    'expires_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _respondedAtMeta = const VerificationMeta(
+    'respondedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> respondedAt = GeneratedColumn<DateTime>(
+    'responded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    tripId,
+    invitedByUserId,
+    invitedEmail,
+    invitedUserId,
+    status,
+    role,
+    createdAt,
+    expiresAt,
+    respondedAt,
+    lastSyncedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'trip_invitations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TripInvitation> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('trip_id')) {
+      context.handle(
+        _tripIdMeta,
+        tripId.isAcceptableOrUnknown(data['trip_id']!, _tripIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tripIdMeta);
+    }
+    if (data.containsKey('invited_by_user_id')) {
+      context.handle(
+        _invitedByUserIdMeta,
+        invitedByUserId.isAcceptableOrUnknown(
+          data['invited_by_user_id']!,
+          _invitedByUserIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_invitedByUserIdMeta);
+    }
+    if (data.containsKey('invited_email')) {
+      context.handle(
+        _invitedEmailMeta,
+        invitedEmail.isAcceptableOrUnknown(
+          data['invited_email']!,
+          _invitedEmailMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_invitedEmailMeta);
+    }
+    if (data.containsKey('invited_user_id')) {
+      context.handle(
+        _invitedUserIdMeta,
+        invitedUserId.isAcceptableOrUnknown(
+          data['invited_user_id']!,
+          _invitedUserIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+        _roleMeta,
+        role.isAcceptableOrUnknown(data['role']!, _roleMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('expires_at')) {
+      context.handle(
+        _expiresAtMeta,
+        expiresAt.isAcceptableOrUnknown(data['expires_at']!, _expiresAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_expiresAtMeta);
+    }
+    if (data.containsKey('responded_at')) {
+      context.handle(
+        _respondedAtMeta,
+        respondedAt.isAcceptableOrUnknown(
+          data['responded_at']!,
+          _respondedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TripInvitation map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TripInvitation(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      tripId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}trip_id'],
+      )!,
+      invitedByUserId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}invited_by_user_id'],
+      )!,
+      invitedEmail: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}invited_email'],
+      )!,
+      invitedUserId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}invited_user_id'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      expiresAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}expires_at'],
+      )!,
+      respondedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}responded_at'],
+      ),
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+    );
+  }
+
+  @override
+  $TripInvitationsTable createAlias(String alias) {
+    return $TripInvitationsTable(attachedDatabase, alias);
+  }
+}
+
+class TripInvitation extends DataClass implements Insertable<TripInvitation> {
+  final String id;
+  final String tripId;
+  final String invitedByUserId;
+  final String invitedEmail;
+  final String? invitedUserId;
+  final String status;
+  final String role;
+  final DateTime createdAt;
+  final DateTime expiresAt;
+  final DateTime? respondedAt;
+  final DateTime? lastSyncedAt;
+  const TripInvitation({
+    required this.id,
+    required this.tripId,
+    required this.invitedByUserId,
+    required this.invitedEmail,
+    this.invitedUserId,
+    required this.status,
+    required this.role,
+    required this.createdAt,
+    required this.expiresAt,
+    this.respondedAt,
+    this.lastSyncedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['trip_id'] = Variable<String>(tripId);
+    map['invited_by_user_id'] = Variable<String>(invitedByUserId);
+    map['invited_email'] = Variable<String>(invitedEmail);
+    if (!nullToAbsent || invitedUserId != null) {
+      map['invited_user_id'] = Variable<String>(invitedUserId);
+    }
+    map['status'] = Variable<String>(status);
+    map['role'] = Variable<String>(role);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['expires_at'] = Variable<DateTime>(expiresAt);
+    if (!nullToAbsent || respondedAt != null) {
+      map['responded_at'] = Variable<DateTime>(respondedAt);
+    }
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    return map;
+  }
+
+  TripInvitationsCompanion toCompanion(bool nullToAbsent) {
+    return TripInvitationsCompanion(
+      id: Value(id),
+      tripId: Value(tripId),
+      invitedByUserId: Value(invitedByUserId),
+      invitedEmail: Value(invitedEmail),
+      invitedUserId: invitedUserId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(invitedUserId),
+      status: Value(status),
+      role: Value(role),
+      createdAt: Value(createdAt),
+      expiresAt: Value(expiresAt),
+      respondedAt: respondedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(respondedAt),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+    );
+  }
+
+  factory TripInvitation.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TripInvitation(
+      id: serializer.fromJson<String>(json['id']),
+      tripId: serializer.fromJson<String>(json['tripId']),
+      invitedByUserId: serializer.fromJson<String>(json['invitedByUserId']),
+      invitedEmail: serializer.fromJson<String>(json['invitedEmail']),
+      invitedUserId: serializer.fromJson<String?>(json['invitedUserId']),
+      status: serializer.fromJson<String>(json['status']),
+      role: serializer.fromJson<String>(json['role']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      expiresAt: serializer.fromJson<DateTime>(json['expiresAt']),
+      respondedAt: serializer.fromJson<DateTime?>(json['respondedAt']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'tripId': serializer.toJson<String>(tripId),
+      'invitedByUserId': serializer.toJson<String>(invitedByUserId),
+      'invitedEmail': serializer.toJson<String>(invitedEmail),
+      'invitedUserId': serializer.toJson<String?>(invitedUserId),
+      'status': serializer.toJson<String>(status),
+      'role': serializer.toJson<String>(role),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'expiresAt': serializer.toJson<DateTime>(expiresAt),
+      'respondedAt': serializer.toJson<DateTime?>(respondedAt),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+    };
+  }
+
+  TripInvitation copyWith({
+    String? id,
+    String? tripId,
+    String? invitedByUserId,
+    String? invitedEmail,
+    Value<String?> invitedUserId = const Value.absent(),
+    String? status,
+    String? role,
+    DateTime? createdAt,
+    DateTime? expiresAt,
+    Value<DateTime?> respondedAt = const Value.absent(),
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+  }) => TripInvitation(
+    id: id ?? this.id,
+    tripId: tripId ?? this.tripId,
+    invitedByUserId: invitedByUserId ?? this.invitedByUserId,
+    invitedEmail: invitedEmail ?? this.invitedEmail,
+    invitedUserId: invitedUserId.present
+        ? invitedUserId.value
+        : this.invitedUserId,
+    status: status ?? this.status,
+    role: role ?? this.role,
+    createdAt: createdAt ?? this.createdAt,
+    expiresAt: expiresAt ?? this.expiresAt,
+    respondedAt: respondedAt.present ? respondedAt.value : this.respondedAt,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+  );
+  TripInvitation copyWithCompanion(TripInvitationsCompanion data) {
+    return TripInvitation(
+      id: data.id.present ? data.id.value : this.id,
+      tripId: data.tripId.present ? data.tripId.value : this.tripId,
+      invitedByUserId: data.invitedByUserId.present
+          ? data.invitedByUserId.value
+          : this.invitedByUserId,
+      invitedEmail: data.invitedEmail.present
+          ? data.invitedEmail.value
+          : this.invitedEmail,
+      invitedUserId: data.invitedUserId.present
+          ? data.invitedUserId.value
+          : this.invitedUserId,
+      status: data.status.present ? data.status.value : this.status,
+      role: data.role.present ? data.role.value : this.role,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      expiresAt: data.expiresAt.present ? data.expiresAt.value : this.expiresAt,
+      respondedAt: data.respondedAt.present
+          ? data.respondedAt.value
+          : this.respondedAt,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TripInvitation(')
+          ..write('id: $id, ')
+          ..write('tripId: $tripId, ')
+          ..write('invitedByUserId: $invitedByUserId, ')
+          ..write('invitedEmail: $invitedEmail, ')
+          ..write('invitedUserId: $invitedUserId, ')
+          ..write('status: $status, ')
+          ..write('role: $role, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('expiresAt: $expiresAt, ')
+          ..write('respondedAt: $respondedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    tripId,
+    invitedByUserId,
+    invitedEmail,
+    invitedUserId,
+    status,
+    role,
+    createdAt,
+    expiresAt,
+    respondedAt,
+    lastSyncedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TripInvitation &&
+          other.id == this.id &&
+          other.tripId == this.tripId &&
+          other.invitedByUserId == this.invitedByUserId &&
+          other.invitedEmail == this.invitedEmail &&
+          other.invitedUserId == this.invitedUserId &&
+          other.status == this.status &&
+          other.role == this.role &&
+          other.createdAt == this.createdAt &&
+          other.expiresAt == this.expiresAt &&
+          other.respondedAt == this.respondedAt &&
+          other.lastSyncedAt == this.lastSyncedAt);
+}
+
+class TripInvitationsCompanion extends UpdateCompanion<TripInvitation> {
+  final Value<String> id;
+  final Value<String> tripId;
+  final Value<String> invitedByUserId;
+  final Value<String> invitedEmail;
+  final Value<String?> invitedUserId;
+  final Value<String> status;
+  final Value<String> role;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> expiresAt;
+  final Value<DateTime?> respondedAt;
+  final Value<DateTime?> lastSyncedAt;
+  final Value<int> rowid;
+  const TripInvitationsCompanion({
+    this.id = const Value.absent(),
+    this.tripId = const Value.absent(),
+    this.invitedByUserId = const Value.absent(),
+    this.invitedEmail = const Value.absent(),
+    this.invitedUserId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.role = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.expiresAt = const Value.absent(),
+    this.respondedAt = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TripInvitationsCompanion.insert({
+    required String id,
+    required String tripId,
+    required String invitedByUserId,
+    required String invitedEmail,
+    this.invitedUserId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.role = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime expiresAt,
+    this.respondedAt = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       tripId = Value(tripId),
+       invitedByUserId = Value(invitedByUserId),
+       invitedEmail = Value(invitedEmail),
+       createdAt = Value(createdAt),
+       expiresAt = Value(expiresAt);
+  static Insertable<TripInvitation> custom({
+    Expression<String>? id,
+    Expression<String>? tripId,
+    Expression<String>? invitedByUserId,
+    Expression<String>? invitedEmail,
+    Expression<String>? invitedUserId,
+    Expression<String>? status,
+    Expression<String>? role,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? expiresAt,
+    Expression<DateTime>? respondedAt,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (tripId != null) 'trip_id': tripId,
+      if (invitedByUserId != null) 'invited_by_user_id': invitedByUserId,
+      if (invitedEmail != null) 'invited_email': invitedEmail,
+      if (invitedUserId != null) 'invited_user_id': invitedUserId,
+      if (status != null) 'status': status,
+      if (role != null) 'role': role,
+      if (createdAt != null) 'created_at': createdAt,
+      if (expiresAt != null) 'expires_at': expiresAt,
+      if (respondedAt != null) 'responded_at': respondedAt,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TripInvitationsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? tripId,
+    Value<String>? invitedByUserId,
+    Value<String>? invitedEmail,
+    Value<String?>? invitedUserId,
+    Value<String>? status,
+    Value<String>? role,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? expiresAt,
+    Value<DateTime?>? respondedAt,
+    Value<DateTime?>? lastSyncedAt,
+    Value<int>? rowid,
+  }) {
+    return TripInvitationsCompanion(
+      id: id ?? this.id,
+      tripId: tripId ?? this.tripId,
+      invitedByUserId: invitedByUserId ?? this.invitedByUserId,
+      invitedEmail: invitedEmail ?? this.invitedEmail,
+      invitedUserId: invitedUserId ?? this.invitedUserId,
+      status: status ?? this.status,
+      role: role ?? this.role,
+      createdAt: createdAt ?? this.createdAt,
+      expiresAt: expiresAt ?? this.expiresAt,
+      respondedAt: respondedAt ?? this.respondedAt,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (tripId.present) {
+      map['trip_id'] = Variable<String>(tripId.value);
+    }
+    if (invitedByUserId.present) {
+      map['invited_by_user_id'] = Variable<String>(invitedByUserId.value);
+    }
+    if (invitedEmail.present) {
+      map['invited_email'] = Variable<String>(invitedEmail.value);
+    }
+    if (invitedUserId.present) {
+      map['invited_user_id'] = Variable<String>(invitedUserId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (expiresAt.present) {
+      map['expires_at'] = Variable<DateTime>(expiresAt.value);
+    }
+    if (respondedAt.present) {
+      map['responded_at'] = Variable<DateTime>(respondedAt.value);
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TripInvitationsCompanion(')
+          ..write('id: $id, ')
+          ..write('tripId: $tripId, ')
+          ..write('invitedByUserId: $invitedByUserId, ')
+          ..write('invitedEmail: $invitedEmail, ')
+          ..write('invitedUserId: $invitedUserId, ')
+          ..write('status: $status, ')
+          ..write('role: $role, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('expiresAt: $expiresAt, ')
+          ..write('respondedAt: $respondedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ItineraryItemsTable extends ItineraryItems
     with TableInfo<$ItineraryItemsTable, ItineraryItem> {
   @override
@@ -3329,6 +4014,3331 @@ class ItineraryItemsCompanion extends UpdateCompanion<ItineraryItem> {
   }
 }
 
+class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GuidesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _authorIdMeta = const VerificationMeta(
+    'authorId',
+  );
+  @override
+  late final GeneratedColumn<String> authorId = GeneratedColumn<String>(
+    'author_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id)',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 200,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _destinationMeta = const VerificationMeta(
+    'destination',
+  );
+  @override
+  late final GeneratedColumn<String> destination = GeneratedColumn<String>(
+    'destination',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _coverImageUrlMeta = const VerificationMeta(
+    'coverImageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> coverImageUrl = GeneratedColumn<String>(
+    'cover_image_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _contentMeta = const VerificationMeta(
+    'content',
+  );
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+    'content',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
+  @override
+  late final GeneratedColumn<String> tags = GeneratedColumn<String>(
+    'tags',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _viewCountMeta = const VerificationMeta(
+    'viewCount',
+  );
+  @override
+  late final GeneratedColumn<int> viewCount = GeneratedColumn<int>(
+    'view_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _likeCountMeta = const VerificationMeta(
+    'likeCount',
+  );
+  @override
+  late final GeneratedColumn<int> likeCount = GeneratedColumn<int>(
+    'like_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _isPublishedMeta = const VerificationMeta(
+    'isPublished',
+  );
+  @override
+  late final GeneratedColumn<bool> isPublished = GeneratedColumn<bool>(
+    'is_published',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_published" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _publishedAtMeta = const VerificationMeta(
+    'publishedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> publishedAt = GeneratedColumn<DateTime>(
+    'published_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    authorId,
+    title,
+    description,
+    destination,
+    latitude,
+    longitude,
+    coverImageUrl,
+    content,
+    tags,
+    viewCount,
+    likeCount,
+    isPublished,
+    createdAt,
+    updatedAt,
+    publishedAt,
+    lastSyncedAt,
+    isDeleted,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'guides';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Guide> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('author_id')) {
+      context.handle(
+        _authorIdMeta,
+        authorId.isAcceptableOrUnknown(data['author_id']!, _authorIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_authorIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('destination')) {
+      context.handle(
+        _destinationMeta,
+        destination.isAcceptableOrUnknown(
+          data['destination']!,
+          _destinationMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_destinationMeta);
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    }
+    if (data.containsKey('cover_image_url')) {
+      context.handle(
+        _coverImageUrlMeta,
+        coverImageUrl.isAcceptableOrUnknown(
+          data['cover_image_url']!,
+          _coverImageUrlMeta,
+        ),
+      );
+    }
+    if (data.containsKey('content')) {
+      context.handle(
+        _contentMeta,
+        content.isAcceptableOrUnknown(data['content']!, _contentMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    if (data.containsKey('tags')) {
+      context.handle(
+        _tagsMeta,
+        tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta),
+      );
+    }
+    if (data.containsKey('view_count')) {
+      context.handle(
+        _viewCountMeta,
+        viewCount.isAcceptableOrUnknown(data['view_count']!, _viewCountMeta),
+      );
+    }
+    if (data.containsKey('like_count')) {
+      context.handle(
+        _likeCountMeta,
+        likeCount.isAcceptableOrUnknown(data['like_count']!, _likeCountMeta),
+      );
+    }
+    if (data.containsKey('is_published')) {
+      context.handle(
+        _isPublishedMeta,
+        isPublished.isAcceptableOrUnknown(
+          data['is_published']!,
+          _isPublishedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('published_at')) {
+      context.handle(
+        _publishedAtMeta,
+        publishedAt.isAcceptableOrUnknown(
+          data['published_at']!,
+          _publishedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Guide map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Guide(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      authorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}author_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      destination: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination'],
+      )!,
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
+      coverImageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cover_image_url'],
+      ),
+      content: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content'],
+      )!,
+      tags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tags'],
+      ),
+      viewCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}view_count'],
+      )!,
+      likeCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}like_count'],
+      )!,
+      isPublished: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_published'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      publishedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}published_at'],
+      ),
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+    );
+  }
+
+  @override
+  $GuidesTable createAlias(String alias) {
+    return $GuidesTable(attachedDatabase, alias);
+  }
+}
+
+class Guide extends DataClass implements Insertable<Guide> {
+  final String id;
+  final String authorId;
+  final String title;
+  final String description;
+  final String destination;
+  final double? latitude;
+  final double? longitude;
+  final String? coverImageUrl;
+  final String content;
+  final String? tags;
+  final int viewCount;
+  final int likeCount;
+  final bool isPublished;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? publishedAt;
+  final DateTime? lastSyncedAt;
+  final bool isDeleted;
+  const Guide({
+    required this.id,
+    required this.authorId,
+    required this.title,
+    required this.description,
+    required this.destination,
+    this.latitude,
+    this.longitude,
+    this.coverImageUrl,
+    required this.content,
+    this.tags,
+    required this.viewCount,
+    required this.likeCount,
+    required this.isPublished,
+    required this.createdAt,
+    required this.updatedAt,
+    this.publishedAt,
+    this.lastSyncedAt,
+    required this.isDeleted,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['author_id'] = Variable<String>(authorId);
+    map['title'] = Variable<String>(title);
+    map['description'] = Variable<String>(description);
+    map['destination'] = Variable<String>(destination);
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
+    if (!nullToAbsent || coverImageUrl != null) {
+      map['cover_image_url'] = Variable<String>(coverImageUrl);
+    }
+    map['content'] = Variable<String>(content);
+    if (!nullToAbsent || tags != null) {
+      map['tags'] = Variable<String>(tags);
+    }
+    map['view_count'] = Variable<int>(viewCount);
+    map['like_count'] = Variable<int>(likeCount);
+    map['is_published'] = Variable<bool>(isPublished);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || publishedAt != null) {
+      map['published_at'] = Variable<DateTime>(publishedAt);
+    }
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    return map;
+  }
+
+  GuidesCompanion toCompanion(bool nullToAbsent) {
+    return GuidesCompanion(
+      id: Value(id),
+      authorId: Value(authorId),
+      title: Value(title),
+      description: Value(description),
+      destination: Value(destination),
+      latitude: latitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latitude),
+      longitude: longitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longitude),
+      coverImageUrl: coverImageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(coverImageUrl),
+      content: Value(content),
+      tags: tags == null && nullToAbsent ? const Value.absent() : Value(tags),
+      viewCount: Value(viewCount),
+      likeCount: Value(likeCount),
+      isPublished: Value(isPublished),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      publishedAt: publishedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(publishedAt),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+      isDeleted: Value(isDeleted),
+    );
+  }
+
+  factory Guide.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Guide(
+      id: serializer.fromJson<String>(json['id']),
+      authorId: serializer.fromJson<String>(json['authorId']),
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String>(json['description']),
+      destination: serializer.fromJson<String>(json['destination']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
+      coverImageUrl: serializer.fromJson<String?>(json['coverImageUrl']),
+      content: serializer.fromJson<String>(json['content']),
+      tags: serializer.fromJson<String?>(json['tags']),
+      viewCount: serializer.fromJson<int>(json['viewCount']),
+      likeCount: serializer.fromJson<int>(json['likeCount']),
+      isPublished: serializer.fromJson<bool>(json['isPublished']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      publishedAt: serializer.fromJson<DateTime?>(json['publishedAt']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'authorId': serializer.toJson<String>(authorId),
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String>(description),
+      'destination': serializer.toJson<String>(destination),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
+      'coverImageUrl': serializer.toJson<String?>(coverImageUrl),
+      'content': serializer.toJson<String>(content),
+      'tags': serializer.toJson<String?>(tags),
+      'viewCount': serializer.toJson<int>(viewCount),
+      'likeCount': serializer.toJson<int>(likeCount),
+      'isPublished': serializer.toJson<bool>(isPublished),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'publishedAt': serializer.toJson<DateTime?>(publishedAt),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+    };
+  }
+
+  Guide copyWith({
+    String? id,
+    String? authorId,
+    String? title,
+    String? description,
+    String? destination,
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
+    Value<String?> coverImageUrl = const Value.absent(),
+    String? content,
+    Value<String?> tags = const Value.absent(),
+    int? viewCount,
+    int? likeCount,
+    bool? isPublished,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> publishedAt = const Value.absent(),
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+    bool? isDeleted,
+  }) => Guide(
+    id: id ?? this.id,
+    authorId: authorId ?? this.authorId,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    destination: destination ?? this.destination,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
+    coverImageUrl: coverImageUrl.present
+        ? coverImageUrl.value
+        : this.coverImageUrl,
+    content: content ?? this.content,
+    tags: tags.present ? tags.value : this.tags,
+    viewCount: viewCount ?? this.viewCount,
+    likeCount: likeCount ?? this.likeCount,
+    isPublished: isPublished ?? this.isPublished,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    publishedAt: publishedAt.present ? publishedAt.value : this.publishedAt,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    isDeleted: isDeleted ?? this.isDeleted,
+  );
+  Guide copyWithCompanion(GuidesCompanion data) {
+    return Guide(
+      id: data.id.present ? data.id.value : this.id,
+      authorId: data.authorId.present ? data.authorId.value : this.authorId,
+      title: data.title.present ? data.title.value : this.title,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      destination: data.destination.present
+          ? data.destination.value
+          : this.destination,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      coverImageUrl: data.coverImageUrl.present
+          ? data.coverImageUrl.value
+          : this.coverImageUrl,
+      content: data.content.present ? data.content.value : this.content,
+      tags: data.tags.present ? data.tags.value : this.tags,
+      viewCount: data.viewCount.present ? data.viewCount.value : this.viewCount,
+      likeCount: data.likeCount.present ? data.likeCount.value : this.likeCount,
+      isPublished: data.isPublished.present
+          ? data.isPublished.value
+          : this.isPublished,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      publishedAt: data.publishedAt.present
+          ? data.publishedAt.value
+          : this.publishedAt,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Guide(')
+          ..write('id: $id, ')
+          ..write('authorId: $authorId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('destination: $destination, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('coverImageUrl: $coverImageUrl, ')
+          ..write('content: $content, ')
+          ..write('tags: $tags, ')
+          ..write('viewCount: $viewCount, ')
+          ..write('likeCount: $likeCount, ')
+          ..write('isPublished: $isPublished, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('publishedAt: $publishedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('isDeleted: $isDeleted')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    authorId,
+    title,
+    description,
+    destination,
+    latitude,
+    longitude,
+    coverImageUrl,
+    content,
+    tags,
+    viewCount,
+    likeCount,
+    isPublished,
+    createdAt,
+    updatedAt,
+    publishedAt,
+    lastSyncedAt,
+    isDeleted,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Guide &&
+          other.id == this.id &&
+          other.authorId == this.authorId &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.destination == this.destination &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude &&
+          other.coverImageUrl == this.coverImageUrl &&
+          other.content == this.content &&
+          other.tags == this.tags &&
+          other.viewCount == this.viewCount &&
+          other.likeCount == this.likeCount &&
+          other.isPublished == this.isPublished &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.publishedAt == this.publishedAt &&
+          other.lastSyncedAt == this.lastSyncedAt &&
+          other.isDeleted == this.isDeleted);
+}
+
+class GuidesCompanion extends UpdateCompanion<Guide> {
+  final Value<String> id;
+  final Value<String> authorId;
+  final Value<String> title;
+  final Value<String> description;
+  final Value<String> destination;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
+  final Value<String?> coverImageUrl;
+  final Value<String> content;
+  final Value<String?> tags;
+  final Value<int> viewCount;
+  final Value<int> likeCount;
+  final Value<bool> isPublished;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> publishedAt;
+  final Value<DateTime?> lastSyncedAt;
+  final Value<bool> isDeleted;
+  final Value<int> rowid;
+  const GuidesCompanion({
+    this.id = const Value.absent(),
+    this.authorId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.destination = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.coverImageUrl = const Value.absent(),
+    this.content = const Value.absent(),
+    this.tags = const Value.absent(),
+    this.viewCount = const Value.absent(),
+    this.likeCount = const Value.absent(),
+    this.isPublished = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.publishedAt = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GuidesCompanion.insert({
+    required String id,
+    required String authorId,
+    required String title,
+    required String description,
+    required String destination,
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.coverImageUrl = const Value.absent(),
+    required String content,
+    this.tags = const Value.absent(),
+    this.viewCount = const Value.absent(),
+    this.likeCount = const Value.absent(),
+    this.isPublished = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.publishedAt = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       authorId = Value(authorId),
+       title = Value(title),
+       description = Value(description),
+       destination = Value(destination),
+       content = Value(content),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<Guide> custom({
+    Expression<String>? id,
+    Expression<String>? authorId,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<String>? destination,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+    Expression<String>? coverImageUrl,
+    Expression<String>? content,
+    Expression<String>? tags,
+    Expression<int>? viewCount,
+    Expression<int>? likeCount,
+    Expression<bool>? isPublished,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? publishedAt,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<bool>? isDeleted,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (authorId != null) 'author_id': authorId,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (destination != null) 'destination': destination,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (coverImageUrl != null) 'cover_image_url': coverImageUrl,
+      if (content != null) 'content': content,
+      if (tags != null) 'tags': tags,
+      if (viewCount != null) 'view_count': viewCount,
+      if (likeCount != null) 'like_count': likeCount,
+      if (isPublished != null) 'is_published': isPublished,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (publishedAt != null) 'published_at': publishedAt,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GuidesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? authorId,
+    Value<String>? title,
+    Value<String>? description,
+    Value<String>? destination,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
+    Value<String?>? coverImageUrl,
+    Value<String>? content,
+    Value<String?>? tags,
+    Value<int>? viewCount,
+    Value<int>? likeCount,
+    Value<bool>? isPublished,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? publishedAt,
+    Value<DateTime?>? lastSyncedAt,
+    Value<bool>? isDeleted,
+    Value<int>? rowid,
+  }) {
+    return GuidesCompanion(
+      id: id ?? this.id,
+      authorId: authorId ?? this.authorId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      destination: destination ?? this.destination,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      coverImageUrl: coverImageUrl ?? this.coverImageUrl,
+      content: content ?? this.content,
+      tags: tags ?? this.tags,
+      viewCount: viewCount ?? this.viewCount,
+      likeCount: likeCount ?? this.likeCount,
+      isPublished: isPublished ?? this.isPublished,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      publishedAt: publishedAt ?? this.publishedAt,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      isDeleted: isDeleted ?? this.isDeleted,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (authorId.present) {
+      map['author_id'] = Variable<String>(authorId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (destination.present) {
+      map['destination'] = Variable<String>(destination.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (coverImageUrl.present) {
+      map['cover_image_url'] = Variable<String>(coverImageUrl.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (tags.present) {
+      map['tags'] = Variable<String>(tags.value);
+    }
+    if (viewCount.present) {
+      map['view_count'] = Variable<int>(viewCount.value);
+    }
+    if (likeCount.present) {
+      map['like_count'] = Variable<int>(likeCount.value);
+    }
+    if (isPublished.present) {
+      map['is_published'] = Variable<bool>(isPublished.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (publishedAt.present) {
+      map['published_at'] = Variable<DateTime>(publishedAt.value);
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuidesCompanion(')
+          ..write('id: $id, ')
+          ..write('authorId: $authorId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('destination: $destination, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('coverImageUrl: $coverImageUrl, ')
+          ..write('content: $content, ')
+          ..write('tags: $tags, ')
+          ..write('viewCount: $viewCount, ')
+          ..write('likeCount: $likeCount, ')
+          ..write('isPublished: $isPublished, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('publishedAt: $publishedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GuideItineraryItemsTable extends GuideItineraryItems
+    with TableInfo<$GuideItineraryItemsTable, GuideItineraryItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GuideItineraryItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _guideIdMeta = const VerificationMeta(
+    'guideId',
+  );
+  @override
+  late final GeneratedColumn<String> guideId = GeneratedColumn<String>(
+    'guide_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 300,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _locationNameMeta = const VerificationMeta(
+    'locationName',
+  );
+  @override
+  late final GeneratedColumn<String> locationName = GeneratedColumn<String>(
+    'location_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dayNumberMeta = const VerificationMeta(
+    'dayNumber',
+  );
+  @override
+  late final GeneratedColumn<int> dayNumber = GeneratedColumn<int>(
+    'day_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _suggestedStartTimeMeta =
+      const VerificationMeta('suggestedStartTime');
+  @override
+  late final GeneratedColumn<DateTime> suggestedStartTime =
+      GeneratedColumn<DateTime>(
+        'suggested_start_time',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _suggestedEndTimeMeta = const VerificationMeta(
+    'suggestedEndTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> suggestedEndTime =
+      GeneratedColumn<DateTime>(
+        'suggested_end_time',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('other'),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _estimatedCostMeta = const VerificationMeta(
+    'estimatedCost',
+  );
+  @override
+  late final GeneratedColumn<double> estimatedCost = GeneratedColumn<double>(
+    'estimated_cost',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _costCurrencyMeta = const VerificationMeta(
+    'costCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> costCurrency = GeneratedColumn<String>(
+    'cost_currency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    guideId,
+    title,
+    description,
+    locationName,
+    latitude,
+    longitude,
+    dayNumber,
+    suggestedStartTime,
+    suggestedEndTime,
+    category,
+    sortOrder,
+    estimatedCost,
+    costCurrency,
+    createdAt,
+    updatedAt,
+    lastSyncedAt,
+    isDeleted,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'guide_itinerary_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GuideItineraryItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('guide_id')) {
+      context.handle(
+        _guideIdMeta,
+        guideId.isAcceptableOrUnknown(data['guide_id']!, _guideIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_guideIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('location_name')) {
+      context.handle(
+        _locationNameMeta,
+        locationName.isAcceptableOrUnknown(
+          data['location_name']!,
+          _locationNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    }
+    if (data.containsKey('day_number')) {
+      context.handle(
+        _dayNumberMeta,
+        dayNumber.isAcceptableOrUnknown(data['day_number']!, _dayNumberMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayNumberMeta);
+    }
+    if (data.containsKey('suggested_start_time')) {
+      context.handle(
+        _suggestedStartTimeMeta,
+        suggestedStartTime.isAcceptableOrUnknown(
+          data['suggested_start_time']!,
+          _suggestedStartTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('suggested_end_time')) {
+      context.handle(
+        _suggestedEndTimeMeta,
+        suggestedEndTime.isAcceptableOrUnknown(
+          data['suggested_end_time']!,
+          _suggestedEndTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('estimated_cost')) {
+      context.handle(
+        _estimatedCostMeta,
+        estimatedCost.isAcceptableOrUnknown(
+          data['estimated_cost']!,
+          _estimatedCostMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cost_currency')) {
+      context.handle(
+        _costCurrencyMeta,
+        costCurrency.isAcceptableOrUnknown(
+          data['cost_currency']!,
+          _costCurrencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GuideItineraryItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GuideItineraryItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      guideId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}guide_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      locationName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location_name'],
+      ),
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
+      dayNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}day_number'],
+      )!,
+      suggestedStartTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}suggested_start_time'],
+      ),
+      suggestedEndTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}suggested_end_time'],
+      ),
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      estimatedCost: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}estimated_cost'],
+      ),
+      costCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cost_currency'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+    );
+  }
+
+  @override
+  $GuideItineraryItemsTable createAlias(String alias) {
+    return $GuideItineraryItemsTable(attachedDatabase, alias);
+  }
+}
+
+class GuideItineraryItem extends DataClass
+    implements Insertable<GuideItineraryItem> {
+  final String id;
+  final String guideId;
+  final String title;
+  final String? description;
+  final String? locationName;
+  final double? latitude;
+  final double? longitude;
+  final int dayNumber;
+  final DateTime? suggestedStartTime;
+  final DateTime? suggestedEndTime;
+  final String category;
+  final int sortOrder;
+  final double? estimatedCost;
+  final String? costCurrency;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? lastSyncedAt;
+  final bool isDeleted;
+  const GuideItineraryItem({
+    required this.id,
+    required this.guideId,
+    required this.title,
+    this.description,
+    this.locationName,
+    this.latitude,
+    this.longitude,
+    required this.dayNumber,
+    this.suggestedStartTime,
+    this.suggestedEndTime,
+    required this.category,
+    required this.sortOrder,
+    this.estimatedCost,
+    this.costCurrency,
+    required this.createdAt,
+    required this.updatedAt,
+    this.lastSyncedAt,
+    required this.isDeleted,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['guide_id'] = Variable<String>(guideId);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || locationName != null) {
+      map['location_name'] = Variable<String>(locationName);
+    }
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
+    map['day_number'] = Variable<int>(dayNumber);
+    if (!nullToAbsent || suggestedStartTime != null) {
+      map['suggested_start_time'] = Variable<DateTime>(suggestedStartTime);
+    }
+    if (!nullToAbsent || suggestedEndTime != null) {
+      map['suggested_end_time'] = Variable<DateTime>(suggestedEndTime);
+    }
+    map['category'] = Variable<String>(category);
+    map['sort_order'] = Variable<int>(sortOrder);
+    if (!nullToAbsent || estimatedCost != null) {
+      map['estimated_cost'] = Variable<double>(estimatedCost);
+    }
+    if (!nullToAbsent || costCurrency != null) {
+      map['cost_currency'] = Variable<String>(costCurrency);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    return map;
+  }
+
+  GuideItineraryItemsCompanion toCompanion(bool nullToAbsent) {
+    return GuideItineraryItemsCompanion(
+      id: Value(id),
+      guideId: Value(guideId),
+      title: Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      locationName: locationName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(locationName),
+      latitude: latitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latitude),
+      longitude: longitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longitude),
+      dayNumber: Value(dayNumber),
+      suggestedStartTime: suggestedStartTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(suggestedStartTime),
+      suggestedEndTime: suggestedEndTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(suggestedEndTime),
+      category: Value(category),
+      sortOrder: Value(sortOrder),
+      estimatedCost: estimatedCost == null && nullToAbsent
+          ? const Value.absent()
+          : Value(estimatedCost),
+      costCurrency: costCurrency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(costCurrency),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+      isDeleted: Value(isDeleted),
+    );
+  }
+
+  factory GuideItineraryItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GuideItineraryItem(
+      id: serializer.fromJson<String>(json['id']),
+      guideId: serializer.fromJson<String>(json['guideId']),
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
+      locationName: serializer.fromJson<String?>(json['locationName']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
+      dayNumber: serializer.fromJson<int>(json['dayNumber']),
+      suggestedStartTime: serializer.fromJson<DateTime?>(
+        json['suggestedStartTime'],
+      ),
+      suggestedEndTime: serializer.fromJson<DateTime?>(
+        json['suggestedEndTime'],
+      ),
+      category: serializer.fromJson<String>(json['category']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      estimatedCost: serializer.fromJson<double?>(json['estimatedCost']),
+      costCurrency: serializer.fromJson<String?>(json['costCurrency']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'guideId': serializer.toJson<String>(guideId),
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String?>(description),
+      'locationName': serializer.toJson<String?>(locationName),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
+      'dayNumber': serializer.toJson<int>(dayNumber),
+      'suggestedStartTime': serializer.toJson<DateTime?>(suggestedStartTime),
+      'suggestedEndTime': serializer.toJson<DateTime?>(suggestedEndTime),
+      'category': serializer.toJson<String>(category),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'estimatedCost': serializer.toJson<double?>(estimatedCost),
+      'costCurrency': serializer.toJson<String?>(costCurrency),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+    };
+  }
+
+  GuideItineraryItem copyWith({
+    String? id,
+    String? guideId,
+    String? title,
+    Value<String?> description = const Value.absent(),
+    Value<String?> locationName = const Value.absent(),
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
+    int? dayNumber,
+    Value<DateTime?> suggestedStartTime = const Value.absent(),
+    Value<DateTime?> suggestedEndTime = const Value.absent(),
+    String? category,
+    int? sortOrder,
+    Value<double?> estimatedCost = const Value.absent(),
+    Value<String?> costCurrency = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+    bool? isDeleted,
+  }) => GuideItineraryItem(
+    id: id ?? this.id,
+    guideId: guideId ?? this.guideId,
+    title: title ?? this.title,
+    description: description.present ? description.value : this.description,
+    locationName: locationName.present ? locationName.value : this.locationName,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
+    dayNumber: dayNumber ?? this.dayNumber,
+    suggestedStartTime: suggestedStartTime.present
+        ? suggestedStartTime.value
+        : this.suggestedStartTime,
+    suggestedEndTime: suggestedEndTime.present
+        ? suggestedEndTime.value
+        : this.suggestedEndTime,
+    category: category ?? this.category,
+    sortOrder: sortOrder ?? this.sortOrder,
+    estimatedCost: estimatedCost.present
+        ? estimatedCost.value
+        : this.estimatedCost,
+    costCurrency: costCurrency.present ? costCurrency.value : this.costCurrency,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    isDeleted: isDeleted ?? this.isDeleted,
+  );
+  GuideItineraryItem copyWithCompanion(GuideItineraryItemsCompanion data) {
+    return GuideItineraryItem(
+      id: data.id.present ? data.id.value : this.id,
+      guideId: data.guideId.present ? data.guideId.value : this.guideId,
+      title: data.title.present ? data.title.value : this.title,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      locationName: data.locationName.present
+          ? data.locationName.value
+          : this.locationName,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      dayNumber: data.dayNumber.present ? data.dayNumber.value : this.dayNumber,
+      suggestedStartTime: data.suggestedStartTime.present
+          ? data.suggestedStartTime.value
+          : this.suggestedStartTime,
+      suggestedEndTime: data.suggestedEndTime.present
+          ? data.suggestedEndTime.value
+          : this.suggestedEndTime,
+      category: data.category.present ? data.category.value : this.category,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      estimatedCost: data.estimatedCost.present
+          ? data.estimatedCost.value
+          : this.estimatedCost,
+      costCurrency: data.costCurrency.present
+          ? data.costCurrency.value
+          : this.costCurrency,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuideItineraryItem(')
+          ..write('id: $id, ')
+          ..write('guideId: $guideId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('locationName: $locationName, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('dayNumber: $dayNumber, ')
+          ..write('suggestedStartTime: $suggestedStartTime, ')
+          ..write('suggestedEndTime: $suggestedEndTime, ')
+          ..write('category: $category, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('estimatedCost: $estimatedCost, ')
+          ..write('costCurrency: $costCurrency, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('isDeleted: $isDeleted')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    guideId,
+    title,
+    description,
+    locationName,
+    latitude,
+    longitude,
+    dayNumber,
+    suggestedStartTime,
+    suggestedEndTime,
+    category,
+    sortOrder,
+    estimatedCost,
+    costCurrency,
+    createdAt,
+    updatedAt,
+    lastSyncedAt,
+    isDeleted,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GuideItineraryItem &&
+          other.id == this.id &&
+          other.guideId == this.guideId &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.locationName == this.locationName &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude &&
+          other.dayNumber == this.dayNumber &&
+          other.suggestedStartTime == this.suggestedStartTime &&
+          other.suggestedEndTime == this.suggestedEndTime &&
+          other.category == this.category &&
+          other.sortOrder == this.sortOrder &&
+          other.estimatedCost == this.estimatedCost &&
+          other.costCurrency == this.costCurrency &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.lastSyncedAt == this.lastSyncedAt &&
+          other.isDeleted == this.isDeleted);
+}
+
+class GuideItineraryItemsCompanion extends UpdateCompanion<GuideItineraryItem> {
+  final Value<String> id;
+  final Value<String> guideId;
+  final Value<String> title;
+  final Value<String?> description;
+  final Value<String?> locationName;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
+  final Value<int> dayNumber;
+  final Value<DateTime?> suggestedStartTime;
+  final Value<DateTime?> suggestedEndTime;
+  final Value<String> category;
+  final Value<int> sortOrder;
+  final Value<double?> estimatedCost;
+  final Value<String?> costCurrency;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> lastSyncedAt;
+  final Value<bool> isDeleted;
+  final Value<int> rowid;
+  const GuideItineraryItemsCompanion({
+    this.id = const Value.absent(),
+    this.guideId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.locationName = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.dayNumber = const Value.absent(),
+    this.suggestedStartTime = const Value.absent(),
+    this.suggestedEndTime = const Value.absent(),
+    this.category = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.estimatedCost = const Value.absent(),
+    this.costCurrency = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GuideItineraryItemsCompanion.insert({
+    required String id,
+    required String guideId,
+    required String title,
+    this.description = const Value.absent(),
+    this.locationName = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    required int dayNumber,
+    this.suggestedStartTime = const Value.absent(),
+    this.suggestedEndTime = const Value.absent(),
+    this.category = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.estimatedCost = const Value.absent(),
+    this.costCurrency = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.lastSyncedAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       guideId = Value(guideId),
+       title = Value(title),
+       dayNumber = Value(dayNumber),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<GuideItineraryItem> custom({
+    Expression<String>? id,
+    Expression<String>? guideId,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<String>? locationName,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+    Expression<int>? dayNumber,
+    Expression<DateTime>? suggestedStartTime,
+    Expression<DateTime>? suggestedEndTime,
+    Expression<String>? category,
+    Expression<int>? sortOrder,
+    Expression<double>? estimatedCost,
+    Expression<String>? costCurrency,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<bool>? isDeleted,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (guideId != null) 'guide_id': guideId,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (locationName != null) 'location_name': locationName,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (dayNumber != null) 'day_number': dayNumber,
+      if (suggestedStartTime != null)
+        'suggested_start_time': suggestedStartTime,
+      if (suggestedEndTime != null) 'suggested_end_time': suggestedEndTime,
+      if (category != null) 'category': category,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (estimatedCost != null) 'estimated_cost': estimatedCost,
+      if (costCurrency != null) 'cost_currency': costCurrency,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GuideItineraryItemsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? guideId,
+    Value<String>? title,
+    Value<String?>? description,
+    Value<String?>? locationName,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
+    Value<int>? dayNumber,
+    Value<DateTime?>? suggestedStartTime,
+    Value<DateTime?>? suggestedEndTime,
+    Value<String>? category,
+    Value<int>? sortOrder,
+    Value<double?>? estimatedCost,
+    Value<String?>? costCurrency,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? lastSyncedAt,
+    Value<bool>? isDeleted,
+    Value<int>? rowid,
+  }) {
+    return GuideItineraryItemsCompanion(
+      id: id ?? this.id,
+      guideId: guideId ?? this.guideId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      locationName: locationName ?? this.locationName,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      dayNumber: dayNumber ?? this.dayNumber,
+      suggestedStartTime: suggestedStartTime ?? this.suggestedStartTime,
+      suggestedEndTime: suggestedEndTime ?? this.suggestedEndTime,
+      category: category ?? this.category,
+      sortOrder: sortOrder ?? this.sortOrder,
+      estimatedCost: estimatedCost ?? this.estimatedCost,
+      costCurrency: costCurrency ?? this.costCurrency,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      isDeleted: isDeleted ?? this.isDeleted,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (guideId.present) {
+      map['guide_id'] = Variable<String>(guideId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (locationName.present) {
+      map['location_name'] = Variable<String>(locationName.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (dayNumber.present) {
+      map['day_number'] = Variable<int>(dayNumber.value);
+    }
+    if (suggestedStartTime.present) {
+      map['suggested_start_time'] = Variable<DateTime>(
+        suggestedStartTime.value,
+      );
+    }
+    if (suggestedEndTime.present) {
+      map['suggested_end_time'] = Variable<DateTime>(suggestedEndTime.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (estimatedCost.present) {
+      map['estimated_cost'] = Variable<double>(estimatedCost.value);
+    }
+    if (costCurrency.present) {
+      map['cost_currency'] = Variable<String>(costCurrency.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuideItineraryItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('guideId: $guideId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('locationName: $locationName, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('dayNumber: $dayNumber, ')
+          ..write('suggestedStartTime: $suggestedStartTime, ')
+          ..write('suggestedEndTime: $suggestedEndTime, ')
+          ..write('category: $category, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('estimatedCost: $estimatedCost, ')
+          ..write('costCurrency: $costCurrency, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GuideLikesTable extends GuideLikes
+    with TableInfo<$GuideLikesTable, GuideLike> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GuideLikesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _guideIdMeta = const VerificationMeta(
+    'guideId',
+  );
+  @override
+  late final GeneratedColumn<String> guideId = GeneratedColumn<String>(
+    'guide_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id)',
+    ),
+  );
+  static const VerificationMeta _likedAtMeta = const VerificationMeta(
+    'likedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> likedAt = GeneratedColumn<DateTime>(
+    'liked_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    guideId,
+    userId,
+    likedAt,
+    lastSyncedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'guide_likes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GuideLike> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('guide_id')) {
+      context.handle(
+        _guideIdMeta,
+        guideId.isAcceptableOrUnknown(data['guide_id']!, _guideIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_guideIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('liked_at')) {
+      context.handle(
+        _likedAtMeta,
+        likedAt.isAcceptableOrUnknown(data['liked_at']!, _likedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_likedAtMeta);
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {guideId, userId},
+  ];
+  @override
+  GuideLike map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GuideLike(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      guideId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}guide_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      likedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}liked_at'],
+      )!,
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+    );
+  }
+
+  @override
+  $GuideLikesTable createAlias(String alias) {
+    return $GuideLikesTable(attachedDatabase, alias);
+  }
+}
+
+class GuideLike extends DataClass implements Insertable<GuideLike> {
+  final int id;
+  final String guideId;
+  final String userId;
+  final DateTime likedAt;
+  final DateTime? lastSyncedAt;
+  const GuideLike({
+    required this.id,
+    required this.guideId,
+    required this.userId,
+    required this.likedAt,
+    this.lastSyncedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['guide_id'] = Variable<String>(guideId);
+    map['user_id'] = Variable<String>(userId);
+    map['liked_at'] = Variable<DateTime>(likedAt);
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    return map;
+  }
+
+  GuideLikesCompanion toCompanion(bool nullToAbsent) {
+    return GuideLikesCompanion(
+      id: Value(id),
+      guideId: Value(guideId),
+      userId: Value(userId),
+      likedAt: Value(likedAt),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+    );
+  }
+
+  factory GuideLike.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GuideLike(
+      id: serializer.fromJson<int>(json['id']),
+      guideId: serializer.fromJson<String>(json['guideId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      likedAt: serializer.fromJson<DateTime>(json['likedAt']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'guideId': serializer.toJson<String>(guideId),
+      'userId': serializer.toJson<String>(userId),
+      'likedAt': serializer.toJson<DateTime>(likedAt),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+    };
+  }
+
+  GuideLike copyWith({
+    int? id,
+    String? guideId,
+    String? userId,
+    DateTime? likedAt,
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+  }) => GuideLike(
+    id: id ?? this.id,
+    guideId: guideId ?? this.guideId,
+    userId: userId ?? this.userId,
+    likedAt: likedAt ?? this.likedAt,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+  );
+  GuideLike copyWithCompanion(GuideLikesCompanion data) {
+    return GuideLike(
+      id: data.id.present ? data.id.value : this.id,
+      guideId: data.guideId.present ? data.guideId.value : this.guideId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      likedAt: data.likedAt.present ? data.likedAt.value : this.likedAt,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuideLike(')
+          ..write('id: $id, ')
+          ..write('guideId: $guideId, ')
+          ..write('userId: $userId, ')
+          ..write('likedAt: $likedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, guideId, userId, likedAt, lastSyncedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GuideLike &&
+          other.id == this.id &&
+          other.guideId == this.guideId &&
+          other.userId == this.userId &&
+          other.likedAt == this.likedAt &&
+          other.lastSyncedAt == this.lastSyncedAt);
+}
+
+class GuideLikesCompanion extends UpdateCompanion<GuideLike> {
+  final Value<int> id;
+  final Value<String> guideId;
+  final Value<String> userId;
+  final Value<DateTime> likedAt;
+  final Value<DateTime?> lastSyncedAt;
+  const GuideLikesCompanion({
+    this.id = const Value.absent(),
+    this.guideId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.likedAt = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+  });
+  GuideLikesCompanion.insert({
+    this.id = const Value.absent(),
+    required String guideId,
+    required String userId,
+    required DateTime likedAt,
+    this.lastSyncedAt = const Value.absent(),
+  }) : guideId = Value(guideId),
+       userId = Value(userId),
+       likedAt = Value(likedAt);
+  static Insertable<GuideLike> custom({
+    Expression<int>? id,
+    Expression<String>? guideId,
+    Expression<String>? userId,
+    Expression<DateTime>? likedAt,
+    Expression<DateTime>? lastSyncedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (guideId != null) 'guide_id': guideId,
+      if (userId != null) 'user_id': userId,
+      if (likedAt != null) 'liked_at': likedAt,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+    });
+  }
+
+  GuideLikesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? guideId,
+    Value<String>? userId,
+    Value<DateTime>? likedAt,
+    Value<DateTime?>? lastSyncedAt,
+  }) {
+    return GuideLikesCompanion(
+      id: id ?? this.id,
+      guideId: guideId ?? this.guideId,
+      userId: userId ?? this.userId,
+      likedAt: likedAt ?? this.likedAt,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (guideId.present) {
+      map['guide_id'] = Variable<String>(guideId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (likedAt.present) {
+      map['liked_at'] = Variable<DateTime>(likedAt.value);
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuideLikesCompanion(')
+          ..write('id: $id, ')
+          ..write('guideId: $guideId, ')
+          ..write('userId: $userId, ')
+          ..write('likedAt: $likedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GuideCommentsTable extends GuideComments
+    with TableInfo<$GuideCommentsTable, GuideComment> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GuideCommentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _guideIdMeta = const VerificationMeta(
+    'guideId',
+  );
+  @override
+  late final GeneratedColumn<String> guideId = GeneratedColumn<String>(
+    'guide_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id)',
+    ),
+  );
+  static const VerificationMeta _contentMeta = const VerificationMeta(
+    'content',
+  );
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+    'content',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    guideId,
+    userId,
+    content,
+    createdAt,
+    updatedAt,
+    lastSyncedAt,
+    isDeleted,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'guide_comments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GuideComment> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('guide_id')) {
+      context.handle(
+        _guideIdMeta,
+        guideId.isAcceptableOrUnknown(data['guide_id']!, _guideIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_guideIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('content')) {
+      context.handle(
+        _contentMeta,
+        content.isAcceptableOrUnknown(data['content']!, _contentMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GuideComment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GuideComment(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      guideId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}guide_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      content: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+    );
+  }
+
+  @override
+  $GuideCommentsTable createAlias(String alias) {
+    return $GuideCommentsTable(attachedDatabase, alias);
+  }
+}
+
+class GuideComment extends DataClass implements Insertable<GuideComment> {
+  final String id;
+  final String guideId;
+  final String userId;
+  final String content;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? lastSyncedAt;
+  final bool isDeleted;
+  const GuideComment({
+    required this.id,
+    required this.guideId,
+    required this.userId,
+    required this.content,
+    required this.createdAt,
+    required this.updatedAt,
+    this.lastSyncedAt,
+    required this.isDeleted,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['guide_id'] = Variable<String>(guideId);
+    map['user_id'] = Variable<String>(userId);
+    map['content'] = Variable<String>(content);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    return map;
+  }
+
+  GuideCommentsCompanion toCompanion(bool nullToAbsent) {
+    return GuideCommentsCompanion(
+      id: Value(id),
+      guideId: Value(guideId),
+      userId: Value(userId),
+      content: Value(content),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+      isDeleted: Value(isDeleted),
+    );
+  }
+
+  factory GuideComment.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GuideComment(
+      id: serializer.fromJson<String>(json['id']),
+      guideId: serializer.fromJson<String>(json['guideId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      content: serializer.fromJson<String>(json['content']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'guideId': serializer.toJson<String>(guideId),
+      'userId': serializer.toJson<String>(userId),
+      'content': serializer.toJson<String>(content),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+    };
+  }
+
+  GuideComment copyWith({
+    String? id,
+    String? guideId,
+    String? userId,
+    String? content,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+    bool? isDeleted,
+  }) => GuideComment(
+    id: id ?? this.id,
+    guideId: guideId ?? this.guideId,
+    userId: userId ?? this.userId,
+    content: content ?? this.content,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    isDeleted: isDeleted ?? this.isDeleted,
+  );
+  GuideComment copyWithCompanion(GuideCommentsCompanion data) {
+    return GuideComment(
+      id: data.id.present ? data.id.value : this.id,
+      guideId: data.guideId.present ? data.guideId.value : this.guideId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      content: data.content.present ? data.content.value : this.content,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuideComment(')
+          ..write('id: $id, ')
+          ..write('guideId: $guideId, ')
+          ..write('userId: $userId, ')
+          ..write('content: $content, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('isDeleted: $isDeleted')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    guideId,
+    userId,
+    content,
+    createdAt,
+    updatedAt,
+    lastSyncedAt,
+    isDeleted,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GuideComment &&
+          other.id == this.id &&
+          other.guideId == this.guideId &&
+          other.userId == this.userId &&
+          other.content == this.content &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.lastSyncedAt == this.lastSyncedAt &&
+          other.isDeleted == this.isDeleted);
+}
+
+class GuideCommentsCompanion extends UpdateCompanion<GuideComment> {
+  final Value<String> id;
+  final Value<String> guideId;
+  final Value<String> userId;
+  final Value<String> content;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> lastSyncedAt;
+  final Value<bool> isDeleted;
+  final Value<int> rowid;
+  const GuideCommentsCompanion({
+    this.id = const Value.absent(),
+    this.guideId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.content = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GuideCommentsCompanion.insert({
+    required String id,
+    required String guideId,
+    required String userId,
+    required String content,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.lastSyncedAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       guideId = Value(guideId),
+       userId = Value(userId),
+       content = Value(content),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<GuideComment> custom({
+    Expression<String>? id,
+    Expression<String>? guideId,
+    Expression<String>? userId,
+    Expression<String>? content,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<bool>? isDeleted,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (guideId != null) 'guide_id': guideId,
+      if (userId != null) 'user_id': userId,
+      if (content != null) 'content': content,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GuideCommentsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? guideId,
+    Value<String>? userId,
+    Value<String>? content,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? lastSyncedAt,
+    Value<bool>? isDeleted,
+    Value<int>? rowid,
+  }) {
+    return GuideCommentsCompanion(
+      id: id ?? this.id,
+      guideId: guideId ?? this.guideId,
+      userId: userId ?? this.userId,
+      content: content ?? this.content,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      isDeleted: isDeleted ?? this.isDeleted,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (guideId.present) {
+      map['guide_id'] = Variable<String>(guideId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GuideCommentsCompanion(')
+          ..write('id: $id, ')
+          ..write('guideId: $guideId, ')
+          ..write('userId: $userId, ')
+          ..write('content: $content, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TripGuideReferencesTable extends TripGuideReferences
+    with TableInfo<$TripGuideReferencesTable, TripGuideReference> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TripGuideReferencesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _tripIdMeta = const VerificationMeta('tripId');
+  @override
+  late final GeneratedColumn<String> tripId = GeneratedColumn<String>(
+    'trip_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _guideIdMeta = const VerificationMeta(
+    'guideId',
+  );
+  @override
+  late final GeneratedColumn<String> guideId = GeneratedColumn<String>(
+    'guide_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _importedAtMeta = const VerificationMeta(
+    'importedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> importedAt = GeneratedColumn<DateTime>(
+    'imported_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    tripId,
+    guideId,
+    importedAt,
+    lastSyncedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'trip_guide_references';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TripGuideReference> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('trip_id')) {
+      context.handle(
+        _tripIdMeta,
+        tripId.isAcceptableOrUnknown(data['trip_id']!, _tripIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tripIdMeta);
+    }
+    if (data.containsKey('guide_id')) {
+      context.handle(
+        _guideIdMeta,
+        guideId.isAcceptableOrUnknown(data['guide_id']!, _guideIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_guideIdMeta);
+    }
+    if (data.containsKey('imported_at')) {
+      context.handle(
+        _importedAtMeta,
+        importedAt.isAcceptableOrUnknown(data['imported_at']!, _importedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_importedAtMeta);
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {tripId, guideId},
+  ];
+  @override
+  TripGuideReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TripGuideReference(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      tripId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}trip_id'],
+      )!,
+      guideId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}guide_id'],
+      )!,
+      importedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}imported_at'],
+      )!,
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+    );
+  }
+
+  @override
+  $TripGuideReferencesTable createAlias(String alias) {
+    return $TripGuideReferencesTable(attachedDatabase, alias);
+  }
+}
+
+class TripGuideReference extends DataClass
+    implements Insertable<TripGuideReference> {
+  final int id;
+  final String tripId;
+  final String guideId;
+  final DateTime importedAt;
+  final DateTime? lastSyncedAt;
+  const TripGuideReference({
+    required this.id,
+    required this.tripId,
+    required this.guideId,
+    required this.importedAt,
+    this.lastSyncedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['trip_id'] = Variable<String>(tripId);
+    map['guide_id'] = Variable<String>(guideId);
+    map['imported_at'] = Variable<DateTime>(importedAt);
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    return map;
+  }
+
+  TripGuideReferencesCompanion toCompanion(bool nullToAbsent) {
+    return TripGuideReferencesCompanion(
+      id: Value(id),
+      tripId: Value(tripId),
+      guideId: Value(guideId),
+      importedAt: Value(importedAt),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+    );
+  }
+
+  factory TripGuideReference.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TripGuideReference(
+      id: serializer.fromJson<int>(json['id']),
+      tripId: serializer.fromJson<String>(json['tripId']),
+      guideId: serializer.fromJson<String>(json['guideId']),
+      importedAt: serializer.fromJson<DateTime>(json['importedAt']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'tripId': serializer.toJson<String>(tripId),
+      'guideId': serializer.toJson<String>(guideId),
+      'importedAt': serializer.toJson<DateTime>(importedAt),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+    };
+  }
+
+  TripGuideReference copyWith({
+    int? id,
+    String? tripId,
+    String? guideId,
+    DateTime? importedAt,
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+  }) => TripGuideReference(
+    id: id ?? this.id,
+    tripId: tripId ?? this.tripId,
+    guideId: guideId ?? this.guideId,
+    importedAt: importedAt ?? this.importedAt,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+  );
+  TripGuideReference copyWithCompanion(TripGuideReferencesCompanion data) {
+    return TripGuideReference(
+      id: data.id.present ? data.id.value : this.id,
+      tripId: data.tripId.present ? data.tripId.value : this.tripId,
+      guideId: data.guideId.present ? data.guideId.value : this.guideId,
+      importedAt: data.importedAt.present
+          ? data.importedAt.value
+          : this.importedAt,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TripGuideReference(')
+          ..write('id: $id, ')
+          ..write('tripId: $tripId, ')
+          ..write('guideId: $guideId, ')
+          ..write('importedAt: $importedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, tripId, guideId, importedAt, lastSyncedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TripGuideReference &&
+          other.id == this.id &&
+          other.tripId == this.tripId &&
+          other.guideId == this.guideId &&
+          other.importedAt == this.importedAt &&
+          other.lastSyncedAt == this.lastSyncedAt);
+}
+
+class TripGuideReferencesCompanion extends UpdateCompanion<TripGuideReference> {
+  final Value<int> id;
+  final Value<String> tripId;
+  final Value<String> guideId;
+  final Value<DateTime> importedAt;
+  final Value<DateTime?> lastSyncedAt;
+  const TripGuideReferencesCompanion({
+    this.id = const Value.absent(),
+    this.tripId = const Value.absent(),
+    this.guideId = const Value.absent(),
+    this.importedAt = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+  });
+  TripGuideReferencesCompanion.insert({
+    this.id = const Value.absent(),
+    required String tripId,
+    required String guideId,
+    required DateTime importedAt,
+    this.lastSyncedAt = const Value.absent(),
+  }) : tripId = Value(tripId),
+       guideId = Value(guideId),
+       importedAt = Value(importedAt);
+  static Insertable<TripGuideReference> custom({
+    Expression<int>? id,
+    Expression<String>? tripId,
+    Expression<String>? guideId,
+    Expression<DateTime>? importedAt,
+    Expression<DateTime>? lastSyncedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (tripId != null) 'trip_id': tripId,
+      if (guideId != null) 'guide_id': guideId,
+      if (importedAt != null) 'imported_at': importedAt,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+    });
+  }
+
+  TripGuideReferencesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? tripId,
+    Value<String>? guideId,
+    Value<DateTime>? importedAt,
+    Value<DateTime?>? lastSyncedAt,
+  }) {
+    return TripGuideReferencesCompanion(
+      id: id ?? this.id,
+      tripId: tripId ?? this.tripId,
+      guideId: guideId ?? this.guideId,
+      importedAt: importedAt ?? this.importedAt,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (tripId.present) {
+      map['trip_id'] = Variable<String>(tripId.value);
+    }
+    if (guideId.present) {
+      map['guide_id'] = Variable<String>(guideId.value);
+    }
+    if (importedAt.present) {
+      map['imported_at'] = Variable<DateTime>(importedAt.value);
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TripGuideReferencesCompanion(')
+          ..write('id: $id, ')
+          ..write('tripId: $tripId, ')
+          ..write('guideId: $guideId, ')
+          ..write('importedAt: $importedAt, ')
+          ..write('lastSyncedAt: $lastSyncedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncQueueTable extends SyncQueue
     with TableInfo<$SyncQueueTable, SyncQueueData> {
   @override
@@ -3842,7 +7852,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TripsTable trips = $TripsTable(this);
   late final $TripCollaboratorsTable tripCollaborators =
       $TripCollaboratorsTable(this);
+  late final $TripInvitationsTable tripInvitations = $TripInvitationsTable(
+    this,
+  );
   late final $ItineraryItemsTable itineraryItems = $ItineraryItemsTable(this);
+  late final $GuidesTable guides = $GuidesTable(this);
+  late final $GuideItineraryItemsTable guideItineraryItems =
+      $GuideItineraryItemsTable(this);
+  late final $GuideLikesTable guideLikes = $GuideLikesTable(this);
+  late final $GuideCommentsTable guideComments = $GuideCommentsTable(this);
+  late final $TripGuideReferencesTable tripGuideReferences =
+      $TripGuideReferencesTable(this);
   late final $SyncQueueTable syncQueue = $SyncQueueTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -3853,7 +7873,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     userPreferences,
     trips,
     tripCollaborators,
+    tripInvitations,
     itineraryItems,
+    guides,
+    guideItineraryItems,
+    guideLikes,
+    guideComments,
+    tripGuideReferences,
     syncQueue,
   ];
 }
@@ -3965,6 +7991,61 @@ final class $$UsersTableReferences
     ).filter((f) => f.createdBy.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_itineraryItemsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$GuidesTable, List<Guide>> _guidesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.guides,
+    aliasName: $_aliasNameGenerator(db.users.id, db.guides.authorId),
+  );
+
+  $$GuidesTableProcessedTableManager get guidesRefs {
+    final manager = $$GuidesTableTableManager(
+      $_db,
+      $_db.guides,
+    ).filter((f) => f.authorId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_guidesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$GuideLikesTable, List<GuideLike>>
+  _guideLikesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.guideLikes,
+    aliasName: $_aliasNameGenerator(db.users.id, db.guideLikes.userId),
+  );
+
+  $$GuideLikesTableProcessedTableManager get guideLikesRefs {
+    final manager = $$GuideLikesTableTableManager(
+      $_db,
+      $_db.guideLikes,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_guideLikesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$GuideCommentsTable, List<GuideComment>>
+  _guideCommentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.guideComments,
+    aliasName: $_aliasNameGenerator(db.users.id, db.guideComments.userId),
+  );
+
+  $$GuideCommentsTableProcessedTableManager get guideCommentsRefs {
+    final manager = $$GuideCommentsTableTableManager(
+      $_db,
+      $_db.guideComments,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_guideCommentsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -4115,6 +8196,81 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
           }) => $$ItineraryItemsTableFilterComposer(
             $db: $db,
             $table: $db.itineraryItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> guidesRefs(
+    Expression<bool> Function($$GuidesTableFilterComposer f) f,
+  ) {
+    final $$GuidesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.guides,
+      getReferencedColumn: (t) => t.authorId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GuidesTableFilterComposer(
+            $db: $db,
+            $table: $db.guides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> guideLikesRefs(
+    Expression<bool> Function($$GuideLikesTableFilterComposer f) f,
+  ) {
+    final $$GuideLikesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.guideLikes,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GuideLikesTableFilterComposer(
+            $db: $db,
+            $table: $db.guideLikes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> guideCommentsRefs(
+    Expression<bool> Function($$GuideCommentsTableFilterComposer f) f,
+  ) {
+    final $$GuideCommentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.guideComments,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GuideCommentsTableFilterComposer(
+            $db: $db,
+            $table: $db.guideComments,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4324,6 +8480,81 @@ class $$UsersTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> guidesRefs<T extends Object>(
+    Expression<T> Function($$GuidesTableAnnotationComposer a) f,
+  ) {
+    final $$GuidesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.guides,
+      getReferencedColumn: (t) => t.authorId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GuidesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.guides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> guideLikesRefs<T extends Object>(
+    Expression<T> Function($$GuideLikesTableAnnotationComposer a) f,
+  ) {
+    final $$GuideLikesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.guideLikes,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GuideLikesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.guideLikes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> guideCommentsRefs<T extends Object>(
+    Expression<T> Function($$GuideCommentsTableAnnotationComposer a) f,
+  ) {
+    final $$GuideCommentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.guideComments,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GuideCommentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.guideComments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$UsersTableTableManager
@@ -4344,6 +8575,9 @@ class $$UsersTableTableManager
             bool tripsRefs,
             bool tripCollaboratorsRefs,
             bool itineraryItemsRefs,
+            bool guidesRefs,
+            bool guideLikesRefs,
+            bool guideCommentsRefs,
           })
         > {
   $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
@@ -4417,6 +8651,9 @@ class $$UsersTableTableManager
                 tripsRefs = false,
                 tripCollaboratorsRefs = false,
                 itineraryItemsRefs = false,
+                guidesRefs = false,
+                guideLikesRefs = false,
+                guideCommentsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -4425,6 +8662,9 @@ class $$UsersTableTableManager
                     if (tripsRefs) db.trips,
                     if (tripCollaboratorsRefs) db.tripCollaborators,
                     if (itineraryItemsRefs) db.itineraryItems,
+                    if (guidesRefs) db.guides,
+                    if (guideLikesRefs) db.guideLikes,
+                    if (guideCommentsRefs) db.guideComments,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -4505,6 +8745,57 @@ class $$UsersTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (guidesRefs)
+                        await $_getPrefetchedData<User, $UsersTable, Guide>(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._guidesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(db, table, p0).guidesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.authorId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (guideLikesRefs)
+                        await $_getPrefetchedData<User, $UsersTable, GuideLike>(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._guideLikesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).guideLikesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (guideCommentsRefs)
+                        await $_getPrefetchedData<
+                          User,
+                          $UsersTable,
+                          GuideComment
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._guideCommentsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).guideCommentsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -4530,6 +8821,9 @@ typedef $$UsersTableProcessedTableManager =
         bool tripsRefs,
         bool tripCollaboratorsRefs,
         bool itineraryItemsRefs,
+        bool guidesRefs,
+        bool guideLikesRefs,
+        bool guideCommentsRefs,
       })
     >;
 typedef $$UserPreferencesTableCreateCompanionBuilder =
@@ -4983,6 +9277,26 @@ final class $$TripsTableReferences
     );
   }
 
+  static MultiTypedResultKey<$TripInvitationsTable, List<TripInvitation>>
+  _tripInvitationsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.tripInvitations,
+    aliasName: $_aliasNameGenerator(db.trips.id, db.tripInvitations.tripId),
+  );
+
+  $$TripInvitationsTableProcessedTableManager get tripInvitationsRefs {
+    final manager = $$TripInvitationsTableTableManager(
+      $_db,
+      $_db.tripInvitations,
+    ).filter((f) => f.tripId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _tripInvitationsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$ItineraryItemsTable, List<ItineraryItem>>
   _itineraryItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.itineraryItems,
@@ -5119,6 +9433,31 @@ class $$TripsTableFilterComposer extends Composer<_$AppDatabase, $TripsTable> {
           }) => $$TripCollaboratorsTableFilterComposer(
             $db: $db,
             $table: $db.tripCollaborators,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> tripInvitationsRefs(
+    Expression<bool> Function($$TripInvitationsTableFilterComposer f) f,
+  ) {
+    final $$TripInvitationsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tripInvitations,
+      getReferencedColumn: (t) => t.tripId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TripInvitationsTableFilterComposer(
+            $db: $db,
+            $table: $db.tripInvitations,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5365,6 +9704,31 @@ class $$TripsTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> tripInvitationsRefs<T extends Object>(
+    Expression<T> Function($$TripInvitationsTableAnnotationComposer a) f,
+  ) {
+    final $$TripInvitationsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tripInvitations,
+      getReferencedColumn: (t) => t.tripId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TripInvitationsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tripInvitations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> itineraryItemsRefs<T extends Object>(
     Expression<T> Function($$ItineraryItemsTableAnnotationComposer a) f,
   ) {
@@ -5407,6 +9771,7 @@ class $$TripsTableTableManager
           PrefetchHooks Function({
             bool ownerId,
             bool tripCollaboratorsRefs,
+            bool tripInvitationsRefs,
             bool itineraryItemsRefs,
           })
         > {
@@ -5503,12 +9868,14 @@ class $$TripsTableTableManager
               ({
                 ownerId = false,
                 tripCollaboratorsRefs = false,
+                tripInvitationsRefs = false,
                 itineraryItemsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (tripCollaboratorsRefs) db.tripCollaborators,
+                    if (tripInvitationsRefs) db.tripInvitations,
                     if (itineraryItemsRefs) db.itineraryItems,
                   ],
                   addJoins:
@@ -5566,6 +9933,27 @@ class $$TripsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (tripInvitationsRefs)
+                        await $_getPrefetchedData<
+                          Trip,
+                          $TripsTable,
+                          TripInvitation
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TripsTableReferences
+                              ._tripInvitationsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TripsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).tripInvitationsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.tripId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (itineraryItemsRefs)
                         await $_getPrefetchedData<
                           Trip,
@@ -5610,6 +9998,7 @@ typedef $$TripsTableProcessedTableManager =
       PrefetchHooks Function({
         bool ownerId,
         bool tripCollaboratorsRefs,
+        bool tripInvitationsRefs,
         bool itineraryItemsRefs,
       })
     >;
@@ -6050,6 +10439,646 @@ typedef $$TripCollaboratorsTableProcessedTableManager =
       (TripCollaborator, $$TripCollaboratorsTableReferences),
       TripCollaborator,
       PrefetchHooks Function({bool tripId, bool userId})
+    >;
+typedef $$TripInvitationsTableCreateCompanionBuilder =
+    TripInvitationsCompanion Function({
+      required String id,
+      required String tripId,
+      required String invitedByUserId,
+      required String invitedEmail,
+      Value<String?> invitedUserId,
+      Value<String> status,
+      Value<String> role,
+      required DateTime createdAt,
+      required DateTime expiresAt,
+      Value<DateTime?> respondedAt,
+      Value<DateTime?> lastSyncedAt,
+      Value<int> rowid,
+    });
+typedef $$TripInvitationsTableUpdateCompanionBuilder =
+    TripInvitationsCompanion Function({
+      Value<String> id,
+      Value<String> tripId,
+      Value<String> invitedByUserId,
+      Value<String> invitedEmail,
+      Value<String?> invitedUserId,
+      Value<String> status,
+      Value<String> role,
+      Value<DateTime> createdAt,
+      Value<DateTime> expiresAt,
+      Value<DateTime?> respondedAt,
+      Value<DateTime?> lastSyncedAt,
+      Value<int> rowid,
+    });
+
+final class $$TripInvitationsTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $TripInvitationsTable, TripInvitation> {
+  $$TripInvitationsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TripsTable _tripIdTable(_$AppDatabase db) => db.trips.createAlias(
+    $_aliasNameGenerator(db.tripInvitations.tripId, db.trips.id),
+  );
+
+  $$TripsTableProcessedTableManager get tripId {
+    final $_column = $_itemColumn<String>('trip_id')!;
+
+    final manager = $$TripsTableTableManager(
+      $_db,
+      $_db.trips,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_tripIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $UsersTable _invitedByUserIdTable(_$AppDatabase db) =>
+      db.users.createAlias(
+        $_aliasNameGenerator(db.tripInvitations.invitedByUserId, db.users.id),
+      );
+
+  $$UsersTableProcessedTableManager get invitedByUserId {
+    final $_column = $_itemColumn<String>('invited_by_user_id')!;
+
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_invitedByUserIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $UsersTable _invitedUserIdTable(_$AppDatabase db) =>
+      db.users.createAlias(
+        $_aliasNameGenerator(db.tripInvitations.invitedUserId, db.users.id),
+      );
+
+  $$UsersTableProcessedTableManager? get invitedUserId {
+    final $_column = $_itemColumn<String>('invited_user_id');
+    if ($_column == null) return null;
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_invitedUserIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TripInvitationsTableFilterComposer
+    extends Composer<_$AppDatabase, $TripInvitationsTable> {
+  $$TripInvitationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get invitedEmail => $composableBuilder(
+    column: $table.invitedEmail,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get respondedAt => $composableBuilder(
+    column: $table.respondedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TripsTableFilterComposer get tripId {
+    final $$TripsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tripId,
+      referencedTable: $db.trips,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TripsTableFilterComposer(
+            $db: $db,
+            $table: $db.trips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$UsersTableFilterComposer get invitedByUserId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.invitedByUserId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$UsersTableFilterComposer get invitedUserId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.invitedUserId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TripInvitationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TripInvitationsTable> {
+  $$TripInvitationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get invitedEmail => $composableBuilder(
+    column: $table.invitedEmail,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get respondedAt => $composableBuilder(
+    column: $table.respondedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TripsTableOrderingComposer get tripId {
+    final $$TripsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tripId,
+      referencedTable: $db.trips,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TripsTableOrderingComposer(
+            $db: $db,
+            $table: $db.trips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$UsersTableOrderingComposer get invitedByUserId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.invitedByUserId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$UsersTableOrderingComposer get invitedUserId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.invitedUserId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TripInvitationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TripInvitationsTable> {
+  $$TripInvitationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get invitedEmail => $composableBuilder(
+    column: $table.invitedEmail,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get expiresAt =>
+      $composableBuilder(column: $table.expiresAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get respondedAt => $composableBuilder(
+    column: $table.respondedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  $$TripsTableAnnotationComposer get tripId {
+    final $$TripsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tripId,
+      referencedTable: $db.trips,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TripsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$UsersTableAnnotationComposer get invitedByUserId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.invitedByUserId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$UsersTableAnnotationComposer get invitedUserId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.invitedUserId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TripInvitationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TripInvitationsTable,
+          TripInvitation,
+          $$TripInvitationsTableFilterComposer,
+          $$TripInvitationsTableOrderingComposer,
+          $$TripInvitationsTableAnnotationComposer,
+          $$TripInvitationsTableCreateCompanionBuilder,
+          $$TripInvitationsTableUpdateCompanionBuilder,
+          (TripInvitation, $$TripInvitationsTableReferences),
+          TripInvitation,
+          PrefetchHooks Function({
+            bool tripId,
+            bool invitedByUserId,
+            bool invitedUserId,
+          })
+        > {
+  $$TripInvitationsTableTableManager(
+    _$AppDatabase db,
+    $TripInvitationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TripInvitationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TripInvitationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TripInvitationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> tripId = const Value.absent(),
+                Value<String> invitedByUserId = const Value.absent(),
+                Value<String> invitedEmail = const Value.absent(),
+                Value<String?> invitedUserId = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> role = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> expiresAt = const Value.absent(),
+                Value<DateTime?> respondedAt = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TripInvitationsCompanion(
+                id: id,
+                tripId: tripId,
+                invitedByUserId: invitedByUserId,
+                invitedEmail: invitedEmail,
+                invitedUserId: invitedUserId,
+                status: status,
+                role: role,
+                createdAt: createdAt,
+                expiresAt: expiresAt,
+                respondedAt: respondedAt,
+                lastSyncedAt: lastSyncedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String tripId,
+                required String invitedByUserId,
+                required String invitedEmail,
+                Value<String?> invitedUserId = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> role = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime expiresAt,
+                Value<DateTime?> respondedAt = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TripInvitationsCompanion.insert(
+                id: id,
+                tripId: tripId,
+                invitedByUserId: invitedByUserId,
+                invitedEmail: invitedEmail,
+                invitedUserId: invitedUserId,
+                status: status,
+                role: role,
+                createdAt: createdAt,
+                expiresAt: expiresAt,
+                respondedAt: respondedAt,
+                lastSyncedAt: lastSyncedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TripInvitationsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                tripId = false,
+                invitedByUserId = false,
+                invitedUserId = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (tripId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.tripId,
+                                    referencedTable:
+                                        $$TripInvitationsTableReferences
+                                            ._tripIdTable(db),
+                                    referencedColumn:
+                                        $$TripInvitationsTableReferences
+                                            ._tripIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (invitedByUserId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.invitedByUserId,
+                                    referencedTable:
+                                        $$TripInvitationsTableReferences
+                                            ._invitedByUserIdTable(db),
+                                    referencedColumn:
+                                        $$TripInvitationsTableReferences
+                                            ._invitedByUserIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (invitedUserId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.invitedUserId,
+                                    referencedTable:
+                                        $$TripInvitationsTableReferences
+                                            ._invitedUserIdTable(db),
+                                    referencedColumn:
+                                        $$TripInvitationsTableReferences
+                                            ._invitedUserIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TripInvitationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TripInvitationsTable,
+      TripInvitation,
+      $$TripInvitationsTableFilterComposer,
+      $$TripInvitationsTableOrderingComposer,
+      $$TripInvitationsTableAnnotationComposer,
+      $$TripInvitationsTableCreateCompanionBuilder,
+      $$TripInvitationsTableUpdateCompanionBuilder,
+      (TripInvitation, $$TripInvitationsTableReferences),
+      TripInvitation,
+      PrefetchHooks Function({
+        bool tripId,
+        bool invitedByUserId,
+        bool invitedUserId,
+      })
     >;
 typedef $$ItineraryItemsTableCreateCompanionBuilder =
     ItineraryItemsCompanion Function({
@@ -6700,6 +11729,1967 @@ typedef $$ItineraryItemsTableProcessedTableManager =
       ItineraryItem,
       PrefetchHooks Function({bool tripId, bool createdBy})
     >;
+typedef $$GuidesTableCreateCompanionBuilder =
+    GuidesCompanion Function({
+      required String id,
+      required String authorId,
+      required String title,
+      required String description,
+      required String destination,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      Value<String?> coverImageUrl,
+      required String content,
+      Value<String?> tags,
+      Value<int> viewCount,
+      Value<int> likeCount,
+      Value<bool> isPublished,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<DateTime?> publishedAt,
+      Value<DateTime?> lastSyncedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+typedef $$GuidesTableUpdateCompanionBuilder =
+    GuidesCompanion Function({
+      Value<String> id,
+      Value<String> authorId,
+      Value<String> title,
+      Value<String> description,
+      Value<String> destination,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      Value<String?> coverImageUrl,
+      Value<String> content,
+      Value<String?> tags,
+      Value<int> viewCount,
+      Value<int> likeCount,
+      Value<bool> isPublished,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> publishedAt,
+      Value<DateTime?> lastSyncedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+
+final class $$GuidesTableReferences
+    extends BaseReferences<_$AppDatabase, $GuidesTable, Guide> {
+  $$GuidesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $UsersTable _authorIdTable(_$AppDatabase db) => db.users.createAlias(
+    $_aliasNameGenerator(db.guides.authorId, db.users.id),
+  );
+
+  $$UsersTableProcessedTableManager get authorId {
+    final $_column = $_itemColumn<String>('author_id')!;
+
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_authorIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$GuidesTableFilterComposer
+    extends Composer<_$AppDatabase, $GuidesTable> {
+  $$GuidesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destination => $composableBuilder(
+    column: $table.destination,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get coverImageUrl => $composableBuilder(
+    column: $table.coverImageUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tags => $composableBuilder(
+    column: $table.tags,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get viewCount => $composableBuilder(
+    column: $table.viewCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get likeCount => $composableBuilder(
+    column: $table.likeCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPublished => $composableBuilder(
+    column: $table.isPublished,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$UsersTableFilterComposer get authorId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.authorId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuidesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GuidesTable> {
+  $$GuidesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destination => $composableBuilder(
+    column: $table.destination,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get coverImageUrl => $composableBuilder(
+    column: $table.coverImageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tags => $composableBuilder(
+    column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get viewCount => $composableBuilder(
+    column: $table.viewCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get likeCount => $composableBuilder(
+    column: $table.likeCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPublished => $composableBuilder(
+    column: $table.isPublished,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$UsersTableOrderingComposer get authorId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.authorId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuidesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GuidesTable> {
+  $$GuidesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destination => $composableBuilder(
+    column: $table.destination,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<String> get coverImageUrl => $composableBuilder(
+    column: $table.coverImageUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
+
+  GeneratedColumn<int> get viewCount =>
+      $composableBuilder(column: $table.viewCount, builder: (column) => column);
+
+  GeneratedColumn<int> get likeCount =>
+      $composableBuilder(column: $table.likeCount, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPublished => $composableBuilder(
+    column: $table.isPublished,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  $$UsersTableAnnotationComposer get authorId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.authorId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuidesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GuidesTable,
+          Guide,
+          $$GuidesTableFilterComposer,
+          $$GuidesTableOrderingComposer,
+          $$GuidesTableAnnotationComposer,
+          $$GuidesTableCreateCompanionBuilder,
+          $$GuidesTableUpdateCompanionBuilder,
+          (Guide, $$GuidesTableReferences),
+          Guide,
+          PrefetchHooks Function({bool authorId})
+        > {
+  $$GuidesTableTableManager(_$AppDatabase db, $GuidesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GuidesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GuidesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GuidesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> authorId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> destination = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                Value<String?> coverImageUrl = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<String?> tags = const Value.absent(),
+                Value<int> viewCount = const Value.absent(),
+                Value<int> likeCount = const Value.absent(),
+                Value<bool> isPublished = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> publishedAt = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GuidesCompanion(
+                id: id,
+                authorId: authorId,
+                title: title,
+                description: description,
+                destination: destination,
+                latitude: latitude,
+                longitude: longitude,
+                coverImageUrl: coverImageUrl,
+                content: content,
+                tags: tags,
+                viewCount: viewCount,
+                likeCount: likeCount,
+                isPublished: isPublished,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                publishedAt: publishedAt,
+                lastSyncedAt: lastSyncedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String authorId,
+                required String title,
+                required String description,
+                required String destination,
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                Value<String?> coverImageUrl = const Value.absent(),
+                required String content,
+                Value<String?> tags = const Value.absent(),
+                Value<int> viewCount = const Value.absent(),
+                Value<int> likeCount = const Value.absent(),
+                Value<bool> isPublished = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> publishedAt = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GuidesCompanion.insert(
+                id: id,
+                authorId: authorId,
+                title: title,
+                description: description,
+                destination: destination,
+                latitude: latitude,
+                longitude: longitude,
+                coverImageUrl: coverImageUrl,
+                content: content,
+                tags: tags,
+                viewCount: viewCount,
+                likeCount: likeCount,
+                isPublished: isPublished,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                publishedAt: publishedAt,
+                lastSyncedAt: lastSyncedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$GuidesTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback: ({authorId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (authorId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.authorId,
+                                referencedTable: $$GuidesTableReferences
+                                    ._authorIdTable(db),
+                                referencedColumn: $$GuidesTableReferences
+                                    ._authorIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GuidesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GuidesTable,
+      Guide,
+      $$GuidesTableFilterComposer,
+      $$GuidesTableOrderingComposer,
+      $$GuidesTableAnnotationComposer,
+      $$GuidesTableCreateCompanionBuilder,
+      $$GuidesTableUpdateCompanionBuilder,
+      (Guide, $$GuidesTableReferences),
+      Guide,
+      PrefetchHooks Function({bool authorId})
+    >;
+typedef $$GuideItineraryItemsTableCreateCompanionBuilder =
+    GuideItineraryItemsCompanion Function({
+      required String id,
+      required String guideId,
+      required String title,
+      Value<String?> description,
+      Value<String?> locationName,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      required int dayNumber,
+      Value<DateTime?> suggestedStartTime,
+      Value<DateTime?> suggestedEndTime,
+      Value<String> category,
+      Value<int> sortOrder,
+      Value<double?> estimatedCost,
+      Value<String?> costCurrency,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<DateTime?> lastSyncedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+typedef $$GuideItineraryItemsTableUpdateCompanionBuilder =
+    GuideItineraryItemsCompanion Function({
+      Value<String> id,
+      Value<String> guideId,
+      Value<String> title,
+      Value<String?> description,
+      Value<String?> locationName,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      Value<int> dayNumber,
+      Value<DateTime?> suggestedStartTime,
+      Value<DateTime?> suggestedEndTime,
+      Value<String> category,
+      Value<int> sortOrder,
+      Value<double?> estimatedCost,
+      Value<String?> costCurrency,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> lastSyncedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+
+class $$GuideItineraryItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $GuideItineraryItemsTable> {
+  $$GuideItineraryItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get guideId => $composableBuilder(
+    column: $table.guideId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locationName => $composableBuilder(
+    column: $table.locationName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dayNumber => $composableBuilder(
+    column: $table.dayNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get suggestedStartTime => $composableBuilder(
+    column: $table.suggestedStartTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get suggestedEndTime => $composableBuilder(
+    column: $table.suggestedEndTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get estimatedCost => $composableBuilder(
+    column: $table.estimatedCost,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get costCurrency => $composableBuilder(
+    column: $table.costCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GuideItineraryItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $GuideItineraryItemsTable> {
+  $$GuideItineraryItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get guideId => $composableBuilder(
+    column: $table.guideId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locationName => $composableBuilder(
+    column: $table.locationName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get dayNumber => $composableBuilder(
+    column: $table.dayNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get suggestedStartTime => $composableBuilder(
+    column: $table.suggestedStartTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get suggestedEndTime => $composableBuilder(
+    column: $table.suggestedEndTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get estimatedCost => $composableBuilder(
+    column: $table.estimatedCost,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get costCurrency => $composableBuilder(
+    column: $table.costCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GuideItineraryItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GuideItineraryItemsTable> {
+  $$GuideItineraryItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get guideId =>
+      $composableBuilder(column: $table.guideId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get locationName => $composableBuilder(
+    column: $table.locationName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<int> get dayNumber =>
+      $composableBuilder(column: $table.dayNumber, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get suggestedStartTime => $composableBuilder(
+    column: $table.suggestedStartTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get suggestedEndTime => $composableBuilder(
+    column: $table.suggestedEndTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<double> get estimatedCost => $composableBuilder(
+    column: $table.estimatedCost,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get costCurrency => $composableBuilder(
+    column: $table.costCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+}
+
+class $$GuideItineraryItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GuideItineraryItemsTable,
+          GuideItineraryItem,
+          $$GuideItineraryItemsTableFilterComposer,
+          $$GuideItineraryItemsTableOrderingComposer,
+          $$GuideItineraryItemsTableAnnotationComposer,
+          $$GuideItineraryItemsTableCreateCompanionBuilder,
+          $$GuideItineraryItemsTableUpdateCompanionBuilder,
+          (
+            GuideItineraryItem,
+            BaseReferences<
+              _$AppDatabase,
+              $GuideItineraryItemsTable,
+              GuideItineraryItem
+            >,
+          ),
+          GuideItineraryItem,
+          PrefetchHooks Function()
+        > {
+  $$GuideItineraryItemsTableTableManager(
+    _$AppDatabase db,
+    $GuideItineraryItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GuideItineraryItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GuideItineraryItemsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$GuideItineraryItemsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> guideId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String?> locationName = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                Value<int> dayNumber = const Value.absent(),
+                Value<DateTime?> suggestedStartTime = const Value.absent(),
+                Value<DateTime?> suggestedEndTime = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<double?> estimatedCost = const Value.absent(),
+                Value<String?> costCurrency = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GuideItineraryItemsCompanion(
+                id: id,
+                guideId: guideId,
+                title: title,
+                description: description,
+                locationName: locationName,
+                latitude: latitude,
+                longitude: longitude,
+                dayNumber: dayNumber,
+                suggestedStartTime: suggestedStartTime,
+                suggestedEndTime: suggestedEndTime,
+                category: category,
+                sortOrder: sortOrder,
+                estimatedCost: estimatedCost,
+                costCurrency: costCurrency,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastSyncedAt: lastSyncedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String guideId,
+                required String title,
+                Value<String?> description = const Value.absent(),
+                Value<String?> locationName = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                required int dayNumber,
+                Value<DateTime?> suggestedStartTime = const Value.absent(),
+                Value<DateTime?> suggestedEndTime = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<double?> estimatedCost = const Value.absent(),
+                Value<String?> costCurrency = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GuideItineraryItemsCompanion.insert(
+                id: id,
+                guideId: guideId,
+                title: title,
+                description: description,
+                locationName: locationName,
+                latitude: latitude,
+                longitude: longitude,
+                dayNumber: dayNumber,
+                suggestedStartTime: suggestedStartTime,
+                suggestedEndTime: suggestedEndTime,
+                category: category,
+                sortOrder: sortOrder,
+                estimatedCost: estimatedCost,
+                costCurrency: costCurrency,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastSyncedAt: lastSyncedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GuideItineraryItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GuideItineraryItemsTable,
+      GuideItineraryItem,
+      $$GuideItineraryItemsTableFilterComposer,
+      $$GuideItineraryItemsTableOrderingComposer,
+      $$GuideItineraryItemsTableAnnotationComposer,
+      $$GuideItineraryItemsTableCreateCompanionBuilder,
+      $$GuideItineraryItemsTableUpdateCompanionBuilder,
+      (
+        GuideItineraryItem,
+        BaseReferences<
+          _$AppDatabase,
+          $GuideItineraryItemsTable,
+          GuideItineraryItem
+        >,
+      ),
+      GuideItineraryItem,
+      PrefetchHooks Function()
+    >;
+typedef $$GuideLikesTableCreateCompanionBuilder =
+    GuideLikesCompanion Function({
+      Value<int> id,
+      required String guideId,
+      required String userId,
+      required DateTime likedAt,
+      Value<DateTime?> lastSyncedAt,
+    });
+typedef $$GuideLikesTableUpdateCompanionBuilder =
+    GuideLikesCompanion Function({
+      Value<int> id,
+      Value<String> guideId,
+      Value<String> userId,
+      Value<DateTime> likedAt,
+      Value<DateTime?> lastSyncedAt,
+    });
+
+final class $$GuideLikesTableReferences
+    extends BaseReferences<_$AppDatabase, $GuideLikesTable, GuideLike> {
+  $$GuideLikesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $UsersTable _userIdTable(_$AppDatabase db) => db.users.createAlias(
+    $_aliasNameGenerator(db.guideLikes.userId, db.users.id),
+  );
+
+  $$UsersTableProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
+
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$GuideLikesTableFilterComposer
+    extends Composer<_$AppDatabase, $GuideLikesTable> {
+  $$GuideLikesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get guideId => $composableBuilder(
+    column: $table.guideId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get likedAt => $composableBuilder(
+    column: $table.likedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuideLikesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GuideLikesTable> {
+  $$GuideLikesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get guideId => $composableBuilder(
+    column: $table.guideId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get likedAt => $composableBuilder(
+    column: $table.likedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuideLikesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GuideLikesTable> {
+  $$GuideLikesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get guideId =>
+      $composableBuilder(column: $table.guideId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get likedAt =>
+      $composableBuilder(column: $table.likedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuideLikesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GuideLikesTable,
+          GuideLike,
+          $$GuideLikesTableFilterComposer,
+          $$GuideLikesTableOrderingComposer,
+          $$GuideLikesTableAnnotationComposer,
+          $$GuideLikesTableCreateCompanionBuilder,
+          $$GuideLikesTableUpdateCompanionBuilder,
+          (GuideLike, $$GuideLikesTableReferences),
+          GuideLike,
+          PrefetchHooks Function({bool userId})
+        > {
+  $$GuideLikesTableTableManager(_$AppDatabase db, $GuideLikesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GuideLikesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GuideLikesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GuideLikesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> guideId = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<DateTime> likedAt = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+              }) => GuideLikesCompanion(
+                id: id,
+                guideId: guideId,
+                userId: userId,
+                likedAt: likedAt,
+                lastSyncedAt: lastSyncedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String guideId,
+                required String userId,
+                required DateTime likedAt,
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+              }) => GuideLikesCompanion.insert(
+                id: id,
+                guideId: guideId,
+                userId: userId,
+                likedAt: likedAt,
+                lastSyncedAt: lastSyncedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GuideLikesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({userId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (userId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.userId,
+                                referencedTable: $$GuideLikesTableReferences
+                                    ._userIdTable(db),
+                                referencedColumn: $$GuideLikesTableReferences
+                                    ._userIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GuideLikesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GuideLikesTable,
+      GuideLike,
+      $$GuideLikesTableFilterComposer,
+      $$GuideLikesTableOrderingComposer,
+      $$GuideLikesTableAnnotationComposer,
+      $$GuideLikesTableCreateCompanionBuilder,
+      $$GuideLikesTableUpdateCompanionBuilder,
+      (GuideLike, $$GuideLikesTableReferences),
+      GuideLike,
+      PrefetchHooks Function({bool userId})
+    >;
+typedef $$GuideCommentsTableCreateCompanionBuilder =
+    GuideCommentsCompanion Function({
+      required String id,
+      required String guideId,
+      required String userId,
+      required String content,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<DateTime?> lastSyncedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+typedef $$GuideCommentsTableUpdateCompanionBuilder =
+    GuideCommentsCompanion Function({
+      Value<String> id,
+      Value<String> guideId,
+      Value<String> userId,
+      Value<String> content,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> lastSyncedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+
+final class $$GuideCommentsTableReferences
+    extends BaseReferences<_$AppDatabase, $GuideCommentsTable, GuideComment> {
+  $$GuideCommentsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $UsersTable _userIdTable(_$AppDatabase db) => db.users.createAlias(
+    $_aliasNameGenerator(db.guideComments.userId, db.users.id),
+  );
+
+  $$UsersTableProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
+
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$GuideCommentsTableFilterComposer
+    extends Composer<_$AppDatabase, $GuideCommentsTable> {
+  $$GuideCommentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get guideId => $composableBuilder(
+    column: $table.guideId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuideCommentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $GuideCommentsTable> {
+  $$GuideCommentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get guideId => $composableBuilder(
+    column: $table.guideId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuideCommentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GuideCommentsTable> {
+  $$GuideCommentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get guideId =>
+      $composableBuilder(column: $table.guideId, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GuideCommentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GuideCommentsTable,
+          GuideComment,
+          $$GuideCommentsTableFilterComposer,
+          $$GuideCommentsTableOrderingComposer,
+          $$GuideCommentsTableAnnotationComposer,
+          $$GuideCommentsTableCreateCompanionBuilder,
+          $$GuideCommentsTableUpdateCompanionBuilder,
+          (GuideComment, $$GuideCommentsTableReferences),
+          GuideComment,
+          PrefetchHooks Function({bool userId})
+        > {
+  $$GuideCommentsTableTableManager(_$AppDatabase db, $GuideCommentsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GuideCommentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GuideCommentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GuideCommentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> guideId = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GuideCommentsCompanion(
+                id: id,
+                guideId: guideId,
+                userId: userId,
+                content: content,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastSyncedAt: lastSyncedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String guideId,
+                required String userId,
+                required String content,
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GuideCommentsCompanion.insert(
+                id: id,
+                guideId: guideId,
+                userId: userId,
+                content: content,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastSyncedAt: lastSyncedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GuideCommentsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({userId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (userId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.userId,
+                                referencedTable: $$GuideCommentsTableReferences
+                                    ._userIdTable(db),
+                                referencedColumn: $$GuideCommentsTableReferences
+                                    ._userIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GuideCommentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GuideCommentsTable,
+      GuideComment,
+      $$GuideCommentsTableFilterComposer,
+      $$GuideCommentsTableOrderingComposer,
+      $$GuideCommentsTableAnnotationComposer,
+      $$GuideCommentsTableCreateCompanionBuilder,
+      $$GuideCommentsTableUpdateCompanionBuilder,
+      (GuideComment, $$GuideCommentsTableReferences),
+      GuideComment,
+      PrefetchHooks Function({bool userId})
+    >;
+typedef $$TripGuideReferencesTableCreateCompanionBuilder =
+    TripGuideReferencesCompanion Function({
+      Value<int> id,
+      required String tripId,
+      required String guideId,
+      required DateTime importedAt,
+      Value<DateTime?> lastSyncedAt,
+    });
+typedef $$TripGuideReferencesTableUpdateCompanionBuilder =
+    TripGuideReferencesCompanion Function({
+      Value<int> id,
+      Value<String> tripId,
+      Value<String> guideId,
+      Value<DateTime> importedAt,
+      Value<DateTime?> lastSyncedAt,
+    });
+
+class $$TripGuideReferencesTableFilterComposer
+    extends Composer<_$AppDatabase, $TripGuideReferencesTable> {
+  $$TripGuideReferencesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tripId => $composableBuilder(
+    column: $table.tripId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get guideId => $composableBuilder(
+    column: $table.guideId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TripGuideReferencesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TripGuideReferencesTable> {
+  $$TripGuideReferencesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tripId => $composableBuilder(
+    column: $table.tripId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get guideId => $composableBuilder(
+    column: $table.guideId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TripGuideReferencesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TripGuideReferencesTable> {
+  $$TripGuideReferencesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get tripId =>
+      $composableBuilder(column: $table.tripId, builder: (column) => column);
+
+  GeneratedColumn<String> get guideId =>
+      $composableBuilder(column: $table.guideId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$TripGuideReferencesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TripGuideReferencesTable,
+          TripGuideReference,
+          $$TripGuideReferencesTableFilterComposer,
+          $$TripGuideReferencesTableOrderingComposer,
+          $$TripGuideReferencesTableAnnotationComposer,
+          $$TripGuideReferencesTableCreateCompanionBuilder,
+          $$TripGuideReferencesTableUpdateCompanionBuilder,
+          (
+            TripGuideReference,
+            BaseReferences<
+              _$AppDatabase,
+              $TripGuideReferencesTable,
+              TripGuideReference
+            >,
+          ),
+          TripGuideReference,
+          PrefetchHooks Function()
+        > {
+  $$TripGuideReferencesTableTableManager(
+    _$AppDatabase db,
+    $TripGuideReferencesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TripGuideReferencesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TripGuideReferencesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TripGuideReferencesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> tripId = const Value.absent(),
+                Value<String> guideId = const Value.absent(),
+                Value<DateTime> importedAt = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+              }) => TripGuideReferencesCompanion(
+                id: id,
+                tripId: tripId,
+                guideId: guideId,
+                importedAt: importedAt,
+                lastSyncedAt: lastSyncedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String tripId,
+                required String guideId,
+                required DateTime importedAt,
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+              }) => TripGuideReferencesCompanion.insert(
+                id: id,
+                tripId: tripId,
+                guideId: guideId,
+                importedAt: importedAt,
+                lastSyncedAt: lastSyncedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TripGuideReferencesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TripGuideReferencesTable,
+      TripGuideReference,
+      $$TripGuideReferencesTableFilterComposer,
+      $$TripGuideReferencesTableOrderingComposer,
+      $$TripGuideReferencesTableAnnotationComposer,
+      $$TripGuideReferencesTableCreateCompanionBuilder,
+      $$TripGuideReferencesTableUpdateCompanionBuilder,
+      (
+        TripGuideReference,
+        BaseReferences<
+          _$AppDatabase,
+          $TripGuideReferencesTable,
+          TripGuideReference
+        >,
+      ),
+      TripGuideReference,
+      PrefetchHooks Function()
+    >;
 typedef $$SyncQueueTableCreateCompanionBuilder =
     SyncQueueCompanion Function({
       Value<int> id,
@@ -6967,8 +13957,20 @@ class $AppDatabaseManager {
       $$TripsTableTableManager(_db, _db.trips);
   $$TripCollaboratorsTableTableManager get tripCollaborators =>
       $$TripCollaboratorsTableTableManager(_db, _db.tripCollaborators);
+  $$TripInvitationsTableTableManager get tripInvitations =>
+      $$TripInvitationsTableTableManager(_db, _db.tripInvitations);
   $$ItineraryItemsTableTableManager get itineraryItems =>
       $$ItineraryItemsTableTableManager(_db, _db.itineraryItems);
+  $$GuidesTableTableManager get guides =>
+      $$GuidesTableTableManager(_db, _db.guides);
+  $$GuideItineraryItemsTableTableManager get guideItineraryItems =>
+      $$GuideItineraryItemsTableTableManager(_db, _db.guideItineraryItems);
+  $$GuideLikesTableTableManager get guideLikes =>
+      $$GuideLikesTableTableManager(_db, _db.guideLikes);
+  $$GuideCommentsTableTableManager get guideComments =>
+      $$GuideCommentsTableTableManager(_db, _db.guideComments);
+  $$TripGuideReferencesTableTableManager get tripGuideReferences =>
+      $$TripGuideReferencesTableTableManager(_db, _db.tripGuideReferences);
   $$SyncQueueTableTableManager get syncQueue =>
       $$SyncQueueTableTableManager(_db, _db.syncQueue);
 }

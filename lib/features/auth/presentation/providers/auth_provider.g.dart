@@ -80,7 +80,7 @@ final class EmailAuthControllerProvider
 }
 
 String _$emailAuthControllerHash() =>
-    r'2ad5be559dbcf520e65cf4d61ac44d0c65e76499';
+    r'db7dfa75f77591b67fffab2288aabe8274507cf8';
 
 /// Controller for email authentication actions.
 
