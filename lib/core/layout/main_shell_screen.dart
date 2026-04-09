@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../theme/app_colors.dart';
 
-/// Main shell screen with elegant animated bottom navigation.
+/// Main shell screen with bottom navigation.
 class MainShellScreen extends ConsumerStatefulWidget {
   const MainShellScreen({super.key, required this.navigationShell});
 
@@ -14,12 +14,7 @@ class MainShellScreen extends ConsumerStatefulWidget {
   ConsumerState<MainShellScreen> createState() => _MainShellScreenState();
 }
 
-class _MainShellScreenState extends ConsumerState<MainShellScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  int _previousIndex = 0;
-
+class _MainShellScreenState extends ConsumerState<MainShellScreen> {
   static const _tabs = [
     _TabItem(
       icon: Icons.home_outlined,
@@ -47,32 +42,7 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen>
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
-    );
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
   void _onTabSelected(int index) {
-    if (index != _previousIndex) {
-      _animationController.reset();
-      _animationController.forward();
-      _previousIndex = index;
-    }
-
     widget.navigationShell.goBranch(
       index,
       initialLocation: index == widget.navigationShell.currentIndex,
@@ -165,34 +135,30 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen>
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 // Home
-                _AnimatedNavItem(
+                _NavItem(
                   tab: _tabs[0],
                   isSelected: currentIndex == 0,
                   onTap: () => _onTabSelected(0),
-                  scaleAnimation: currentIndex == 0 ? _scaleAnimation : null,
                 ),
                 // Trips
-                _AnimatedNavItem(
+                _NavItem(
                   tab: _tabs[1],
                   isSelected: currentIndex == 1,
                   onTap: () => _onTabSelected(1),
-                  scaleAnimation: currentIndex == 1 ? _scaleAnimation : null,
                 ),
                 // Plus Button (Center)
                 _PlusButton(onTap: () => _showAddOptions(context)),
                 // Guides
-                _AnimatedNavItem(
+                _NavItem(
                   tab: _tabs[2],
                   isSelected: currentIndex == 2,
                   onTap: () => _onTabSelected(2),
-                  scaleAnimation: currentIndex == 2 ? _scaleAnimation : null,
                 ),
                 // Profile
-                _AnimatedNavItem(
+                _NavItem(
                   tab: _tabs[3],
                   isSelected: currentIndex == 3,
                   onTap: () => _onTabSelected(3),
-                  scaleAnimation: currentIndex == 3 ? _scaleAnimation : null,
                 ),
               ],
             ),
@@ -203,18 +169,16 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen>
   }
 }
 
-class _AnimatedNavItem extends StatelessWidget {
-  const _AnimatedNavItem({
+class _NavItem extends StatelessWidget {
+  const _NavItem({
     required this.tab,
     required this.isSelected,
     required this.onTap,
-    this.scaleAnimation,
   });
 
   final _TabItem tab;
   final bool isSelected;
   final VoidCallback onTap;
-  final Animation<double>? scaleAnimation;
 
   @override
   Widget build(BuildContext context) {
@@ -223,29 +187,14 @@ class _AnimatedNavItem extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.all(12),
-        child: scaleAnimation != null
-            ? ScaleTransition(scale: scaleAnimation!, child: _buildIcon())
-            : _buildIcon(),
+        child: Icon(
+          isSelected ? tab.activeIcon : tab.icon,
+          color: isSelected
+              ? tab.color
+              : AppColors.textSecondary.withValues(alpha: 0.5),
+          size: 32,
+        ),
       ),
-    );
-  }
-
-  Widget _buildIcon() {
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 300),
-      tween: Tween(begin: 0.0, end: isSelected ? 1.0 : 0.0),
-      curve: Curves.easeInOut,
-      builder: (context, value, child) {
-        return Icon(
-          value > 0.5 ? tab.activeIcon : tab.icon,
-          color: Color.lerp(
-            AppColors.textSecondary.withValues(alpha: 0.5),
-            tab.color,
-            value,
-          ),
-          size: 28 + (value * 4),
-        );
-      },
     );
   }
 }
