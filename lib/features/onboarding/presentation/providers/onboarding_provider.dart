@@ -17,14 +17,13 @@ final onboardingStatusProvider = StreamProvider<OnboardingStep>((ref) {
 
   final uid = firebaseUser.uid;
 
-  // Filter out null users and wait for actual data to be synced
-  return userRepo.watchLocalUser(uid).where((user) => user != null).asyncExpand(
-    (user) {
-      return userRepo
-          .watchUserPreferences(uid)
-          .map(
-            (prefs) => resolveOnboardingStep(user: user!, preferences: prefs),
-          );
-    },
-  );
+  // Wait for first non-null user, then switch to watching both user and preferences
+  return userRepo
+      .watchLocalUser(uid)
+      .where((user) => user != null)
+      .asyncExpand((user) {
+    return userRepo.watchUserPreferences(uid).map(
+          (prefs) => resolveOnboardingStep(user: user!, preferences: prefs),
+        );
+  });
 });
