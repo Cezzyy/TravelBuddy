@@ -1,153 +1,205 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../auth/presentation/providers/current_user_provider.dart';
+import 'widgets/continue_planning_card.dart';
+import 'widgets/guide_card.dart';
+import 'widgets/hero_banner.dart';
+import 'widgets/landmark_card.dart';
+import 'widgets/section_header.dart';
+import 'widgets/trip_card.dart';
 
-/// Home screen - Main dashboard for TravelBuddy.
-/// Shows upcoming and past trips (to be implemented).
-class HomeScreen extends ConsumerWidget {
+/// Home screen with hero banner, guides, landmarks, and trips.
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final localUser = ref.watch(currentUserProvider);
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: CustomScrollView(
+        slivers: [
+          // Hero Banner - Full width, no padding
+          SliverToBoxAdapter(
+            child: HeroBanner(
+              onCreateTrip: () => _showComingSoon(context),
+            ),
+          ),
 
-    return localUser.when(
-      data: (user) => _buildContent(context, user),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(child: Text('Error: $error')),
-    );
-  }
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
-  Widget _buildContent(BuildContext context, user) {
-    return CustomScrollView(
-      slivers: [
-        // Welcome section
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user?.displayName ?? 'Welcome Back!',
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+          // Featured Guides Section
+          const SliverToBoxAdapter(
+            child: SectionHeader(
+              title: 'Featured Guides',
+              actionLabel: 'See all',
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 260,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  GuideCard(
+                    title: '5 Days in Tokyo: A Complete Guide',
+                    destination: 'Tokyo, Japan',
+                    authorName: 'Sarah Chen',
+                    imageUrl: null,
+                    likeCount: 234,
+                    onTap: () => _showComingSoon(context),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  user?.email ?? 'Traveler',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
+                  GuideCard(
+                    title: 'Paris on a Budget',
+                    destination: 'Paris, France',
+                    authorName: 'Mike Johnson',
+                    imageUrl: null,
+                    likeCount: 189,
+                    onTap: () => _showComingSoon(context),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // Upcoming trips section
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Upcoming Trips',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                  GuideCard(
+                    title: 'Bali Adventure Guide',
+                    destination: 'Bali, Indonesia',
+                    authorName: 'Emma Wilson',
+                    imageUrl: null,
+                    likeCount: 312,
+                    onTap: () => _showComingSoon(context),
                   ),
-                ),
-                const SizedBox(height: 16),
-                _buildEmptyState(
-                  icon: Icons.luggage_rounded,
-                  message: 'No upcoming trips yet',
-                  subtitle: 'Create your first trip to get started',
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
 
-        const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-        // Past trips section
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Past Trips',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+          // Famous Landmarks Section
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          const SliverToBoxAdapter(
+            child: SectionHeader(
+              title: 'Famous Landmarks',
+              actionLabel: 'Explore',
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 200,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  LandmarkCard(
+                    name: 'Eiffel Tower',
+                    location: 'Paris, France',
+                    imageUrl: null,
+                    onTap: () => _showComingSoon(context),
                   ),
-                ),
-                const SizedBox(height: 16),
-                _buildEmptyState(
-                  icon: Icons.history_rounded,
-                  message: 'No past trips',
-                  subtitle: 'Your completed adventures will appear here',
-                ),
-              ],
+                  LandmarkCard(
+                    name: 'Great Wall',
+                    location: 'Beijing, China',
+                    imageUrl: null,
+                    onTap: () => _showComingSoon(context),
+                  ),
+                  LandmarkCard(
+                    name: 'Colosseum',
+                    location: 'Rome, Italy',
+                    imageUrl: null,
+                    onTap: () => _showComingSoon(context),
+                  ),
+                  LandmarkCard(
+                    name: 'Taj Mahal',
+                    location: 'Agra, India',
+                    imageUrl: null,
+                    onTap: () => _showComingSoon(context),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
 
-        const SliverToBoxAdapter(child: SizedBox(height: 100)),
-      ],
-    );
-  }
+          // Upcoming Trips Section
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          const SliverToBoxAdapter(
+            child: SectionHeader(
+              title: 'Upcoming Trips',
+              actionLabel: 'View all',
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                TripCard(
+                  title: 'Summer Vacation',
+                  destination: 'Bali, Indonesia',
+                  startDate: DateTime.now().add(const Duration(days: 15)),
+                  endDate: DateTime.now().add(const Duration(days: 22)),
+                  coverImageUrl: null,
+                  daysUntil: 15,
+                  onTap: () => _showComingSoon(context),
+                ),
+                TripCard(
+                  title: 'Weekend Getaway',
+                  destination: 'Kyoto, Japan',
+                  startDate: DateTime.now().add(const Duration(days: 30)),
+                  endDate: DateTime.now().add(const Duration(days: 33)),
+                  coverImageUrl: null,
+                  daysUntil: 30,
+                  onTap: () => _showComingSoon(context),
+                ),
+              ]),
+            ),
+          ),
 
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String message,
-    required String subtitle,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.surfaceVariant, width: 1),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            size: 48,
-            color: AppColors.textSecondary.withValues(alpha: 0.5),
+          // Continue Planning Section
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          const SliverToBoxAdapter(
+            child: SectionHeader(title: 'Continue Planning'),
           ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                ContinuePlanningCard(
+                  title: 'Europe Backpacking',
+                  subtitle: '12 days • 5 cities',
+                  progress: 0.65,
+                  iconData: Icons.luggage_rounded,
+                  onTap: () => _showComingSoon(context),
+                ),
+                ContinuePlanningCard(
+                  title: 'Southeast Asia Guide',
+                  subtitle: 'Draft • 8 destinations',
+                  progress: 0.40,
+                  iconData: Icons.menu_book_rounded,
+                  onTap: () => _showComingSoon(context),
+                ),
+                ContinuePlanningCard(
+                  title: 'New York City Trip',
+                  subtitle: '5 days • 15 activities',
+                  progress: 0.85,
+                  iconData: Icons.luggage_rounded,
+                  onTap: () => _showComingSoon(context),
+                ),
+              ]),
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary.withValues(alpha: 0.7),
-            ),
-          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
+      ),
+    );
+  }
+
+  void _showComingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Coming Soon'),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
       ),
     );
   }
