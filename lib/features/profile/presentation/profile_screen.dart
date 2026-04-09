@@ -2,147 +2,413 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../auth/presentation/providers/auth_provider.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 
-/// Profile screen — shows user info, preferences, and settings.
+/// Profile screen — shows user info, travel stats, and settings.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final localUser = ref.watch(currentUserProvider);
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
 
     return localUser.when(
-      data: (user) => _buildContent(context, user, theme, colors),
+      data: (user) => _ProfileContent(user: user),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => Center(child: Text('Error: $error')),
     );
   }
+}
 
-  Widget _buildContent(
-    BuildContext context,
-    dynamic user,
-    ThemeData theme,
-    ColorScheme colors,
-  ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        children: [
-          const SizedBox(height: 8),
-          // Avatar
-          CircleAvatar(
-            radius: 48,
-            backgroundColor: colors.primaryContainer,
-            child: Icon(
-              Icons.person_rounded,
-              size: 48,
-              color: colors.onPrimaryContainer,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            user?.displayName ?? 'Traveler',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            user?.email ?? '',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.onSurface.withValues(alpha: 0.6),
-            ),
-          ),
-          const SizedBox(height: 32),
+class _ProfileContent extends ConsumerWidget {
+  const _ProfileContent({required this.user});
 
-          // Settings cards
-          _SettingsCard(
-            icon: Icons.person_outline_rounded,
-            title: 'Edit Profile',
-            subtitle: 'Update your name and photo',
-            onTap: () => _comingSoon(context),
+  final dynamic user;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
+    return CustomScrollView(
+      slivers: [
+        // Header with gradient
+        SliverToBoxAdapter(
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.primary, AppColors.primaryLight],
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  const SizedBox(height: 24),
+                  // Avatar with border
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 52,
+                      backgroundColor: Colors.white,
+                      child: user?.photoUrl != null
+                          ? ClipOval(
+                              child: Image.network(
+                                user!.photoUrl!,
+                                width: 104,
+                                height: 104,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.person_rounded,
+                              size: 52,
+                              color: AppColors.primary,
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    user?.displayName ?? 'Traveler',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    user?.email ?? '',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.calendar_today_rounded,
+                        size: 14,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        _formatJoinDate(user?.createdAt),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 12),
-          _SettingsCard(
-            icon: Icons.tune_rounded,
-            title: 'Travel Preferences',
-            subtitle: 'Adjust your travel style and interests',
-            onTap: () => _comingSoon(context),
+        ),
+
+        // Travel Stats
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(20),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _StatItem(
+                    icon: Icons.flight_takeoff_rounded,
+                    value: '0',
+                    label: 'Trips',
+                  ),
+                  _VerticalDivider(),
+                  _StatItem(
+                    icon: Icons.location_on_outlined,
+                    value: '0',
+                    label: 'Places',
+                  ),
+                  _VerticalDivider(),
+                  _StatItem(
+                    icon: Icons.calendar_today_outlined,
+                    value: '0',
+                    label: 'Days',
+                  ),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 12),
-          _SettingsCard(
-            icon: Icons.notifications_none_rounded,
-            title: 'Notifications',
-            subtitle: 'Manage notification settings',
-            onTap: () => _comingSoon(context),
+        ),
+
+        // Settings Section
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              Text(
+                'Account',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _MenuTile(
+                icon: Icons.person_outline_rounded,
+                iconColor: AppColors.primary,
+                title: 'Edit Profile',
+                subtitle: 'Update your name and photo',
+                onTap: () => _comingSoon(context),
+              ),
+              const SizedBox(height: 8),
+              _MenuTile(
+                icon: Icons.favorite_outline_rounded,
+                iconColor: AppColors.accent,
+                title: 'Travel Preferences',
+                subtitle: 'Your travel style and interests',
+                onTap: () => _comingSoon(context),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Settings',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _MenuTile(
+                icon: Icons.notifications_none_rounded,
+                iconColor: AppColors.primaryLight,
+                title: 'Notifications',
+                subtitle: 'Manage your alerts',
+                onTap: () => _comingSoon(context),
+              ),
+              const SizedBox(height: 8),
+              _MenuTile(
+                icon: Icons.shield_outlined,
+                iconColor: AppColors.primary,
+                title: 'Privacy & Security',
+                subtitle: 'Control your data',
+                onTap: () => _comingSoon(context),
+              ),
+              const SizedBox(height: 8),
+              _MenuTile(
+                icon: Icons.language_rounded,
+                iconColor: AppColors.primaryLight,
+                title: 'Language',
+                subtitle: 'English',
+                onTap: () => _comingSoon(context),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Support',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _MenuTile(
+                icon: Icons.help_outline_rounded,
+                iconColor: AppColors.accent,
+                title: 'Help Center',
+                subtitle: 'FAQs and support',
+                onTap: () => _comingSoon(context),
+              ),
+              const SizedBox(height: 8),
+              _MenuTile(
+                icon: Icons.info_outline_rounded,
+                iconColor: AppColors.primary,
+                title: 'About',
+                subtitle: 'Version 1.0.0',
+                onTap: () => _comingSoon(context),
+              ),
+              const SizedBox(height: 32),
+              // Sign Out Button
+              _SignOutButton(onPressed: () => _handleSignOut(context, ref)),
+              const SizedBox(height: 16),
+            ]),
           ),
-          const SizedBox(height: 12),
-          _SettingsCard(
-            icon: Icons.shield_outlined,
-            title: 'Privacy & Security',
-            subtitle: 'Account security and data settings',
-            onTap: () => _comingSoon(context),
-          ),
-          const SizedBox(height: 12),
-          _SettingsCard(
-            icon: Icons.info_outline_rounded,
-            title: 'About',
-            subtitle: 'App version and legal info',
-            onTap: () => _comingSoon(context),
-          ),
-        ],
+        ),
+      ],
+    );
+  }
+
+  String _formatJoinDate(DateTime? createdAt) {
+    if (createdAt == null) return 'Joined recently';
+
+    final months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    return 'Joined ${months[createdAt.month - 1]} ${createdAt.year}';
+  }
+
+  void _comingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Coming Soon'),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
 
-  void _comingSoon(BuildContext context) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Coming Soon')));
+  Future<void> _handleSignOut(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            child: const Text('Sign Out'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      await ref.read(emailAuthControllerProvider.notifier).signOut();
+    }
   }
 }
 
-class _SettingsCard extends StatelessWidget {
-  const _SettingsCard({
+class _StatItem extends StatelessWidget {
+  const _StatItem({
     required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, color: AppColors.primary, size: 28),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary.withValues(alpha: 0.8),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _VerticalDivider extends StatelessWidget {
+  const _VerticalDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 40,
+      width: 1,
+      color: AppColors.textSecondary.withValues(alpha: 0.2),
+    );
+  }
+}
+
+class _MenuTile extends StatelessWidget {
+  const _MenuTile({
+    required this.icon,
+    required this.iconColor,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
 
   final IconData icon;
+  final Color iconColor;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
     return Material(
-      color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(14),
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: colors.outlineVariant),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppColors.textSecondary.withValues(alpha: 0.1),
+            ),
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: colors.primaryContainer,
+                  color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, size: 22, color: colors.onPrimaryContainer),
+                child: Icon(icon, size: 22, color: iconColor),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -151,9 +417,10 @@ class _SettingsCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: const TextStyle(
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: colors.onSurface,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -161,7 +428,7 @@ class _SettingsCard extends StatelessWidget {
                       subtitle,
                       style: TextStyle(
                         fontSize: 13,
-                        color: colors.onSurface.withValues(alpha: 0.6),
+                        color: AppColors.textSecondary.withValues(alpha: 0.8),
                       ),
                     ),
                   ],
@@ -169,9 +436,36 @@ class _SettingsCard extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: AppColors.textSecondary.withValues(alpha: 0.5),
+                color: AppColors.textSecondary.withValues(alpha: 0.4),
+                size: 20,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SignOutButton extends StatelessWidget {
+  const _SignOutButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: const Icon(Icons.logout_rounded),
+        label: const Text('Sign Out'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.error,
+          side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
       ),
