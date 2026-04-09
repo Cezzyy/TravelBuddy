@@ -9,33 +9,13 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: AppColors.background,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'TravelBuddy',
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.w700,
-                color: AppColors.primary,
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: 32,
-              height: 32,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  AppColors.primary.withValues(alpha: 0.7),
-                ),
-              ),
-            ),
-          ],
+        child: Icon(
+          Icons.mode_of_travel_rounded,
+          color: AppColors.primary,
+          size: 80,
         ),
       ),
     );

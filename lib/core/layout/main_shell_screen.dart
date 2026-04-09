@@ -68,27 +68,18 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.primary, AppColors.primaryLight],
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.flight_takeoff_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
+            const Icon(
+              Icons.mode_of_travel_rounded,
+              color: AppColors.primary,
+              size: 32,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             const Text(
               'TravelBuddy',
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 color: AppColors.primary,
-                fontSize: 20,
+                fontSize: 24,
               ),
             ),
           ],
