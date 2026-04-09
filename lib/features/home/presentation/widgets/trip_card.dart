@@ -28,6 +28,7 @@ class TripCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        height: 120,
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -48,12 +49,14 @@ class TripCard extends StatelessWidget {
                 left: Radius.circular(16),
               ),
               child: Container(
-                width: 110,
-                height: 110,
+                width: 120,
+                height: 120,
                 color: AppColors.primaryLight.withValues(alpha: 0.2),
                 child: coverImageUrl != null
                     ? Image.network(
                         coverImageUrl!,
+                        width: 120,
+                        height: 120,
                         fit: BoxFit.cover,
                         errorBuilder: (_, _, _) => _buildPlaceholder(),
                       )
@@ -63,27 +66,32 @@ class TripCard extends StatelessWidget {
             // Content
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 17,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
+                        height: 1.2,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Row(
                       children: [
                         const Icon(
                           Icons.location_on_outlined,
-                          size: 16,
+                          size: 14,
                           color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 4),
@@ -91,8 +99,9 @@ class TripCard extends StatelessWidget {
                           child: Text(
                             destination,
                             style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: 13,
                               color: AppColors.textSecondary,
+                              height: 1.2,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -100,15 +109,15 @@ class TripCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                        horizontal: 10,
+                        vertical: 5,
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.accent.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         daysUntil > 0
@@ -117,9 +126,10 @@ class TripCard extends StatelessWidget {
                             ? 'Today'
                             : 'Ongoing',
                         style: const TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: AppColors.accent,
+                          height: 1,
                         ),
                       ),
                     ),

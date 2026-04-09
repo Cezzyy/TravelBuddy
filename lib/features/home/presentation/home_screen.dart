@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
-import 'widgets/continue_planning_card.dart';
 import 'widgets/guide_card.dart';
 import 'widgets/hero_banner.dart';
 import 'widgets/landmark_card.dart';
@@ -155,36 +154,115 @@ class HomeScreen extends StatelessWidget {
             child: SectionHeader(title: 'Continue Planning'),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
+          // Integrated list items (no card containers)
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                ContinuePlanningCard(
+                _buildPlanningItem(
+                  context,
                   title: 'Europe Backpacking',
                   subtitle: '12 days • 5 cities',
-                  progress: 0.65,
-                  iconData: Icons.luggage_rounded,
-                  onTap: () => _showComingSoon(context),
+                  imageUrl: null,
                 ),
-                ContinuePlanningCard(
+                const SizedBox(height: 20),
+                _buildPlanningItem(
+                  context,
                   title: 'Southeast Asia Guide',
                   subtitle: 'Draft • 8 destinations',
-                  progress: 0.40,
-                  iconData: Icons.menu_book_rounded,
-                  onTap: () => _showComingSoon(context),
+                  imageUrl: null,
                 ),
-                ContinuePlanningCard(
+                const SizedBox(height: 20),
+                _buildPlanningItem(
+                  context,
                   title: 'New York City Trip',
                   subtitle: '5 days • 15 activities',
-                  progress: 0.85,
-                  iconData: Icons.luggage_rounded,
-                  onTap: () => _showComingSoon(context),
+                  imageUrl: null,
                 ),
               ]),
             ),
           ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlanningItem(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required String? imageUrl,
+  }) {
+    return GestureDetector(
+      onTap: () => _showComingSoon(context),
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        children: [
+          // Square image
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: imageUrl != null
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => Icon(
+                        Icons.image_outlined,
+                        size: 28,
+                        color: AppColors.primary.withValues(alpha: 0.4),
+                      ),
+                    )
+                  : Icon(
+                      Icons.image_outlined,
+                      size: 28,
+                      color: AppColors.primary.withValues(alpha: 0.4),
+                    ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          // Text content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary.withValues(alpha: 0.8),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: AppColors.textSecondary.withValues(alpha: 0.3),
+            size: 20,
+          ),
         ],
       ),
     );
