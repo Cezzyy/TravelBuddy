@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../data/auth_repository.dart';
+import '../../data/user_repository.dart';
 import '../../../../core/logging/app_logger.dart';
 
 part 'auth_provider.g.dart';
@@ -110,8 +111,12 @@ class EmailAuthController extends _$EmailAuthController {
   Future<void> signOut() async {
     state = const AsyncLoading();
     final repository = ref.read(authRepositoryProvider);
+    final userRepo = ref.read(userRepositoryProvider);
 
     try {
+      // Clear all local data before signing out
+      await userRepo.clearAllLocalData();
+
       await repository.signOut();
       if (ref.mounted) {
         state = const AsyncData(null);

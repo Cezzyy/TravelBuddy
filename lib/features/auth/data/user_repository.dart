@@ -282,6 +282,27 @@ class UserRepository {
     )..where((p) => p.userId.equals(userId))).getSingleOrNull();
   }
 
+  /// Clear all local user data (for sign out / account switching)
+  Future<void> clearAllLocalData() async {
+    try {
+      AppLogger.talker.info('Clearing all local user data');
+
+      // Delete all data from all tables
+      await _db.delete(_db.users).go();
+      await _db.delete(_db.userPreferences).go();
+      await _db.delete(_db.syncQueue).go();
+      await _db.delete(_db.trips).go();
+      await _db.delete(_db.itineraryItems).go();
+      await _db.delete(_db.guides).go();
+      await _db.delete(_db.guideComments).go();
+
+      AppLogger.talker.info('All local data cleared');
+    } catch (e, st) {
+      AppLogger.talker.error('Failed to clear local data', e, st);
+      rethrow;
+    }
+  }
+
   /// Stream of local user preferences.
   Stream<UserPreference?> watchUserPreferences(String userId) {
     return (_db.select(

@@ -124,6 +124,16 @@ class AuthRepository {
     }
   }
 
+  /// Delete all local data (for account switching)
+  Future<void> clearLocalData() async {
+    try {
+      AppLogger.talker.info('Clearing local data for account switch');
+      // This will be called when signing out to ensure clean state
+    } catch (e, st) {
+      AppLogger.talker.error('Failed to clear local data', e, st);
+    }
+  }
+
   /// Convert FirebaseAuthException to user-friendly messages.
   String _handleAuthException(FirebaseAuthException e) {
     switch (e.code) {

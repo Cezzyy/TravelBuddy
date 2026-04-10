@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../auth/data/auth_repository.dart';
 import '../../../../core/router/route_names.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class _TravelStyleOption {
   const _TravelStyleOption(this.label, this.icon, this.description);
@@ -156,45 +157,59 @@ class _PreferencesScreenState extends ConsumerState<PreferencesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Travel Preferences')),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        title: const Text(
+          'Travel Preferences',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'How Do You Like to Travel?',
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: TextStyle(
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                        height: 1.2,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
                       'We\'ll tailor trip suggestions based on your style.',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onSurface.withValues(alpha: 0.6),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textSecondary.withValues(alpha: 0.9),
+                        height: 1.4,
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
 
                     // --- Travel Style ---
-                    _SectionHeader(
+                    const _SectionHeader(
                       icon: Icons.explore_rounded,
                       label: 'Travel Style',
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     GridView.count(
                       crossAxisCount: 2,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
                       childAspectRatio: 2.0,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -208,25 +223,24 @@ class _PreferencesScreenState extends ConsumerState<PreferencesScreen> {
                           onTap: () => setState(
                             () => _selectedTravelStyle = style.label,
                           ),
-                          colors: colors,
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
 
                     // --- Budget Level ---
-                    _SectionHeader(
+                    const _SectionHeader(
                       icon: Icons.payments_rounded,
                       label: 'Budget Level',
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     Row(
                       children: _budgetLevels.map((budget) {
                         final isSelected = _selectedBudgetLevel == budget.label;
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(
-                              right: budget != _budgetLevels.last ? 10 : 0,
+                              right: budget != _budgetLevels.last ? 12 : 0,
                             ),
                             child: _BudgetCard(
                               icon: budget.icon,
@@ -236,52 +250,44 @@ class _PreferencesScreenState extends ConsumerState<PreferencesScreen> {
                               onTap: () => setState(
                                 () => _selectedBudgetLevel = budget.label,
                               ),
-                              colors: colors,
                             ),
                           ),
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
 
                     // --- Activities ---
-                    _SectionHeader(
+                    const _SectionHeader(
                       icon: Icons.local_activity_rounded,
                       label: 'Favourite Activities',
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       'Pick all that you enjoy',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurface.withValues(alpha: 0.5),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary.withValues(alpha: 0.8),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: 10,
+                      runSpacing: 10,
                       children: _activities.map((activity) {
                         final isSelected = _selectedActivities.contains(
                           activity.label,
                         );
-                        return FilterChip(
-                          avatar: Icon(
-                            activity.icon,
-                            size: 18,
-                            color: isSelected
-                                ? colors.onSecondaryContainer
-                                : colors.onSurface.withValues(alpha: 0.6),
-                          ),
-                          label: Text(activity.label),
-                          selected: isSelected,
-                          showCheckmark: false,
-                          selectedColor: colors.secondaryContainer,
-                          onSelected: (selected) {
+                        return _ActivityChip(
+                          icon: activity.icon,
+                          label: activity.label,
+                          isSelected: isSelected,
+                          onTap: () {
                             setState(() {
-                              if (selected) {
-                                _selectedActivities.add(activity.label);
-                              } else {
+                              if (isSelected) {
                                 _selectedActivities.remove(activity.label);
+                              } else {
+                                _selectedActivities.add(activity.label);
                               }
                             });
                           },
@@ -296,13 +302,22 @@ class _PreferencesScreenState extends ConsumerState<PreferencesScreen> {
 
             // --- Submit Button ---
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
               child: SizedBox(
                 width: double.infinity,
-                child: FilledButton(
+                child: ElevatedButton(
                   onPressed: _isSubmitting ? null : _submit,
-                  style: FilledButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                    disabledBackgroundColor: AppColors.primary.withValues(
+                      alpha: 0.5,
+                    ),
                   ),
                   child: _isSubmitting
                       ? const SizedBox(
@@ -313,7 +328,13 @@ class _PreferencesScreenState extends ConsumerState<PreferencesScreen> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text('Continue'),
+                      : const Text(
+                          'Continue',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -331,15 +352,16 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(icon, size: 20, color: theme.colorScheme.primary),
-        const SizedBox(width: 8),
+        Icon(icon, size: 22, color: AppColors.primary),
+        const SizedBox(width: 10),
         Text(
           label,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
           ),
         ),
       ],
@@ -354,7 +376,6 @@ class _SelectableCard extends StatelessWidget {
     required this.subtitle,
     required this.isSelected,
     required this.onTap,
-    required this.colors,
   });
 
   final IconData icon;
@@ -362,66 +383,74 @@ class _SelectableCard extends StatelessWidget {
   final String subtitle;
   final bool isSelected;
   final VoidCallback onTap;
-  final ColorScheme colors;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: isSelected ? colors.primaryContainer : colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isSelected ? colors.primary : colors.outlineVariant,
-              width: isSelected ? 2 : 1,
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.primary
+                : AppColors.surfaceVariant.withValues(alpha: 0.5),
+            width: isSelected ? 2 : 1,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    icon,
-                    size: 20,
-                    color: isSelected
-                        ? colors.onPrimaryContainer
-                        : colors.onSurface.withValues(alpha: 0.7),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      label,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: isSelected
-                            ? colors.onPrimaryContainer
-                            : colors.onSurface,
-                      ),
+                ]
+              : [],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  size: 20,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.textPrimary,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: isSelected
-                      ? colors.onPrimaryContainer.withValues(alpha: 0.7)
-                      : colors.onSurface.withValues(alpha: 0.5),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.textSecondary.withValues(alpha: 0.8),
+                height: 1.3,
               ),
-            ],
-          ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );
@@ -435,7 +464,6 @@ class _BudgetCard extends StatelessWidget {
     required this.hint,
     required this.isSelected,
     required this.onTap,
-    required this.colors,
   });
 
   final IconData icon;
@@ -443,57 +471,117 @@ class _BudgetCard extends StatelessWidget {
   final String hint;
   final bool isSelected;
   final VoidCallback onTap;
-  final ColorScheme colors;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: isSelected ? colors.primaryContainer : colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isSelected ? colors.primary : colors.outlineVariant,
-              width: isSelected ? 2 : 1,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.primary
+                : AppColors.surfaceVariant.withValues(alpha: 0.5),
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : [],
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              size: 32,
+              color: isSelected ? AppColors.primary : AppColors.textSecondary,
             ),
+            const SizedBox(height: 10),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? AppColors.primary : AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              hint,
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.textSecondary.withValues(alpha: 0.8),
+                height: 1.3,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ActivityChip extends StatelessWidget {
+  const _ActivityChip({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.accent.withValues(alpha: 0.12)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.accent
+                : AppColors.surfaceVariant.withValues(alpha: 0.5),
+            width: isSelected ? 1.5 : 1,
           ),
-          child: Column(
-            children: [
-              Icon(
-                icon,
-                size: 28,
-                color: isSelected
-                    ? colors.onPrimaryContainer
-                    : colors.onSurface.withValues(alpha: 0.7),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected ? AppColors.accent : AppColors.textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected ? AppColors.accent : AppColors.textPrimary,
               ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: isSelected
-                      ? colors.onPrimaryContainer
-                      : colors.onSurface,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                hint,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: isSelected
-                      ? colors.onPrimaryContainer.withValues(alpha: 0.7)
-                      : colors.onSurface.withValues(alpha: 0.5),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -57,7 +57,10 @@ final firestoreUserProvider = StreamProvider<FirestoreUser?>((ref) async* {
     }
 
     final uid = firebaseUser.uid;
-    AppLogger.talker.debug('Loading Firestore user data for: $uid');
+    final email = firebaseUser.email;
+    AppLogger.talker.info(
+      'Loading Firestore user data for: $uid (email: $email)',
+    );
 
     try {
       // Watch the Firestore document for real-time updates
@@ -71,8 +74,8 @@ final firestoreUserProvider = StreamProvider<FirestoreUser?>((ref) async* {
 
         final data = docSnapshot.data()!;
         final user = FirestoreUser.fromFirestore(uid, data);
-        AppLogger.talker.debug(
-          'Firestore user data loaded: ${user.displayName}',
+        AppLogger.talker.info(
+          'Firestore user data loaded - ID: ${user.id}, Email: ${user.email}, Name: ${user.displayName}',
         );
         yield user;
       }

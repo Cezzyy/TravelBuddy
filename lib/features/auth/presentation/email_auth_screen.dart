@@ -62,12 +62,34 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
       // Navigation is handled by GoRouter redirect on auth state change
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        final errorMessage = e.toString();
+
+        // If sign-up fails because account exists, suggest signing in instead
+        if (_isSignUp && errorMessage.contains('already exists')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'This email is already registered. Please sign in instead.',
+              ),
+              backgroundColor: AppColors.error,
+              action: SnackBarAction(
+                label: 'Sign In',
+                textColor: Colors.white,
+                onPressed: () {
+                  setState(() => _isSignUp = false);
+                },
+              ),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
       }
     }
   }
