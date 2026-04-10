@@ -410,12 +410,19 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     final controller = ref.read(emailAuthControllerProvider.notifier);
     try {
       await controller.signInWithGoogle();
-      // Navigation is handled by GoRouter redirect on auth state change
+      // Router will handle navigation based on onboarding status
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+
+      // Show user-friendly error message
+      final errorMessage = e.toString().replaceAll('Exception: ', '');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red.shade700,
+          duration: const Duration(seconds: 4),
+        ),
+      );
     }
   }
 }

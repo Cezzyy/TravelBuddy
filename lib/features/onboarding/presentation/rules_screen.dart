@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../auth/data/auth_repository.dart';
-import '../../auth/data/user_repository.dart';
-import '../../../../core/router/route_names.dart';
 
 class RulesScreen extends ConsumerStatefulWidget {
   const RulesScreen({super.key});
@@ -27,18 +25,19 @@ class _RulesScreenState extends ConsumerState<RulesScreen> {
 
     final firebaseUser = ref.read(authRepositoryProvider).currentUser;
     if (firebaseUser == null) {
-      if (mounted) context.goNamed(RouteNames.auth);
       return;
     }
 
     setState(() => _isSubmitting = true);
     try {
-      await ref
-          .read(userRepositoryProvider)
-          .updateUserProfile(userId: firebaseUser.uid, hasAgreedToRules: true);
-      if (mounted) {
-        context.goNamed(RouteNames.home);
-      }
+      // Update Firestore directly
+      final firestore = FirebaseFirestore.instance;
+      await firestore.collection('users').doc(firebaseUser.uid).update({
+        'hasAgreedToRules': true,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      // Router will automatically navigate to home
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(

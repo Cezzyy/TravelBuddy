@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../data/auth_repository.dart';
-import '../../data/user_repository.dart';
+import '../../../../core/logging/app_logger.dart';
 
 part 'auth_provider.g.dart';
 
@@ -24,20 +25,11 @@ class EmailAuthController extends _$EmailAuthController {
   /// Sign in with email and password.
   Future<void> signIn({required String email, required String password}) async {
     final authRepo = ref.read(authRepositoryProvider);
-    final userRepo = ref.read(userRepositoryProvider);
     state = const AsyncLoading();
 
     final result = await AsyncValue.guard(() async {
-      // Sign in with Firebase
-      final credential = await authRepo.signInWithEmail(
-        email: email,
-        password: password,
-      );
-
-      // Sync user to local DB
-      if (credential.user != null) {
-        await userRepo.syncUserFromAuth(credential.user!);
-      }
+      await authRepo.signInWithEmail(email: email, password: password);
+      // That's it! No local DB sync here
     });
 
     if (ref.mounted) {
@@ -48,19 +40,28 @@ class EmailAuthController extends _$EmailAuthController {
   /// Sign up with email and password.
   Future<void> signUp({required String email, required String password}) async {
     final authRepo = ref.read(authRepositoryProvider);
-    final userRepo = ref.read(userRepositoryProvider);
+    final firestore = FirebaseFirestore.instance;
     state = const AsyncLoading();
 
     final result = await AsyncValue.guard(() async {
-      // Create account with Firebase
       final credential = await authRepo.signUpWithEmail(
         email: email,
         password: password,
       );
 
-      // Sync new user to local DB and Firestore
+      // Create user document in Firestore only
       if (credential.user != null) {
-        await userRepo.syncUserFromAuth(credential.user!);
+        final uid = credential.user!.uid;
+        await firestore.collection('users').doc(uid).set({
+          'email': credential.user!.email ?? '',
+          'displayName': credential.user!.displayName,
+          'photoUrl': credential.user!.photoURL,
+          'isProfileComplete': false,
+          'hasAgreedToRules': false,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        AppLogger.talker.info('New user created in Firestore: $uid');
       }
     });
 
@@ -71,13 +72,32 @@ class EmailAuthController extends _$EmailAuthController {
 
   Future<void> signInWithGoogle() async {
     final authRepo = ref.read(authRepositoryProvider);
-    final userRepo = ref.read(userRepositoryProvider);
+    final firestore = FirebaseFirestore.instance;
     state = const AsyncLoading();
 
     final result = await AsyncValue.guard(() async {
       final credential = await authRepo.signInWithGoogle();
+
       if (credential.user != null) {
-        await userRepo.syncUserFromAuth(credential.user!);
+        final uid = credential.user!.uid;
+        final docRef = firestore.collection('users').doc(uid);
+        final docSnapshot = await docRef.get();
+
+        // Only create document if it doesn't exist (new user)
+        if (!docSnapshot.exists) {
+          await docRef.set({
+            'email': credential.user!.email ?? '',
+            'displayName': credential.user!.displayName,
+            'photoUrl': credential.user!.photoURL,
+            'isProfileComplete': false,
+            'hasAgreedToRules': false,
+            'createdAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+          AppLogger.talker.info('New Google user created in Firestore: $uid');
+        } else {
+          AppLogger.talker.info('Existing Google user signed in: $uid');
+        }
       }
     });
 

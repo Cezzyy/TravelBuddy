@@ -46,34 +46,61 @@ class UserRepository {
       'Syncing user from Firebase Auth: ${firebaseUser.uid}',
     );
 
-    // Check if user exists in Firestore
-    final docRef = _firestore.collection('users').doc(firebaseUser.uid);
-    final docSnapshot = await docRef.get();
+    try {
+      // Check if user exists in Firestore
+      final docRef = _firestore.collection('users').doc(firebaseUser.uid);
+      final docSnapshot = await docRef.get();
 
-    final now = DateTime.now();
-    User localUser;
+      final now = DateTime.now();
+      User localUser;
 
-    if (docSnapshot.exists) {
-      // User exists in Firestore, sync to local DB
-      final data = docSnapshot.data()!;
-      localUser = await _syncFromFirestore(firebaseUser.uid, data);
-      AppLogger.talker.info('User synced from Firestore to local DB');
-    } else {
-      // New user, create in both Firestore and local DB
-      final userData = {
-        'email': firebaseUser.email ?? '',
-        'displayName': firebaseUser.displayName,
-        'photoUrl': firebaseUser.photoURL,
-        'isProfileComplete': false,
-        'hasAgreedToRules': false,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      };
+      if (docSnapshot.exists) {
+        // User exists in Firestore, sync to local DB
+        final data = docSnapshot.data()!;
+        localUser = await _syncFromFirestore(firebaseUser.uid, data);
+        AppLogger.talker.info('User synced from Firestore to local DB');
+      } else {
+        // New user, create in both Firestore and local DB
+        final userData = {
+          'email': firebaseUser.email ?? '',
+          'displayName': firebaseUser.displayName,
+          'photoUrl': firebaseUser.photoURL,
+          'isProfileComplete': false,
+          'hasAgreedToRules': false,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
 
-      await docRef.set(userData);
-      AppLogger.talker.info('New user created in Firestore');
+        await docRef.set(userData);
+        AppLogger.talker.info('New user created in Firestore');
 
-      // Create in local DB
+        // Create in local DB
+        final companion = UsersCompanion.insert(
+          id: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          displayName: drift.Value(firebaseUser.displayName),
+          photoUrl: drift.Value(firebaseUser.photoURL),
+          isProfileComplete: const drift.Value(false),
+          hasAgreedToRules: const drift.Value(false),
+          createdAt: now,
+          updatedAt: now,
+          lastSyncedAt: drift.Value(now),
+        );
+
+        await _db
+            .into(_db.users)
+            .insert(companion, mode: drift.InsertMode.insertOrReplace);
+
+        localUser = (await getLocalUser(firebaseUser.uid))!;
+        AppLogger.talker.info('New user created in local DB');
+      }
+
+      return localUser;
+    } catch (e, st) {
+      AppLogger.talker.error('Failed to sync user from auth', e, st);
+
+      // Fallback: create minimal local user record to prevent app from being stuck
+      final now = DateTime.now();
       final companion = UsersCompanion.insert(
         id: firebaseUser.uid,
         email: firebaseUser.email ?? '',
@@ -90,11 +117,11 @@ class UserRepository {
           .into(_db.users)
           .insert(companion, mode: drift.InsertMode.insertOrReplace);
 
-      localUser = (await getLocalUser(firebaseUser.uid))!;
-      AppLogger.talker.info('New user created in local DB');
-    }
+      final localUser = (await getLocalUser(firebaseUser.uid))!;
+      AppLogger.talker.warning('Created fallback local user record');
 
-    return localUser;
+      return localUser;
+    }
   }
 
   /// Sync user data from Firestore to local DB.

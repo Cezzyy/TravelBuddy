@@ -107,23 +107,43 @@ GoRouter appRouter(Ref ref) {
       final isOnAuth = location.startsWith(RoutePaths.auth);
       final isOnOnboarding = location.startsWith('/onboarding');
 
+      AppLogger.talker.debug(
+        'Router redirect: location=$location, authenticated=$isAuthenticated',
+      );
+
+      // Not authenticated - redirect to auth
       if (!isAuthenticated) {
-        return isOnAuth ? null : RoutePaths.auth;
+        if (isOnAuth) {
+          return null;
+        }
+        AppLogger.talker.debug('Redirecting to auth (not authenticated)');
+        return RoutePaths.auth;
       }
 
+      // Authenticated but onboarding status is loading - stay on splash
       if (onboardingAsync.isLoading) {
-        return isOnSplash ? null : RoutePaths.splash;
+        if (isOnSplash) {
+          return null;
+        }
+        AppLogger.talker.debug('Redirecting to splash (onboarding loading)');
+        return RoutePaths.splash;
       }
 
+      // Onboarding provider error - log and allow navigation
       if (onboardingAsync.hasError) {
-        AppLogger.talker.warning(
+        AppLogger.talker.error(
           'Onboarding provider error: ${onboardingAsync.error}',
+          onboardingAsync.error,
+          onboardingAsync.stackTrace,
         );
+        // Don't block navigation on error, let user proceed
         return null;
       }
 
       final step = onboardingAsync.value!;
+      AppLogger.talker.debug('Current onboarding step: $step');
 
+      // User needs to complete onboarding
       if (step != OnboardingStep.complete) {
         final target = switch (step) {
           OnboardingStep.profile => RoutePaths.onboardingProfile,
@@ -131,10 +151,17 @@ GoRouter appRouter(Ref ref) {
           OnboardingStep.rules => RoutePaths.onboardingRules,
           OnboardingStep.complete => RoutePaths.home,
         };
-        return location != target ? target : null;
+
+        if (location != target) {
+          AppLogger.talker.debug('Redirecting to onboarding: $target');
+          return target;
+        }
+        return null;
       }
 
+      // Onboarding complete - redirect away from splash/auth/onboarding
       if (isOnSplash || isOnAuth || isOnOnboarding) {
+        AppLogger.talker.debug('Redirecting to home (onboarding complete)');
         return RoutePaths.home;
       }
 

@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../auth/data/auth_repository.dart';
-import '../../auth/data/user_repository.dart';
 import '../../../../core/router/route_names.dart';
 
 class _TravelStyleOption {
@@ -128,17 +128,19 @@ class _PreferencesScreenState extends ConsumerState<PreferencesScreen> {
 
     setState(() => _isSubmitting = true);
     try {
-      await ref
-          .read(userRepositoryProvider)
-          .updateUserPreferences(
-            userId: firebaseUser.uid,
-            travelStyle: _selectedTravelStyle,
-            budgetLevel: _selectedBudgetLevel,
-            preferredActivities: jsonEncode(_selectedActivities.toList()),
-          );
-      if (mounted) {
-        context.goNamed(RouteNames.onboardingRules);
-      }
+      // Update Firestore directly
+      final firestore = FirebaseFirestore.instance;
+      await firestore.collection('users').doc(firebaseUser.uid).update({
+        'preferences': {
+          'travelStyle': _selectedTravelStyle,
+          'budgetLevel': _selectedBudgetLevel,
+          'preferredActivities': jsonEncode(_selectedActivities.toList()),
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      // Router will automatically navigate based on onboarding status
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(

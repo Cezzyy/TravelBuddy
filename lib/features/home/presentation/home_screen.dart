@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/data/providers/database_provider.dart';
+import '../../auth/data/auth_repository.dart';
+import '../../auth/data/background_sync.dart';
+import '../../../core/logging/app_logger.dart';
 import 'widgets/guide_card.dart';
 import 'widgets/hero_banner.dart';
 import 'widgets/landmark_card.dart';
@@ -8,8 +14,48 @@ import 'widgets/section_header.dart';
 import 'widgets/trip_card.dart';
 
 /// Home screen with hero banner, guides, landmarks, and trips.
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  bool _hasSynced = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Trigger background sync when home screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _triggerBackgroundSync();
+    });
+  }
+
+  Future<void> _triggerBackgroundSync() async {
+    if (_hasSynced) return;
+
+    final authRepo = ref.read(authRepositoryProvider);
+    final firebaseUser = authRepo.currentUser;
+
+    if (firebaseUser == null) return;
+
+    try {
+      _hasSynced = true;
+      AppLogger.talker.info('Triggering background sync to local DB');
+
+      final db = ref.read(appDatabaseProvider);
+      final firestore = FirebaseFirestore.instance;
+      final sync = BackgroundSync(db, firestore);
+
+      await sync.syncUserToLocalDB(firebaseUser);
+      AppLogger.talker.info('Background sync completed');
+    } catch (e, st) {
+      AppLogger.talker.error('Background sync error', e, st);
+      // Don't show error to user - this is background operation
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

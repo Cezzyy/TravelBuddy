@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
-import '../../auth/presentation/providers/current_user_provider.dart';
+import '../../auth/presentation/providers/firestore_user_provider.dart';
 
 /// Profile screen — shows user info, travel stats, and settings.
 class ProfileScreen extends ConsumerWidget {
@@ -11,9 +11,9 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final localUser = ref.watch(currentUserProvider);
+    final firestoreUser = ref.watch(firestoreUserProvider);
 
-    return localUser.when(
+    return firestoreUser.when(
       data: (user) => _ProfileContent(user: user),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => Center(child: Text('Error: $error')),

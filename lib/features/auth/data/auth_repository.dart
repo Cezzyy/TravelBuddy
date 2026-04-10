@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/logging/app_logger.dart';
@@ -17,6 +18,7 @@ class AuthRepository {
   AuthRepository(this._auth);
 
   final FirebaseAuth _auth;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   /// Stream of auth state changes (logged in/out).
   Stream<User?> authStateChanges() => _auth.authStateChanges();
@@ -65,19 +67,45 @@ class AuthRepository {
   Future<UserCredential> signInWithGoogle() async {
     try {
       AppLogger.talker.info('Attempting Google sign in');
-      final googleProvider = GoogleAuthProvider();
 
-      final credential = kIsWeb
-          ? await _auth.signInWithPopup(googleProvider)
-          : await _auth.signInWithProvider(googleProvider);
+      if (kIsWeb) {
+        // Web: use popup
+        final googleProvider = GoogleAuthProvider();
+        final credential = await _auth.signInWithPopup(googleProvider);
+        AppLogger.talker.info(
+          'Google sign in successful (web): ${credential.user?.uid}',
+        );
+        return credential;
+      } else {
+        // Mobile: use google_sign_in package for better Android support
+        // This avoids the browser redirect issues
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-      AppLogger.talker.info(
-        'Google sign in successful: ${credential.user?.uid}',
-      );
-      return credential;
+        if (googleUser == null) {
+          AppLogger.talker.warning('Google sign in cancelled by user');
+          throw 'Sign in cancelled';
+        }
+
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        final userCredential = await _auth.signInWithCredential(credential);
+        AppLogger.talker.info(
+          'Google sign in successful (mobile): ${userCredential.user?.uid}',
+        );
+        return userCredential;
+      }
     } on FirebaseAuthException catch (e, st) {
       AppLogger.talker.error('Google sign in failed', e, st);
       throw _handleAuthException(e);
+    } catch (e, st) {
+      AppLogger.talker.error('Google sign in error', e, st);
+      rethrow;
     }
   }
 
@@ -85,7 +113,10 @@ class AuthRepository {
   Future<void> signOut() async {
     try {
       AppLogger.talker.info('Signing out user: ${_auth.currentUser?.uid}');
-      await _auth.signOut();
+      await Future.wait([
+        _auth.signOut(),
+        _googleSignIn.signOut(), // Also sign out from Google
+      ]);
       AppLogger.talker.info('Sign out successful');
     } catch (e, st) {
       AppLogger.talker.error('Sign out failed', e, st);
