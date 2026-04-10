@@ -40,6 +40,9 @@ class MockAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {}
+
+  @override
+  Future<void> clearLocalData() async {}
 }
 
 // Mock UserRepository for testing
@@ -78,6 +81,9 @@ class MockUserRepository implements UserRepository {
     String? budgetLevel,
     String? preferredActivities,
   }) async {}
+
+  @override
+  Future<void> clearAllLocalData() async {}
 }
 
 void main() {
