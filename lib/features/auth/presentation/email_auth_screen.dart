@@ -26,6 +26,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
   bool _obscureConfirm = true;
   bool _ready = false;
   bool _autoValidate = false;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -46,50 +47,44 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
   }
 
   void _submit() async {
-    setState(() => _autoValidate = true);
+    setState(() {
+      _autoValidate = true;
+      _errorMessage = null; // Clear previous errors
+    });
+    
     if (!_formKey.currentState!.validate()) return;
 
     final controller = ref.read(emailAuthControllerProvider.notifier);
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    try {
-      if (_isSignUp) {
-        await controller.signUp(email: email, password: password);
-      } else {
-        await controller.signIn(email: email, password: password);
-      }
-      // Navigation is handled by GoRouter redirect on auth state change
-    } catch (e) {
-      if (mounted) {
-        final errorMessage = e.toString();
+    if (_isSignUp) {
+      await controller.signUp(email: email, password: password);
+    } else {
+      await controller.signIn(email: email, password: password);
+    }
 
-        // If sign-up fails because account exists, suggest signing in instead
-        if (_isSignUp && errorMessage.contains('already exists')) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                'This email is already registered. Please sign in instead.',
-              ),
-              backgroundColor: AppColors.error,
-              action: SnackBarAction(
-                label: 'Sign In',
-                textColor: Colors.white,
-                onPressed: () {
-                  setState(() => _isSignUp = false);
-                },
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        }
+    // Check for errors in the state after the operation
+    final authState = ref.read(emailAuthControllerProvider);
+    if (authState.hasError && mounted) {
+      final error = authState.error;
+      
+      // Extract clean error message (remove any exception prefixes)
+      String errorMessage = error.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring('Exception: '.length);
+      }
+
+      setState(() {
+        _errorMessage = errorMessage;
+      });
+
+      // If sign-up fails because account exists, suggest signing in instead
+      if (_isSignUp && errorMessage.contains('already exists')) {
+        setState(() {
+          _isSignUp = false;
+          _errorMessage = 'This email is already registered. Please sign in instead.';
+        });
       }
     }
   }
@@ -231,6 +226,42 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
               onChanged: _isSignUp ? (_) => setState(() {}) : null,
             ),
 
+            // Error message display
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.error.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline_rounded,
+                      color: AppColors.error,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _errorMessage!,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.error,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             // Password requirements (sign-up only)
             if (_isSignUp) ...[
               const SizedBox(height: 8),
@@ -343,7 +374,10 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => setState(() => _isSignUp = !_isSignUp),
+                    onPressed: () => setState(() {
+                      _isSignUp = !_isSignUp;
+                      _errorMessage = null; // Clear error when switching modes
+                    }),
                     child: Text(
                       _isSignUp ? 'Log In' : 'Sign Up',
                       style: const TextStyle(

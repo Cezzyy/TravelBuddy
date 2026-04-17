@@ -141,6 +141,8 @@ class AuthRepository {
         return 'No account found with this email.';
       case 'wrong-password':
         return 'Incorrect password. Please try again.';
+      case 'invalid-credential':
+        return 'Invalid email or password. Please check your credentials.';
       case 'email-already-in-use':
         return 'An account already exists with this email.';
       case 'invalid-email':
@@ -156,6 +158,14 @@ class AuthRepository {
       case 'network-request-failed':
         return 'Network error. Please check your connection.';
       default:
+        // Check if the message contains specific text patterns
+        final message = e.message?.toLowerCase() ?? '';
+        if (message.contains('credential') && 
+            (message.contains('incorrect') || 
+             message.contains('malformed') || 
+             message.contains('expired'))) {
+          return 'Invalid email or password. Please check your credentials.';
+        }
         return e.message ?? 'An authentication error occurred.';
     }
   }
