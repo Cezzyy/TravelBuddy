@@ -6,15 +6,21 @@ import '../../data/user_repository.dart';
 
 /// Provides the current local user data from Drift based on Firebase auth state.
 /// Returns null if user is not authenticated.
-final currentUserProvider = StreamProvider<User?>((ref) {
+final currentUserProvider = StreamProvider<User?>((ref) async* {
   final authRepo = ref.watch(authRepositoryProvider);
   final userRepo = ref.watch(userRepositoryProvider);
 
-  final currentFirebaseUser = authRepo.currentUser;
+  await for (final firebaseUser in authRepo.authStateChanges()) {
+    if (firebaseUser == null) {
+      // No user authenticated, yield null immediately
+      yield null;
+      continue;
+    }
 
-  if (currentFirebaseUser == null) {
-    return Stream.value(null);
+    // User authenticated, watch their local data
+    // The stream will automatically update when the database changes
+    await for (final localUser in userRepo.watchLocalUser(firebaseUser.uid)) {
+      yield localUser;
+    }
   }
-
-  return userRepo.watchLocalUser(currentFirebaseUser.uid);
 });

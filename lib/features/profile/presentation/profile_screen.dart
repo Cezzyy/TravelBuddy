@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/logging/app_logger.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
+import '../../auth/presentation/providers/current_user_provider.dart';
 import '../../auth/presentation/providers/firestore_user_provider.dart';
 
 /// Profile screen — shows user info, travel stats, and settings.
@@ -12,23 +14,71 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final firestoreUser = ref.watch(firestoreUserProvider);
+    final currentUser = ref.watch(currentUserProvider);
+
+    // Debug logging
+    AppLogger.talker.debug(
+      'Profile screen build - Firestore: ${firestoreUser.hasValue ? firestoreUser.value?.id : 'loading'}, Local: ${currentUser.hasValue ? currentUser.value?.id : 'loading'}',
+    );
 
     return firestoreUser.when(
-      data: (user) => _ProfileContent(user: user),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(child: Text('Error: $error')),
+      data: (user) {
+        AppLogger.talker.debug('Profile screen - Firestore user: ${user?.id} (${user?.email})');
+        
+        // If Firestore user is null but we have a current user, show loading
+        // This handles the case where user just switched accounts
+        if (user == null && currentUser.hasValue && currentUser.value != null) {
+          AppLogger.talker.debug('Profile screen - Showing loading (Firestore null, local exists)');
+          return const Center(child: CircularProgressIndicator());
+        }
+        
+        // If both are null, show empty state
+        if (user == null) {
+          AppLogger.talker.debug('Profile screen - No user data available');
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.person_outline, size: 64, color: AppColors.textSecondary),
+                SizedBox(height: 16),
+                Text('No user data available', style: TextStyle(color: AppColors.textSecondary)),
+              ],
+            ),
+          );
+        }
+        
+        return _ProfileContent(user: user, localUser: currentUser.value);
+      },
+      loading: () {
+        AppLogger.talker.debug('Profile screen - Loading Firestore user');
+        return const Center(child: CircularProgressIndicator());
+      },
+      error: (error, _) {
+        AppLogger.talker.error('Profile screen - Firestore error: $error');
+        return Center(child: Text('Error: $error'));
+      },
     );
   }
 }
 
 class _ProfileContent extends ConsumerWidget {
-  const _ProfileContent({required this.user});
+  const _ProfileContent({required this.user, this.localUser});
 
   final dynamic user;
+  final dynamic localUser;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+
+    // Add debug logging to track user data changes
+    ref.listen(firestoreUserProvider, (previous, next) {
+      next.whenData((user) {
+        AppLogger.talker.debug(
+          'Profile screen - Firestore user changed: ${user?.id} (${user?.email})',
+        );
+      });
+    });
 
     return CustomScrollView(
       slivers: [
