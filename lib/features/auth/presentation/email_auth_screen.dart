@@ -131,7 +131,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
           ),
           const SizedBox(width: 4),
           const Icon(
-            Icons.flight_takeoff_rounded,
+            Icons.mode_of_travel_rounded,
             color: AppColors.primary,
             size: 28,
           ),
