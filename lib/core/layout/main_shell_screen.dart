@@ -71,15 +71,15 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
             const Icon(
               Icons.mode_of_travel_rounded,
               color: AppColors.primary,
-              size: 32,
+              size: 40,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             const Text(
               'TravelBuddy',
               style: TextStyle(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
                 color: AppColors.primary,
-                fontSize: 24,
+                fontSize: 28,
               ),
             ),
           ],

@@ -86,8 +86,8 @@ class HeroBanner extends StatelessWidget {
                   TextButton(
                     onPressed: onCreateTrip,
                     style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppColors.primary,
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,
