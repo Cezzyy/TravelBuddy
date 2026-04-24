@@ -12,6 +12,7 @@ import '../../features/auth/presentation/providers/current_user_provider.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
 import '../../features/auth/presentation/email_auth_screen.dart';
+import '../../features/create/presentation/create_selection_screen.dart';
 import '../../features/guides/presentation/guides_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/onboarding/domain/onboarding_step.dart';
@@ -231,6 +232,29 @@ GoRouter appRouter(Ref ref) {
         name: RouteNames.onboardingRules,
         pageBuilder: (context, state) =>
             _fadeTransitionPage(key: state.pageKey, child: const RulesScreen()),
+      ),
+
+      // Create Selection (Modal)
+      GoRoute(
+        path: RoutePaths.createSelection,
+        name: RouteNames.createSelection,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const CreateSelectionScreen(),
+          transitionDuration: const Duration(milliseconds: 300),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final slide = Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              ),
+            );
+            return SlideTransition(position: slide, child: child);
+          },
+        ),
       ),
 
       StatefulShellRoute.indexedStack(

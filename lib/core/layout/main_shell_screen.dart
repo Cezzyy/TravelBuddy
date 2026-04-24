@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../router/route_names.dart';
 import '../theme/app_colors.dart';
 
 /// Main shell screen with bottom navigation.
@@ -50,13 +51,7 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
   }
 
   void _showAddOptions(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Add Trip or Guide - Coming Soon'),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    context.push(RoutePaths.createSelection);
   }
 
   @override

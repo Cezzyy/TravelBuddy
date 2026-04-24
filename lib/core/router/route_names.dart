@@ -12,6 +12,7 @@ abstract class RoutePaths {
   static const guides = '/guides';
   static const profile = '/profile';
   static const tripDetail = '/trips/:tripId';
+  static const createSelection = '/create';
 }
 
 abstract class RouteNames {
@@ -26,4 +27,5 @@ abstract class RouteNames {
   static const guides = 'guides';
   static const profile = 'profile';
   static const tripDetail = 'trip-detail';
+  static const createSelection = 'create-selection';
 }
