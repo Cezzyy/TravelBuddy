@@ -160,10 +160,10 @@ class AuthRepository {
       default:
         // Check if the message contains specific text patterns
         final message = e.message?.toLowerCase() ?? '';
-        if (message.contains('credential') && 
-            (message.contains('incorrect') || 
-             message.contains('malformed') || 
-             message.contains('expired'))) {
+        if (message.contains('credential') &&
+            (message.contains('incorrect') ||
+                message.contains('malformed') ||
+                message.contains('expired'))) {
           return 'Invalid email or password. Please check your credentials.';
         }
         return e.message ?? 'An authentication error occurred.';

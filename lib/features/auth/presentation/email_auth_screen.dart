@@ -51,7 +51,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
       _autoValidate = true;
       _errorMessage = null; // Clear previous errors
     });
-    
+
     if (!_formKey.currentState!.validate()) return;
 
     final controller = ref.read(emailAuthControllerProvider.notifier);
@@ -68,7 +68,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
     final authState = ref.read(emailAuthControllerProvider);
     if (authState.hasError && mounted) {
       final error = authState.error;
-      
+
       // Extract clean error message (remove any exception prefixes)
       String errorMessage = error.toString();
       if (errorMessage.startsWith('Exception: ')) {
@@ -83,7 +83,8 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
       if (_isSignUp && errorMessage.contains('already exists')) {
         setState(() {
           _isSignUp = false;
-          _errorMessage = 'This email is already registered. Please sign in instead.';
+          _errorMessage =
+              'This email is already registered. Please sign in instead.';
         });
       }
     }
@@ -230,7 +231,10 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
             if (_errorMessage != null) ...[
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),

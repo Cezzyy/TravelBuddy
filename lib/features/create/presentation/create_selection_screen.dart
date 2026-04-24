@@ -43,7 +43,7 @@ class CreateSelectionScreen extends ConsumerWidget {
                     onTap: () => _handleCreateTrip(context),
                   ),
                 ),
-                
+
                 // Bottom side - Write a Guide
                 Expanded(
                   child: _CreateOptionSide(
@@ -70,7 +70,7 @@ class CreateSelectionScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            
+
             // Close button overlay
             Positioned(
               top: 16,
@@ -149,7 +149,7 @@ class _CreateOptionSideState extends State<_CreateOptionSide> {
     final screenHeight = MediaQuery.of(context).size.height;
     final isSmallScreen = screenWidth < 380;
     final isShortScreen = screenHeight < 700;
-    
+
     return Dismissible(
       key: ValueKey(widget.title),
       direction: widget.swipeDirection,
@@ -170,8 +170,12 @@ class _CreateOptionSideState extends State<_CreateOptionSide> {
             // Animated circles in background
             Positioned(
               top: 20,
-              left: widget.swipeDirection == DismissDirection.endToStart ? null : 40,
-              right: widget.swipeDirection == DismissDirection.endToStart ? 40 : null,
+              left: widget.swipeDirection == DismissDirection.endToStart
+                  ? null
+                  : 40,
+              right: widget.swipeDirection == DismissDirection.endToStart
+                  ? 40
+                  : null,
               child: Container(
                 width: 80,
                 height: 80,
@@ -183,8 +187,12 @@ class _CreateOptionSideState extends State<_CreateOptionSide> {
             ),
             Positioned(
               bottom: 40,
-              left: widget.swipeDirection == DismissDirection.endToStart ? null : 20,
-              right: widget.swipeDirection == DismissDirection.endToStart ? 20 : null,
+              left: widget.swipeDirection == DismissDirection.endToStart
+                  ? null
+                  : 20,
+              right: widget.swipeDirection == DismissDirection.endToStart
+                  ? 20
+                  : null,
               child: Container(
                 width: 60,
                 height: 60,
@@ -230,9 +238,7 @@ class _CreateOptionSideState extends State<_CreateOptionSide> {
           scale: _isPressed ? 0.95 : 1.0,
           duration: const Duration(milliseconds: 100),
           child: Container(
-            decoration: BoxDecoration(
-              gradient: widget.gradient,
-            ),
+            decoration: BoxDecoration(gradient: widget.gradient),
             child: Stack(
               children: [
                 // Decorative circles
@@ -260,7 +266,7 @@ class _CreateOptionSideState extends State<_CreateOptionSide> {
                     ),
                   ),
                 ),
-                
+
                 // Content
                 Center(
                   child: Padding(
@@ -290,18 +296,26 @@ class _CreateOptionSideState extends State<_CreateOptionSide> {
                           ),
                           child: Icon(
                             widget.icon,
-                            size: isShortScreen ? 36 : (isSmallScreen ? 40 : 48),
+                            size: isShortScreen
+                                ? 36
+                                : (isSmallScreen ? 40 : 48),
                             color: Colors.white,
                           ),
                         ),
-                        
-                        SizedBox(height: isShortScreen ? 14 : (isSmallScreen ? 16 : 20)),
-                        
+
+                        SizedBox(
+                          height: isShortScreen
+                              ? 14
+                              : (isSmallScreen ? 16 : 20),
+                        ),
+
                         // Title
                         Text(
                           widget.title,
                           style: TextStyle(
-                            fontSize: isShortScreen ? 22 : (isSmallScreen ? 24 : 28),
+                            fontSize: isShortScreen
+                                ? 22
+                                : (isSmallScreen ? 24 : 28),
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
                             height: 1.1,
@@ -309,64 +323,88 @@ class _CreateOptionSideState extends State<_CreateOptionSide> {
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        
-                        SizedBox(height: isShortScreen ? 6 : (isSmallScreen ? 7 : 8)),
-                        
+
+                        SizedBox(
+                          height: isShortScreen ? 6 : (isSmallScreen ? 7 : 8),
+                        ),
+
                         // Subtitle
                         Text(
                           widget.subtitle,
                           style: TextStyle(
-                            fontSize: isShortScreen ? 13 : (isSmallScreen ? 13.5 : 14),
+                            fontSize: isShortScreen
+                                ? 13
+                                : (isSmallScreen ? 13.5 : 14),
                             fontWeight: FontWeight.w500,
                             color: Colors.white.withValues(alpha: 0.9),
                             height: 1.3,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        
-                        SizedBox(height: isShortScreen ? 14 : (isSmallScreen ? 16 : 20)),
-                        
+
+                        SizedBox(
+                          height: isShortScreen
+                              ? 14
+                              : (isSmallScreen ? 16 : 20),
+                        ),
+
                         // Features
-                        ...widget.features.map((feature) => Padding(
-                          padding: EdgeInsets.only(
-                            bottom: isShortScreen ? 6 : (isSmallScreen ? 7 : 8),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.check_circle_rounded,
-                                size: isShortScreen ? 14 : (isSmallScreen ? 15 : 16),
-                                color: Colors.white.withValues(alpha: 0.9),
-                              ),
-                              const SizedBox(width: 6),
-                              Flexible(
-                                child: Text(
-                                  feature,
-                                  style: TextStyle(
-                                    fontSize: isShortScreen ? 12 : (isSmallScreen ? 12.5 : 13),
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white.withValues(alpha: 0.95),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                        ...widget.features.map(
+                          (feature) => Padding(
+                            padding: EdgeInsets.only(
+                              bottom: isShortScreen
+                                  ? 6
+                                  : (isSmallScreen ? 7 : 8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  size: isShortScreen
+                                      ? 14
+                                      : (isSmallScreen ? 15 : 16),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Text(
+                                    feature,
+                                    style: TextStyle(
+                                      fontSize: isShortScreen
+                                          ? 12
+                                          : (isSmallScreen ? 12.5 : 13),
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.95,
+                                      ),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        )),
-                        
-                        SizedBox(height: isShortScreen ? 14 : (isSmallScreen ? 16 : 20)),
-                        
+                        ),
+
+                        SizedBox(
+                          height: isShortScreen
+                              ? 14
+                              : (isSmallScreen ? 16 : 20),
+                        ),
+
                         // Arrow indicator with swipe hint
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               widget.arrowDirection,
-                              size: isShortScreen ? 28 : (isSmallScreen ? 30 : 32),
+                              size: isShortScreen
+                                  ? 28
+                                  : (isSmallScreen ? 30 : 32),
                               color: Colors.white.withValues(alpha: 0.8),
                             ),
                             SizedBox(height: isShortScreen ? 6 : 8),

@@ -23,15 +23,19 @@ class ProfileScreen extends ConsumerWidget {
 
     return firestoreUser.when(
       data: (user) {
-        AppLogger.talker.debug('Profile screen - Firestore user: ${user?.id} (${user?.email})');
-        
+        AppLogger.talker.debug(
+          'Profile screen - Firestore user: ${user?.id} (${user?.email})',
+        );
+
         // If Firestore user is null but we have a current user, show loading
         // This handles the case where user just switched accounts
         if (user == null && currentUser.hasValue && currentUser.value != null) {
-          AppLogger.talker.debug('Profile screen - Showing loading (Firestore null, local exists)');
+          AppLogger.talker.debug(
+            'Profile screen - Showing loading (Firestore null, local exists)',
+          );
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         // If both are null, show empty state
         if (user == null) {
           AppLogger.talker.debug('Profile screen - No user data available');
@@ -39,14 +43,21 @@ class ProfileScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.person_outline, size: 64, color: AppColors.textSecondary),
+                Icon(
+                  Icons.person_outline,
+                  size: 64,
+                  color: AppColors.textSecondary,
+                ),
                 SizedBox(height: 16),
-                Text('No user data available', style: TextStyle(color: AppColors.textSecondary)),
+                Text(
+                  'No user data available',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
               ],
             ),
           );
         }
-        
+
         return _ProfileContent(user: user, localUser: currentUser.value);
       },
       loading: () {

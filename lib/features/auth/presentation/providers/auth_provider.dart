@@ -38,19 +38,18 @@ class EmailAuthController extends _$EmailAuthController {
       await userRepo.clearAllLocalData();
       // Give database time to complete the clear operation
       await Future.delayed(const Duration(milliseconds: 150));
-      
+
       // Invalidate providers before sign in to reset subscriptions
       ref.invalidate(firestoreUserProvider);
       ref.invalidate(currentUserProvider);
       ref.invalidate(onboardingStatusProvider);
-      
+
       // Sign in
-      await authRepo.signInWithEmail(
-        email: email,
-        password: password,
+      await authRepo.signInWithEmail(email: email, password: password);
+
+      AppLogger.talker.info(
+        'Sign in completed, providers will refresh automatically',
       );
-      
-      AppLogger.talker.info('Sign in completed, providers will refresh automatically');
     });
 
     if (ref.mounted) {
@@ -71,12 +70,12 @@ class EmailAuthController extends _$EmailAuthController {
       await userRepo.clearAllLocalData();
       // Give database time to complete the clear operation
       await Future.delayed(const Duration(milliseconds: 150));
-      
+
       // Invalidate providers before sign up to reset subscriptions
       ref.invalidate(firestoreUserProvider);
       ref.invalidate(currentUserProvider);
       ref.invalidate(onboardingStatusProvider);
-      
+
       final credential = await authRepo.signUpWithEmail(
         email: email,
         password: password,
@@ -115,24 +114,24 @@ class EmailAuthController extends _$EmailAuthController {
       await userRepo.clearAllLocalData();
       // Give database time to complete the clear operation
       await Future.delayed(const Duration(milliseconds: 150));
-      
+
       // Invalidate providers before sign in to reset subscriptions
       ref.invalidate(firestoreUserProvider);
       ref.invalidate(currentUserProvider);
       ref.invalidate(onboardingStatusProvider);
-      
+
       final credential = await authRepo.signInWithGoogle();
 
       if (credential.user != null) {
         final uid = credential.user!.uid;
-        
+
         final docRef = firestore.collection('users').doc(uid);
         final docSnapshot = await docRef.get();
 
         // Only create document if it doesn't exist (new user)
         if (!docSnapshot.exists) {
           AppLogger.talker.info('New Google user, creating Firestore document');
-          
+
           await docRef.set({
             'email': credential.user!.email ?? '',
             'displayName': credential.user!.displayName,
@@ -162,7 +161,7 @@ class EmailAuthController extends _$EmailAuthController {
 
     try {
       AppLogger.talker.info('Starting sign out process');
-      
+
       // Clear all local data before signing out
       await userRepo.clearAllLocalData();
       // Give database time to complete the clear operation
@@ -180,7 +179,7 @@ class EmailAuthController extends _$EmailAuthController {
         ref.invalidate(currentUserProvider);
         ref.invalidate(onboardingStatusProvider);
       }
-      
+
       if (ref.mounted) {
         state = const AsyncData(null);
       }
