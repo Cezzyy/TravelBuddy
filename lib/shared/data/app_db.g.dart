@@ -4169,6 +4169,28 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _publishedVersionIdMeta =
+      const VerificationMeta('publishedVersionId');
+  @override
+  late final GeneratedColumn<String> publishedVersionId =
+      GeneratedColumn<String>(
+        'published_version_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _draftVersionIdMeta = const VerificationMeta(
+    'draftVersionId',
+  );
+  @override
+  late final GeneratedColumn<String> draftVersionId = GeneratedColumn<String>(
+    'draft_version_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -4243,6 +4265,8 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
     viewCount,
     likeCount,
     isPublished,
+    publishedVersionId,
+    draftVersionId,
     createdAt,
     updatedAt,
     publishedAt,
@@ -4360,6 +4384,24 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
         ),
       );
     }
+    if (data.containsKey('published_version_id')) {
+      context.handle(
+        _publishedVersionIdMeta,
+        publishedVersionId.isAcceptableOrUnknown(
+          data['published_version_id']!,
+          _publishedVersionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('draft_version_id')) {
+      context.handle(
+        _draftVersionIdMeta,
+        draftVersionId.isAcceptableOrUnknown(
+          data['draft_version_id']!,
+          _draftVersionIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -4461,6 +4503,14 @@ class $GuidesTable extends Guides with TableInfo<$GuidesTable, Guide> {
         DriftSqlType.bool,
         data['${effectivePrefix}is_published'],
       )!,
+      publishedVersionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}published_version_id'],
+      ),
+      draftVersionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}draft_version_id'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -4504,6 +4554,12 @@ class Guide extends DataClass implements Insertable<Guide> {
   final int viewCount;
   final int likeCount;
   final bool isPublished;
+
+  /// If this is a draft version of a published guide, this references the published guide ID
+  final String? publishedVersionId;
+
+  /// If this is a published guide with a draft, this references the draft guide ID
+  final String? draftVersionId;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? publishedAt;
@@ -4523,6 +4579,8 @@ class Guide extends DataClass implements Insertable<Guide> {
     required this.viewCount,
     required this.likeCount,
     required this.isPublished,
+    this.publishedVersionId,
+    this.draftVersionId,
     required this.createdAt,
     required this.updatedAt,
     this.publishedAt,
@@ -4553,6 +4611,12 @@ class Guide extends DataClass implements Insertable<Guide> {
     map['view_count'] = Variable<int>(viewCount);
     map['like_count'] = Variable<int>(likeCount);
     map['is_published'] = Variable<bool>(isPublished);
+    if (!nullToAbsent || publishedVersionId != null) {
+      map['published_version_id'] = Variable<String>(publishedVersionId);
+    }
+    if (!nullToAbsent || draftVersionId != null) {
+      map['draft_version_id'] = Variable<String>(draftVersionId);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || publishedAt != null) {
@@ -4586,6 +4650,12 @@ class Guide extends DataClass implements Insertable<Guide> {
       viewCount: Value(viewCount),
       likeCount: Value(likeCount),
       isPublished: Value(isPublished),
+      publishedVersionId: publishedVersionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(publishedVersionId),
+      draftVersionId: draftVersionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(draftVersionId),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       publishedAt: publishedAt == null && nullToAbsent
@@ -4617,6 +4687,10 @@ class Guide extends DataClass implements Insertable<Guide> {
       viewCount: serializer.fromJson<int>(json['viewCount']),
       likeCount: serializer.fromJson<int>(json['likeCount']),
       isPublished: serializer.fromJson<bool>(json['isPublished']),
+      publishedVersionId: serializer.fromJson<String?>(
+        json['publishedVersionId'],
+      ),
+      draftVersionId: serializer.fromJson<String?>(json['draftVersionId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       publishedAt: serializer.fromJson<DateTime?>(json['publishedAt']),
@@ -4641,6 +4715,8 @@ class Guide extends DataClass implements Insertable<Guide> {
       'viewCount': serializer.toJson<int>(viewCount),
       'likeCount': serializer.toJson<int>(likeCount),
       'isPublished': serializer.toJson<bool>(isPublished),
+      'publishedVersionId': serializer.toJson<String?>(publishedVersionId),
+      'draftVersionId': serializer.toJson<String?>(draftVersionId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'publishedAt': serializer.toJson<DateTime?>(publishedAt),
@@ -4663,6 +4739,8 @@ class Guide extends DataClass implements Insertable<Guide> {
     int? viewCount,
     int? likeCount,
     bool? isPublished,
+    Value<String?> publishedVersionId = const Value.absent(),
+    Value<String?> draftVersionId = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
     Value<DateTime?> publishedAt = const Value.absent(),
@@ -4684,6 +4762,12 @@ class Guide extends DataClass implements Insertable<Guide> {
     viewCount: viewCount ?? this.viewCount,
     likeCount: likeCount ?? this.likeCount,
     isPublished: isPublished ?? this.isPublished,
+    publishedVersionId: publishedVersionId.present
+        ? publishedVersionId.value
+        : this.publishedVersionId,
+    draftVersionId: draftVersionId.present
+        ? draftVersionId.value
+        : this.draftVersionId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     publishedAt: publishedAt.present ? publishedAt.value : this.publishedAt,
@@ -4713,6 +4797,12 @@ class Guide extends DataClass implements Insertable<Guide> {
       isPublished: data.isPublished.present
           ? data.isPublished.value
           : this.isPublished,
+      publishedVersionId: data.publishedVersionId.present
+          ? data.publishedVersionId.value
+          : this.publishedVersionId,
+      draftVersionId: data.draftVersionId.present
+          ? data.draftVersionId.value
+          : this.draftVersionId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       publishedAt: data.publishedAt.present
@@ -4741,6 +4831,8 @@ class Guide extends DataClass implements Insertable<Guide> {
           ..write('viewCount: $viewCount, ')
           ..write('likeCount: $likeCount, ')
           ..write('isPublished: $isPublished, ')
+          ..write('publishedVersionId: $publishedVersionId, ')
+          ..write('draftVersionId: $draftVersionId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('publishedAt: $publishedAt, ')
@@ -4765,6 +4857,8 @@ class Guide extends DataClass implements Insertable<Guide> {
     viewCount,
     likeCount,
     isPublished,
+    publishedVersionId,
+    draftVersionId,
     createdAt,
     updatedAt,
     publishedAt,
@@ -4788,6 +4882,8 @@ class Guide extends DataClass implements Insertable<Guide> {
           other.viewCount == this.viewCount &&
           other.likeCount == this.likeCount &&
           other.isPublished == this.isPublished &&
+          other.publishedVersionId == this.publishedVersionId &&
+          other.draftVersionId == this.draftVersionId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.publishedAt == this.publishedAt &&
@@ -4809,6 +4905,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
   final Value<int> viewCount;
   final Value<int> likeCount;
   final Value<bool> isPublished;
+  final Value<String?> publishedVersionId;
+  final Value<String?> draftVersionId;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> publishedAt;
@@ -4829,6 +4927,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     this.viewCount = const Value.absent(),
     this.likeCount = const Value.absent(),
     this.isPublished = const Value.absent(),
+    this.publishedVersionId = const Value.absent(),
+    this.draftVersionId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.publishedAt = const Value.absent(),
@@ -4850,6 +4950,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     this.viewCount = const Value.absent(),
     this.likeCount = const Value.absent(),
     this.isPublished = const Value.absent(),
+    this.publishedVersionId = const Value.absent(),
+    this.draftVersionId = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.publishedAt = const Value.absent(),
@@ -4878,6 +4980,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     Expression<int>? viewCount,
     Expression<int>? likeCount,
     Expression<bool>? isPublished,
+    Expression<String>? publishedVersionId,
+    Expression<String>? draftVersionId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? publishedAt,
@@ -4899,6 +5003,9 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
       if (viewCount != null) 'view_count': viewCount,
       if (likeCount != null) 'like_count': likeCount,
       if (isPublished != null) 'is_published': isPublished,
+      if (publishedVersionId != null)
+        'published_version_id': publishedVersionId,
+      if (draftVersionId != null) 'draft_version_id': draftVersionId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (publishedAt != null) 'published_at': publishedAt,
@@ -4922,6 +5029,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     Value<int>? viewCount,
     Value<int>? likeCount,
     Value<bool>? isPublished,
+    Value<String?>? publishedVersionId,
+    Value<String?>? draftVersionId,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? publishedAt,
@@ -4943,6 +5052,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
       viewCount: viewCount ?? this.viewCount,
       likeCount: likeCount ?? this.likeCount,
       isPublished: isPublished ?? this.isPublished,
+      publishedVersionId: publishedVersionId ?? this.publishedVersionId,
+      draftVersionId: draftVersionId ?? this.draftVersionId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       publishedAt: publishedAt ?? this.publishedAt,
@@ -4994,6 +5105,12 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
     if (isPublished.present) {
       map['is_published'] = Variable<bool>(isPublished.value);
     }
+    if (publishedVersionId.present) {
+      map['published_version_id'] = Variable<String>(publishedVersionId.value);
+    }
+    if (draftVersionId.present) {
+      map['draft_version_id'] = Variable<String>(draftVersionId.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -5031,6 +5148,8 @@ class GuidesCompanion extends UpdateCompanion<Guide> {
           ..write('viewCount: $viewCount, ')
           ..write('likeCount: $likeCount, ')
           ..write('isPublished: $isPublished, ')
+          ..write('publishedVersionId: $publishedVersionId, ')
+          ..write('draftVersionId: $draftVersionId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('publishedAt: $publishedAt, ')
@@ -11744,6 +11863,8 @@ typedef $$GuidesTableCreateCompanionBuilder =
       Value<int> viewCount,
       Value<int> likeCount,
       Value<bool> isPublished,
+      Value<String?> publishedVersionId,
+      Value<String?> draftVersionId,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<DateTime?> publishedAt,
@@ -11766,6 +11887,8 @@ typedef $$GuidesTableUpdateCompanionBuilder =
       Value<int> viewCount,
       Value<int> likeCount,
       Value<bool> isPublished,
+      Value<String?> publishedVersionId,
+      Value<String?> draftVersionId,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> publishedAt,
@@ -11863,6 +11986,16 @@ class $$GuidesTableFilterComposer
 
   ColumnFilters<bool> get isPublished => $composableBuilder(
     column: $table.isPublished,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get publishedVersionId => $composableBuilder(
+    column: $table.publishedVersionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get draftVersionId => $composableBuilder(
+    column: $table.draftVersionId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11984,6 +12117,16 @@ class $$GuidesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get publishedVersionId => $composableBuilder(
+    column: $table.publishedVersionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get draftVersionId => $composableBuilder(
+    column: $table.draftVersionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -12086,6 +12229,16 @@ class $$GuidesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get publishedVersionId => $composableBuilder(
+    column: $table.publishedVersionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get draftVersionId => $composableBuilder(
+    column: $table.draftVersionId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -12170,6 +12323,8 @@ class $$GuidesTableTableManager
                 Value<int> viewCount = const Value.absent(),
                 Value<int> likeCount = const Value.absent(),
                 Value<bool> isPublished = const Value.absent(),
+                Value<String?> publishedVersionId = const Value.absent(),
+                Value<String?> draftVersionId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> publishedAt = const Value.absent(),
@@ -12190,6 +12345,8 @@ class $$GuidesTableTableManager
                 viewCount: viewCount,
                 likeCount: likeCount,
                 isPublished: isPublished,
+                publishedVersionId: publishedVersionId,
+                draftVersionId: draftVersionId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 publishedAt: publishedAt,
@@ -12212,6 +12369,8 @@ class $$GuidesTableTableManager
                 Value<int> viewCount = const Value.absent(),
                 Value<int> likeCount = const Value.absent(),
                 Value<bool> isPublished = const Value.absent(),
+                Value<String?> publishedVersionId = const Value.absent(),
+                Value<String?> draftVersionId = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<DateTime?> publishedAt = const Value.absent(),
@@ -12232,6 +12391,8 @@ class $$GuidesTableTableManager
                 viewCount: viewCount,
                 likeCount: likeCount,
                 isPublished: isPublished,
+                publishedVersionId: publishedVersionId,
+                draftVersionId: draftVersionId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 publishedAt: publishedAt,

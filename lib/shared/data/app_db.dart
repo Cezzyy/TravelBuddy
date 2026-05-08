@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
 
   // Bump this number whenever you change the schema, then add a migration.
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -66,6 +66,12 @@ class AppDatabase extends _$AppDatabase {
 
           // Add trip invitations table
           await m.createTable(tripInvitations);
+        }
+        
+        // Migration from v2 to v3: Add draft versioning to guides
+        if (from < 3) {
+          await m.addColumn(guides, guides.publishedVersionId);
+          await m.addColumn(guides, guides.draftVersionId);
         }
       },
     );
