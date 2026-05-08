@@ -26,6 +26,9 @@ import '../../features/onboarding/presentation/profile_setup_screen.dart';
 import '../../features/onboarding/presentation/rules_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/trips/presentation/trips_screen.dart';
+import '../../features/trips/presentation/trip_detail_screen.dart';
+import '../../features/trips/presentation/trip_form_screen.dart';
+import '../../features/trips/presentation/trip_itinerary_screen.dart';
 import 'route_names.dart';
 
 part 'app_router.g.dart';
@@ -350,6 +353,82 @@ GoRouter appRouter(Ref ref) {
         },
       ),
 
+      // Trip — Create
+      GoRoute(
+        path: RoutePaths.tripCreate,
+        name: RouteNames.tripCreate,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const TripFormScreen(),
+          transitionDuration: const Duration(milliseconds: 350),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final slide = Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              ),
+            );
+            return SlideTransition(position: slide, child: child);
+          },
+        ),
+      ),
+
+      // Trip — Detail
+      GoRoute(
+        path: RoutePaths.tripDetail,
+        name: RouteNames.tripDetail,
+        pageBuilder: (context, state) {
+          final tripId = state.pathParameters['tripId']!;
+          return _fadeTransitionPage(
+            key: state.pageKey,
+            child: TripDetailScreen(tripId: tripId),
+          );
+        },
+      ),
+
+      // Trip — Edit
+      GoRoute(
+        path: RoutePaths.tripEdit,
+        name: RouteNames.tripEdit,
+        pageBuilder: (context, state) {
+          final tripId = state.pathParameters['tripId']!;
+          return CustomTransitionPage<void>(
+            key: state.pageKey,
+            child: TripFormScreen(tripId: tripId),
+            transitionDuration: const Duration(milliseconds: 350),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              final slide = Tween<Offset>(
+                begin: const Offset(0, 1),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                ),
+              );
+              return SlideTransition(position: slide, child: child);
+            },
+          );
+        },
+      ),
+
+      // Trip — Itinerary Builder
+      GoRoute(
+        path: RoutePaths.tripItinerary,
+        name: RouteNames.tripItinerary,
+        pageBuilder: (context, state) {
+          final tripId = state.pathParameters['tripId']!;
+          return _fadeTransitionPage(
+            key: state.pageKey,
+            child: TripItineraryScreen(tripId: tripId),
+          );
+        },
+      ),
+
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             MainShellScreen(navigationShell: navigationShell),
@@ -372,17 +451,6 @@ GoRouter appRouter(Ref ref) {
                 path: RoutePaths.trips,
                 name: RouteNames.trips,
                 builder: (context, state) => const TripsScreen(),
-                // TODO: Add trip detail route when screen is implemented
-                // routes: [
-                //   GoRoute(
-                //     path: ':tripId',
-                //     name: RouteNames.tripDetail,
-                //     builder: (context, state) {
-                //       final tripId = state.pathParameters['tripId']!;
-                //       return TripDetailScreen(tripId: tripId);
-                //     },
-                //   ),
-                // ],
               ),
             ],
           ),

@@ -11,8 +11,13 @@ abstract class RoutePaths {
   static const trips = '/trips';
   static const guides = '/guides';
   static const profile = '/profile';
-  static const tripDetail = '/trips/:tripId';
   static const createSelection = '/create';
+
+  // Trip routes
+  static const tripCreate = '/trips/create';
+  static const tripDetail = '/trips/:tripId';
+  static const tripEdit = '/trips/:tripId/edit';
+  static const tripItinerary = '/trips/:tripId/itinerary';
 
   // Guide routes
   static const guideCreate = '/guides/create';
@@ -33,8 +38,13 @@ abstract class RouteNames {
   static const trips = 'trips';
   static const guides = 'guides';
   static const profile = 'profile';
-  static const tripDetail = 'trip-detail';
   static const createSelection = 'create-selection';
+
+  // Trip routes
+  static const tripCreate = 'trip-create';
+  static const tripDetail = 'trip-detail';
+  static const tripEdit = 'trip-edit';
+  static const tripItinerary = 'trip-itinerary';
 
   // Guide routes
   static const guideCreate = 'guide-create';

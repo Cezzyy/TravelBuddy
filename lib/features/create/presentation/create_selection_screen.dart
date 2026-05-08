@@ -96,13 +96,7 @@ class CreateSelectionScreen extends ConsumerWidget {
 
   void _handleCreateTrip(BuildContext context) {
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Create Trip - Coming Soon'),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    context.push(RoutePaths.tripCreate);
   }
 
   void _handleCreateGuide(BuildContext context) {
