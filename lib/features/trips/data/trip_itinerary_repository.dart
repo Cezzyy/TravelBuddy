@@ -180,9 +180,7 @@ class TripItineraryRepository {
   /// Get all itinerary items for a trip.
   Future<List<ItineraryItem>> getTripItinerary(String tripId) async {
     return await (_db.select(_db.itineraryItems)
-          ..where(
-            (i) => i.tripId.equals(tripId) & i.isDeleted.equals(false),
-          )
+          ..where((i) => i.tripId.equals(tripId) & i.isDeleted.equals(false))
           ..orderBy([
             (i) => drift.OrderingTerm.asc(i.scheduledDate),
             (i) => drift.OrderingTerm.asc(i.sortOrder),
@@ -193,9 +191,7 @@ class TripItineraryRepository {
   /// Watch all itinerary items for a trip.
   Stream<List<ItineraryItem>> watchTripItinerary(String tripId) {
     return (_db.select(_db.itineraryItems)
-          ..where(
-            (i) => i.tripId.equals(tripId) & i.isDeleted.equals(false),
-          )
+          ..where((i) => i.tripId.equals(tripId) & i.isDeleted.equals(false))
           ..orderBy([
             (i) => drift.OrderingTerm.asc(i.scheduledDate),
             (i) => drift.OrderingTerm.asc(i.sortOrder),
@@ -224,10 +220,7 @@ class TripItineraryRepository {
   }
 
   /// Watch itinerary items for a specific date.
-  Stream<List<ItineraryItem>> watchItemsByDate(
-    String tripId,
-    DateTime date,
-  ) {
+  Stream<List<ItineraryItem>> watchItemsByDate(String tripId, DateTime date) {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
@@ -334,7 +327,9 @@ class TripItineraryRepository {
     required String operation,
     required Map<String, dynamic> payload,
   }) async {
-    await _db.into(_db.syncQueue).insert(
+    await _db
+        .into(_db.syncQueue)
+        .insert(
           SyncQueueCompanion.insert(
             targetTable: targetTable,
             recordId: recordId,

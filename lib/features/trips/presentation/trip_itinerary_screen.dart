@@ -92,7 +92,7 @@ class TripItineraryScreen extends ConsumerWidget {
                     final nextDate = dates.isEmpty
                         ? trip.startDate
                         : dates.last.add(const Duration(days: 1));
-                    
+
                     // Only show if within trip dates
                     if (nextDate.isAfter(trip.endDate)) {
                       return const SizedBox.shrink();
@@ -144,11 +144,8 @@ class TripItineraryScreen extends ConsumerWidget {
                       trip: trip,
                       item: item,
                     ),
-                    onDeleteItem: (item) => _confirmDeleteItem(
-                      context,
-                      ref,
-                      item,
-                    ),
+                    onDeleteItem: (item) =>
+                        _confirmDeleteItem(context, ref, item),
                   );
                 },
               );
@@ -180,7 +177,9 @@ class TripItineraryScreen extends ConsumerWidget {
             throw Exception('Not authenticated');
           }
 
-          await ref.read(tripItineraryFormProvider.notifier).addItem(
+          await ref
+              .read(tripItineraryFormProvider.notifier)
+              .addItem(
                 tripId: tripId,
                 createdBy: currentUser.id,
                 title: data['title'] as String,
@@ -191,7 +190,7 @@ class TripItineraryScreen extends ConsumerWidget {
                 endTime: data['endTime'] as DateTime?,
                 category: data['category'] as String? ?? 'other',
               );
-          
+
           // Check if the operation failed
           final state = ref.read(tripItineraryFormProvider);
           if (state.hasError) {
@@ -218,7 +217,9 @@ class TripItineraryScreen extends ConsumerWidget {
         scheduledDate: item.scheduledDate,
         existingItem: item,
         onSave: (data) async {
-          await ref.read(tripItineraryFormProvider.notifier).updateItem(
+          await ref
+              .read(tripItineraryFormProvider.notifier)
+              .updateItem(
                 itemId: item.id,
                 title: data['title'] as String?,
                 description: data['description'] as String?,
@@ -227,7 +228,7 @@ class TripItineraryScreen extends ConsumerWidget {
                 endTime: data['endTime'] as DateTime?,
                 category: data['category'] as String?,
               );
-          
+
           // Check if the operation failed
           final state = ref.read(tripItineraryFormProvider);
           if (state.hasError) {
@@ -266,7 +267,7 @@ class TripItineraryScreen extends ConsumerWidget {
     if (confirmed == true) {
       try {
         await ref.read(tripItineraryFormProvider.notifier).deleteItem(item.id);
-        
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -492,20 +493,20 @@ class _EditableItemTile extends StatelessWidget {
   }
 
   IconData _categoryIcon(String category) => switch (category) {
-        'transport' => Icons.directions_rounded,
-        'food' => Icons.restaurant_rounded,
-        'activity' => Icons.local_activity_rounded,
-        'accommodation' => Icons.hotel_rounded,
-        _ => Icons.place_rounded,
-      };
+    'transport' => Icons.directions_rounded,
+    'food' => Icons.restaurant_rounded,
+    'activity' => Icons.local_activity_rounded,
+    'accommodation' => Icons.hotel_rounded,
+    _ => Icons.place_rounded,
+  };
 
   Color _categoryColor(String category) => switch (category) {
-        'transport' => Colors.blueAccent,
-        'food' => Colors.orangeAccent,
-        'activity' => AppColors.accent,
-        'accommodation' => AppColors.primary,
-        _ => AppColors.textSecondary,
-      };
+    'transport' => Colors.blueAccent,
+    'food' => Colors.orangeAccent,
+    'activity' => AppColors.accent,
+    'accommodation' => AppColors.primary,
+    _ => AppColors.textSecondary,
+  };
 }
 
 // ─── Item Form Sheet ──────────────────────────────────────────────────────────
@@ -606,10 +607,9 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
               isEditing
                   ? 'Edit Item'
                   : 'Add Item — ${dateFormat.format(widget.scheduledDate)}',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 20),
 
@@ -633,8 +633,9 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
                         ],
                       ),
                       onSelected: (_) => setState(() => _category = cat.$1),
-                      selectedColor:
-                          AppColors.primaryLight.withValues(alpha: 0.2),
+                      selectedColor: AppColors.primaryLight.withValues(
+                        alpha: 0.2,
+                      ),
                       checkmarkColor: AppColors.primary,
                       labelStyle: TextStyle(
                         color: isSelected
@@ -794,7 +795,7 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
 
       if (mounted) {
         Navigator.pop(context);
-        
+
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -820,7 +821,7 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
       }
     } catch (e) {
       setState(() => _isSaving = false);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -850,24 +851,23 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
   }
 
   InputDecoration _inputDec(String hint) => InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: AppColors.surfaceVariant.withValues(alpha: 0.5),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.surfaceVariant),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.surfaceVariant),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-      );
+    hintText: hint,
+    filled: true,
+    fillColor: AppColors.surfaceVariant.withValues(alpha: 0.5),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: AppColors.surfaceVariant),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: AppColors.surfaceVariant),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+    ),
+  );
 }
 
 // ─── Time Picker Field ────────────────────────────────────────────────────────

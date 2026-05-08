@@ -493,8 +493,16 @@ class _StatusSelector extends ConsumerWidget {
 
   static const _statuses = [
     {'value': 'upcoming', 'label': 'Upcoming', 'icon': Icons.schedule_rounded},
-    {'value': 'ongoing', 'label': 'Ongoing', 'icon': Icons.flight_takeoff_rounded},
-    {'value': 'completed', 'label': 'Completed', 'icon': Icons.check_circle_rounded},
+    {
+      'value': 'ongoing',
+      'label': 'Ongoing',
+      'icon': Icons.flight_takeoff_rounded,
+    },
+    {
+      'value': 'completed',
+      'label': 'Completed',
+      'icon': Icons.check_circle_rounded,
+    },
     {'value': 'cancelled', 'label': 'Cancelled', 'icon': Icons.cancel_rounded},
   ];
 
@@ -659,8 +667,8 @@ class _SaveBar extends ConsumerWidget {
                   formState.isSaving
                       ? 'Saving...'
                       : tripId != null
-                          ? 'Save Changes'
-                          : 'Create Trip',
+                      ? 'Save Changes'
+                      : 'Create Trip',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -668,8 +676,9 @@ class _SaveBar extends ConsumerWidget {
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  disabledBackgroundColor:
-                      AppColors.textSecondary.withValues(alpha: 0.2),
+                  disabledBackgroundColor: AppColors.textSecondary.withValues(
+                    alpha: 0.2,
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

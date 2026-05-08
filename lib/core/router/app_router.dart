@@ -362,15 +362,16 @@ GoRouter appRouter(Ref ref) {
           child: const TripFormScreen(),
           transitionDuration: const Duration(milliseconds: 350),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            final slide = Tween<Offset>(
-              begin: const Offset(0, 1),
-              end: Offset.zero,
-            ).animate(
-              CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              ),
-            );
+            final slide =
+                Tween<Offset>(
+                  begin: const Offset(0, 1),
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  ),
+                );
             return SlideTransition(position: slide, child: child);
           },
         ),
@@ -401,17 +402,18 @@ GoRouter appRouter(Ref ref) {
             transitionDuration: const Duration(milliseconds: 350),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-              final slide = Tween<Offset>(
-                begin: const Offset(0, 1),
-                end: Offset.zero,
-              ).animate(
-                CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.easeOutCubic,
-                ),
-              );
-              return SlideTransition(position: slide, child: child);
-            },
+                  final slide =
+                      Tween<Offset>(
+                        begin: const Offset(0, 1),
+                        end: Offset.zero,
+                      ).animate(
+                        CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeOutCubic,
+                        ),
+                      );
+                  return SlideTransition(position: slide, child: child);
+                },
           );
         },
       ),

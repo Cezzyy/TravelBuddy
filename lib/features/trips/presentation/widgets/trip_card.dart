@@ -6,11 +6,7 @@ import '../../../../shared/data/app_db.dart';
 
 /// Card widget for displaying a trip in a list.
 class TripCard extends StatelessWidget {
-  const TripCard({
-    super.key,
-    required this.trip,
-    required this.onTap,
-  });
+  const TripCard({super.key, required this.trip, required this.onTap});
 
   final Trip trip;
   final VoidCallback onTap;
@@ -165,9 +161,7 @@ class TripCard extends StatelessWidget {
       height: 160,
       decoration: BoxDecoration(
         color: AppColors.surfaceVariant,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(16),
-        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: Center(
         child: Icon(

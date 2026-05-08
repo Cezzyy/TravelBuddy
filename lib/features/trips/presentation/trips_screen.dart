@@ -89,10 +89,7 @@ class _TripsScreenState extends ConsumerState<TripsScreen>
         SliverFillRemaining(
           child: TabBarView(
             controller: _tabController,
-            children: const [
-              _UpcomingTripsTab(),
-              _PastTripsTab(),
-            ],
+            children: const [_UpcomingTripsTab(), _PastTripsTab()],
           ),
         ),
       ],
@@ -111,9 +108,8 @@ class _UpcomingTripsTab extends ConsumerWidget {
 
     return tripsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _ErrorState(
-        onRetry: () => ref.invalidate(upcomingTripsProvider),
-      ),
+      error: (e, _) =>
+          _ErrorState(onRetry: () => ref.invalidate(upcomingTripsProvider)),
       data: (trips) {
         if (trips.isEmpty) {
           return const _EmptyState(
@@ -153,9 +149,8 @@ class _PastTripsTab extends ConsumerWidget {
 
     return tripsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _ErrorState(
-        onRetry: () => ref.invalidate(pastTripsProvider),
-      ),
+      error: (e, _) =>
+          _ErrorState(onRetry: () => ref.invalidate(pastTripsProvider)),
       data: (trips) {
         if (trips.isEmpty) {
           return const _EmptyState(

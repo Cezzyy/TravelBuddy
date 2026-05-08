@@ -8,7 +8,7 @@ import '../../data/trip_repository.dart';
 final myTripsProvider = StreamProvider<List<Trip>>((ref) {
   final currentUserAsync = ref.watch(currentUserProvider);
   final currentUser = currentUserAsync.value;
-  
+
   if (currentUser == null) {
     return Stream.value([]);
   }
@@ -21,7 +21,7 @@ final myTripsProvider = StreamProvider<List<Trip>>((ref) {
 final upcomingTripsProvider = StreamProvider<List<Trip>>((ref) {
   final currentUserAsync = ref.watch(currentUserProvider);
   final currentUser = currentUserAsync.value;
-  
+
   if (currentUser == null) {
     return Stream.value([]);
   }
@@ -34,7 +34,7 @@ final upcomingTripsProvider = StreamProvider<List<Trip>>((ref) {
 final pastTripsProvider = StreamProvider<List<Trip>>((ref) {
   final currentUserAsync = ref.watch(currentUserProvider);
   final currentUser = currentUserAsync.value;
-  
+
   if (currentUser == null) {
     return Stream.value([]);
   }

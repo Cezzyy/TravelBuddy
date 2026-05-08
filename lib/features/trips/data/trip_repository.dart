@@ -139,10 +139,7 @@ class TripRepository {
     final now = DateTime.now();
 
     await (_db.update(_db.trips)..where((t) => t.id.equals(tripId))).write(
-      TripsCompanion(
-        status: drift.Value(status),
-        updatedAt: drift.Value(now),
-      ),
+      TripsCompanion(status: drift.Value(status), updatedAt: drift.Value(now)),
     );
 
     AppLogger.talker.info('Trip status updated: $tripId -> $status');
@@ -201,9 +198,7 @@ class TripRepository {
   /// Get all trips by owner.
   Future<List<Trip>> getMyTrips(String ownerId) async {
     return await (_db.select(_db.trips)
-          ..where(
-            (t) => t.ownerId.equals(ownerId) & t.isDeleted.equals(false),
-          )
+          ..where((t) => t.ownerId.equals(ownerId) & t.isDeleted.equals(false))
           ..orderBy([(t) => drift.OrderingTerm.desc(t.startDate)]))
         .get();
   }
@@ -211,9 +206,7 @@ class TripRepository {
   /// Watch all trips by owner.
   Stream<List<Trip>> watchMyTrips(String ownerId) {
     return (_db.select(_db.trips)
-          ..where(
-            (t) => t.ownerId.equals(ownerId) & t.isDeleted.equals(false),
-          )
+          ..where((t) => t.ownerId.equals(ownerId) & t.isDeleted.equals(false))
           ..orderBy([(t) => drift.OrderingTerm.desc(t.startDate)]))
         .watch();
   }
@@ -275,11 +268,11 @@ class TripRepository {
     final lowerQuery = query.toLowerCase();
 
     // Get all trips for the owner
-    final trips = await (_db.select(_db.trips)
-          ..where(
-            (t) => t.ownerId.equals(ownerId) & t.isDeleted.equals(false),
-          ))
-        .get();
+    final trips =
+        await (_db.select(_db.trips)..where(
+              (t) => t.ownerId.equals(ownerId) & t.isDeleted.equals(false),
+            ))
+            .get();
 
     // Filter in memory
     return trips.where((trip) {
@@ -376,7 +369,9 @@ class TripRepository {
     required String operation,
     required Map<String, dynamic> payload,
   }) async {
-    await _db.into(_db.syncQueue).insert(
+    await _db
+        .into(_db.syncQueue)
+        .insert(
           SyncQueueCompanion.insert(
             targetTable: targetTable,
             recordId: recordId,

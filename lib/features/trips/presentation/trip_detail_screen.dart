@@ -92,9 +92,7 @@ class TripDetailScreen extends ConsumerWidget {
                       // Title
                       Text(
                         trip.title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
+                        style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: AppColors.textPrimary,
@@ -114,12 +112,8 @@ class TripDetailScreen extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               trip.destination,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: AppColors.textSecondary,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(color: AppColors.textSecondary),
                             ),
                           ),
                         ],
@@ -149,19 +143,13 @@ class TripDetailScreen extends ConsumerWidget {
                         const SizedBox(height: 24),
                         Text(
                           'About This Trip',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 12),
                         Text(
                           trip.description!,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge
+                          style: Theme.of(context).textTheme.bodyLarge
                               ?.copyWith(
                                 color: AppColors.textSecondary,
                                 height: 1.6,
@@ -184,12 +172,8 @@ class TripDetailScreen extends ConsumerWidget {
                           const SizedBox(width: 8),
                           Text(
                             'Itinerary',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w700),
                           ),
                         ],
                       ),
@@ -255,9 +239,7 @@ class TripDetailScreen extends ConsumerWidget {
 
     if (confirmed != true || !context.mounted) return;
 
-    final success = await ref
-        .read(tripFormProvider(tripId).notifier)
-        .delete();
+    final success = await ref.read(tripFormProvider(tripId).notifier).delete();
 
     if (!context.mounted) return;
 
@@ -387,17 +369,17 @@ class _InfoCard extends StatelessWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   content,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ],
             ),
@@ -454,16 +436,16 @@ class _ItineraryButton extends StatelessWidget {
                       Text(
                         'View Itinerary',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primary,
-                            ),
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         'See your day-by-day plan',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -528,10 +510,7 @@ class _NotFoundState extends StatelessWidget {
             color: AppColors.textSecondary.withValues(alpha: 0.4),
           ),
           const SizedBox(height: 12),
-          Text(
-            'Trip not found',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
+          Text('Trip not found', style: Theme.of(context).textTheme.titleSmall),
         ],
       ),
     );

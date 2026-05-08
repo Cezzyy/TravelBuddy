@@ -179,7 +179,7 @@ class GuideItineraryScreen extends ConsumerWidget {
     if (confirmed == true) {
       try {
         await ref.read(guideItineraryFormProvider.notifier).deleteItem(item.id);
-        
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -660,7 +660,7 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
 
       if (mounted) {
         Navigator.pop(context);
-        
+
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -686,7 +686,7 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
       }
     } catch (e) {
       setState(() => _isSaving = false);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
