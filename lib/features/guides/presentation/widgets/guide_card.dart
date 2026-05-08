@@ -233,13 +233,13 @@ class _AuthorMenu extends StatelessWidget {
     final String publishLabel = guide.isPublished
         ? 'Unpublish'
         : isDraftOfPublished
-            ? 'Apply Changes'
-            : 'Publish';
+        ? 'Apply Changes'
+        : 'Publish';
     final IconData publishIcon = guide.isPublished
         ? Icons.unpublished_rounded
         : isDraftOfPublished
-            ? Icons.check_circle_rounded
-            : Icons.publish_rounded;
+        ? Icons.check_circle_rounded
+        : Icons.publish_rounded;
 
     return Container(
       decoration: BoxDecoration(
@@ -247,7 +247,11 @@ class _AuthorMenu extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: PopupMenuButton<String>(
-        icon: const Icon(Icons.more_vert_rounded, color: Colors.white, size: 18),
+        icon: const Icon(
+          Icons.more_vert_rounded,
+          color: Colors.white,
+          size: 18,
+        ),
         padding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         onSelected: (value) {

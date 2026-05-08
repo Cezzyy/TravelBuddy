@@ -33,10 +33,11 @@ class GuideEngagementRepository {
     final now = DateTime.now();
 
     // Check if already liked
-    final existing = await (_db.select(_db.guideLikes)
-          ..where((l) =>
-              l.guideId.equals(guideId) & l.userId.equals(userId)))
-        .getSingleOrNull();
+    final existing =
+        await (_db.select(_db.guideLikes)..where(
+              (l) => l.guideId.equals(guideId) & l.userId.equals(userId),
+            ))
+            .getSingleOrNull();
 
     if (existing != null) {
       AppLogger.talker.info('Guide already liked: $guideId');
@@ -44,7 +45,9 @@ class GuideEngagementRepository {
     }
 
     // Add like
-    await _db.into(_db.guideLikes).insert(
+    await _db
+        .into(_db.guideLikes)
+        .insert(
           GuideLikesCompanion.insert(
             guideId: guideId,
             userId: userId,
@@ -76,10 +79,11 @@ class GuideEngagementRepository {
 
   /// Unlike a guide.
   Future<void> unlikeGuide(String guideId, String userId) async {
-    final existing = await (_db.select(_db.guideLikes)
-          ..where((l) =>
-              l.guideId.equals(guideId) & l.userId.equals(userId)))
-        .getSingleOrNull();
+    final existing =
+        await (_db.select(_db.guideLikes)..where(
+              (l) => l.guideId.equals(guideId) & l.userId.equals(userId),
+            ))
+            .getSingleOrNull();
 
     if (existing == null) {
       AppLogger.talker.info('Guide not liked: $guideId');
@@ -87,10 +91,9 @@ class GuideEngagementRepository {
     }
 
     // Remove like
-    await (_db.delete(_db.guideLikes)
-          ..where((l) =>
-              l.guideId.equals(guideId) & l.userId.equals(userId)))
-        .go();
+    await (_db.delete(
+      _db.guideLikes,
+    )..where((l) => l.guideId.equals(guideId) & l.userId.equals(userId))).go();
 
     AppLogger.talker.info('Guide unliked locally: $guideId');
 
@@ -102,10 +105,7 @@ class GuideEngagementRepository {
       targetTable: 'guide_likes',
       recordId: '$guideId-$userId',
       operation: 'delete',
-      payload: {
-        'guideId': guideId,
-        'userId': userId,
-      },
+      payload: {'guideId': guideId, 'userId': userId},
     );
 
     // Attempt immediate sync
@@ -116,10 +116,10 @@ class GuideEngagementRepository {
           .where('userId', isEqualTo: userId)
           .get()
           .then((snapshot) {
-        for (final doc in snapshot.docs) {
-          doc.reference.delete();
-        }
-      });
+            for (final doc in snapshot.docs) {
+              doc.reference.delete();
+            }
+          });
       AppLogger.talker.info('Like removed from Firestore: $guideId');
     } catch (e, st) {
       AppLogger.talker.warning(
@@ -132,18 +132,18 @@ class GuideEngagementRepository {
 
   /// Check if a guide is liked by a user.
   Future<bool> isGuideLiked(String guideId, String userId) async {
-    final like = await (_db.select(_db.guideLikes)
-          ..where((l) =>
-              l.guideId.equals(guideId) & l.userId.equals(userId)))
-        .getSingleOrNull();
+    final like =
+        await (_db.select(_db.guideLikes)..where(
+              (l) => l.guideId.equals(guideId) & l.userId.equals(userId),
+            ))
+            .getSingleOrNull();
     return like != null;
   }
 
   /// Watch if a guide is liked by a user.
   Stream<bool> watchIsGuideLiked(String guideId, String userId) {
     return (_db.select(_db.guideLikes)
-          ..where((l) =>
-              l.guideId.equals(guideId) & l.userId.equals(userId)))
+          ..where((l) => l.guideId.equals(guideId) & l.userId.equals(userId)))
         .watchSingleOrNull()
         .map((like) => like != null);
   }
@@ -208,9 +208,9 @@ class GuideEngagementRepository {
   }) async {
     final now = DateTime.now();
 
-    await (_db.update(_db.guideComments)
-          ..where((c) => c.id.equals(commentId)))
-        .write(
+    await (_db.update(
+      _db.guideComments,
+    )..where((c) => c.id.equals(commentId))).write(
       GuideCommentsCompanion(
         content: drift.Value(content),
         updatedAt: drift.Value(now),
@@ -224,10 +224,7 @@ class GuideEngagementRepository {
       targetTable: 'guide_comments',
       recordId: commentId,
       operation: 'update',
-      payload: {
-        'content': content,
-        'updatedAt': now.toIso8601String(),
-      },
+      payload: {'content': content, 'updatedAt': now.toIso8601String()},
     );
 
     // Attempt immediate sync
@@ -238,9 +235,9 @@ class GuideEngagementRepository {
   Future<void> deleteComment(String commentId) async {
     final now = DateTime.now();
 
-    await (_db.update(_db.guideComments)
-          ..where((c) => c.id.equals(commentId)))
-        .write(
+    await (_db.update(
+      _db.guideComments,
+    )..where((c) => c.id.equals(commentId))).write(
       GuideCommentsCompanion(
         isDeleted: const drift.Value(true),
         updatedAt: drift.Value(now),
@@ -254,10 +251,7 @@ class GuideEngagementRepository {
       targetTable: 'guide_comments',
       recordId: commentId,
       operation: 'delete',
-      payload: {
-        'isDeleted': true,
-        'updatedAt': now.toIso8601String(),
-      },
+      payload: {'isDeleted': true, 'updatedAt': now.toIso8601String()},
     );
 
     // Attempt immediate sync
@@ -311,11 +305,10 @@ class GuideEngagementRepository {
 
       // Update lastSyncedAt
       await (_db.update(_db.guideLikes)
-            ..where((l) =>
-                l.guideId.equals(guideId) & l.userId.equals(userId)))
+            ..where((l) => l.guideId.equals(guideId) & l.userId.equals(userId)))
           .write(
-        GuideLikesCompanion(lastSyncedAt: drift.Value(DateTime.now())),
-      );
+            GuideLikesCompanion(lastSyncedAt: drift.Value(DateTime.now())),
+          );
     } catch (e, st) {
       AppLogger.talker.warning(
         'Failed to sync like to Firestore (will retry later)',
@@ -348,9 +341,9 @@ class GuideEngagementRepository {
       AppLogger.talker.info('Comment synced to Firestore: $commentId');
 
       // Update lastSyncedAt
-      await (_db.update(_db.guideComments)
-            ..where((c) => c.id.equals(commentId)))
-          .write(
+      await (_db.update(
+        _db.guideComments,
+      )..where((c) => c.id.equals(commentId))).write(
         GuideCommentsCompanion(lastSyncedAt: drift.Value(DateTime.now())),
       );
     } catch (e, st) {
@@ -369,7 +362,9 @@ class GuideEngagementRepository {
     required String operation,
     required Map<String, dynamic> payload,
   }) async {
-    await _db.into(_db.syncQueue).insert(
+    await _db
+        .into(_db.syncQueue)
+        .insert(
           SyncQueueCompanion.insert(
             targetTable: targetTable,
             recordId: recordId,

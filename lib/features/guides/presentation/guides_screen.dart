@@ -137,7 +137,9 @@ class _BrowseSliver extends ConsumerWidget {
         child: Center(child: CircularProgressIndicator()),
       ),
       error: (e, _) => SliverFillRemaining(
-        child: _ErrorState(onRetry: () => ref.invalidate(publishedGuidesProvider)),
+        child: _ErrorState(
+          onRetry: () => ref.invalidate(publishedGuidesProvider),
+        ),
       ),
       data: (guides) {
         if (guides.isEmpty) {
@@ -175,7 +177,7 @@ class _SearchResultsSliver extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.watch(guideRepositoryProvider);
-    
+
     return FutureBuilder<List<Guide>>(
       future: repo.searchGuides(query),
       builder: (context, snapshot) {
@@ -194,9 +196,7 @@ class _SearchResultsSliver extends ConsumerWidget {
         final guides = snapshot.data ?? [];
 
         if (guides.isEmpty) {
-          return SliverFillRemaining(
-            child: _EmptySearchState(query: query),
-          );
+          return SliverFillRemaining(child: _EmptySearchState(query: query));
         }
 
         return SliverPadding(
@@ -325,10 +325,7 @@ class _ErrorState extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 12),
-          FilledButton.tonal(
-            onPressed: onRetry,
-            child: const Text('Retry'),
-          ),
+          FilledButton.tonal(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );

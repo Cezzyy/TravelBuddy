@@ -193,9 +193,7 @@ class _GuideFormBodyState extends ConsumerState<_GuideFormBody> {
             hint: 'A brief summary shown in the guide card (max 300 chars)',
             child: TextFormField(
               controller: _descriptionController,
-              decoration: _inputDecoration(
-                'What makes this guide special?',
-              ),
+              decoration: _inputDecoration('What makes this guide special?'),
               maxLength: 300,
               maxLines: 3,
               textCapitalization: TextCapitalization.sentences,
@@ -211,10 +209,7 @@ class _GuideFormBodyState extends ConsumerState<_GuideFormBody> {
           const SizedBox(height: 28),
 
           // Tags Section
-          _SectionHeader(
-            icon: Icons.label_outline_rounded,
-            title: 'Tags',
-          ),
+          _SectionHeader(icon: Icons.label_outline_rounded, title: 'Tags'),
           const SizedBox(height: 12),
           _TagInput(guideId: widget.guideId),
 
@@ -223,10 +218,7 @@ class _GuideFormBodyState extends ConsumerState<_GuideFormBody> {
           const SizedBox(height: 28),
 
           // Content Section
-          _SectionHeader(
-            icon: Icons.article_outlined,
-            title: 'Guide Content',
-          ),
+          _SectionHeader(icon: Icons.article_outlined, title: 'Guide Content'),
           const SizedBox(height: 12),
           Text(
             'Share your full story, tips, and recommendations',
@@ -254,10 +246,7 @@ class _GuideFormBodyState extends ConsumerState<_GuideFormBody> {
           const SizedBox(height: 28),
 
           // Itinerary Section
-          _SectionHeader(
-            icon: Icons.map_outlined,
-            title: 'Itinerary',
-          ),
+          _SectionHeader(icon: Icons.map_outlined, title: 'Itinerary'),
           const SizedBox(height: 12),
           if (widget.guideId != null) ...[
             Text(
@@ -304,8 +293,9 @@ class _GuideFormBodyState extends ConsumerState<_GuideFormBody> {
           // Error message
           Consumer(
             builder: (context, ref, _) {
-              final error =
-                  ref.watch(guideFormProvider(widget.guideId)).errorMessage;
+              final error = ref
+                  .watch(guideFormProvider(widget.guideId))
+                  .errorMessage;
               if (error == null) return const SizedBox.shrink();
               return Padding(
                 padding: const EdgeInsets.only(top: 24),
@@ -377,10 +367,7 @@ class _GuideFormBodyState extends ConsumerState<_GuideFormBody> {
 // ─── Section Header ───────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({
-    required this.icon,
-    required this.title,
-  });
+  const _SectionHeader({required this.icon, required this.title});
 
   final IconData icon;
   final String title;
@@ -390,11 +377,7 @@ class _SectionHeader extends StatelessWidget {
     final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: AppColors.primary,
-        ),
+        Icon(icon, size: 20, color: AppColors.primary),
         const SizedBox(width: 8),
         Text(
           title,
@@ -423,9 +406,21 @@ class _TagInputState extends ConsumerState<_TagInput> {
   final _controller = TextEditingController();
 
   static const _suggestions = [
-    'beach', 'adventure', 'budget', 'luxury', 'family',
-    'solo', 'food', 'culture', 'nature', 'city',
-    'hiking', 'backpacking', 'weekend', 'road-trip', 'photography',
+    'beach',
+    'adventure',
+    'budget',
+    'luxury',
+    'family',
+    'solo',
+    'food',
+    'culture',
+    'nature',
+    'city',
+    'hiking',
+    'backpacking',
+    'weekend',
+    'road-trip',
+    'photography',
   ];
 
   @override
@@ -479,8 +474,9 @@ class _TagInputState extends ConsumerState<_TagInput> {
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
                       ),
-                      backgroundColor:
-                          AppColors.primaryLight.withValues(alpha: 0.15),
+                      backgroundColor: AppColors.primaryLight.withValues(
+                        alpha: 0.15,
+                      ),
                       deleteIcon: const Icon(Icons.close_rounded, size: 16),
                       deleteIconColor: AppColors.primary,
                       onDeleted: () => ref
@@ -679,16 +675,16 @@ class _ItineraryShortcut extends StatelessWidget {
                       Text(
                         'Manage Itinerary',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primary,
-                            ),
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         'Add day-by-day activities',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -710,11 +706,7 @@ class _ItineraryShortcut extends StatelessWidget {
 // ─── Form Field Wrapper ───────────────────────────────────────────────────────
 
 class _FormField extends StatelessWidget {
-  const _FormField({
-    required this.label,
-    required this.child,
-    this.hint,
-  });
+  const _FormField({required this.label, required this.child, this.hint});
 
   final String label;
   final Widget child;
@@ -784,8 +776,9 @@ class _SaveDraftButton extends ConsumerWidget {
 
   Future<void> _save(BuildContext context, WidgetRef ref) async {
     final formState = ref.read(guideFormProvider(guideId));
-    final savedId =
-        await ref.read(guideFormProvider(guideId).notifier).saveDraft();
+    final savedId = await ref
+        .read(guideFormProvider(guideId).notifier)
+        .saveDraft();
     if (!context.mounted) return;
 
     if (savedId != null) {
@@ -793,8 +786,11 @@ class _SaveDraftButton extends ConsumerWidget {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded,
-                  color: Colors.white, size: 20),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 10),
               Text(
                 formState.isEditingPublished
@@ -805,11 +801,12 @@ class _SaveDraftButton extends ConsumerWidget {
           ),
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.success,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
-      
+
       // If this was a new guide, replace route with edit route
       // Use the saved ID (which is the draft ID)
       if (guideId == null) {
@@ -971,8 +968,8 @@ class _PublishBar extends ConsumerWidget {
                       formState.isPublishing
                           ? 'Publishing...'
                           : formState.isEditingPublished
-                              ? 'Apply Changes'
-                              : 'Publish Guide',
+                          ? 'Apply Changes'
+                          : 'Publish Guide',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -982,8 +979,8 @@ class _PublishBar extends ConsumerWidget {
                       backgroundColor: formState.isEditingPublished
                           ? AppColors.success
                           : AppColors.accent,
-                      disabledBackgroundColor:
-                          AppColors.textSecondary.withValues(alpha: 0.2),
+                      disabledBackgroundColor: AppColors.textSecondary
+                          .withValues(alpha: 0.2),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -1002,8 +999,9 @@ class _PublishBar extends ConsumerWidget {
 
   Future<void> _publish(BuildContext context, WidgetRef ref) async {
     final formState = ref.read(guideFormProvider(guideId));
-    final publishedId =
-        await ref.read(guideFormProvider(guideId).notifier).publish();
+    final publishedId = await ref
+        .read(guideFormProvider(guideId).notifier)
+        .publish();
     if (!context.mounted) return;
 
     if (publishedId != null) {
@@ -1011,8 +1009,11 @@ class _PublishBar extends ConsumerWidget {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.celebration_rounded,
-                  color: Colors.white, size: 20),
+              const Icon(
+                Icons.celebration_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 10),
               Text(
                 formState.isEditingPublished
@@ -1024,8 +1025,9 @@ class _PublishBar extends ConsumerWidget {
           ),
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.success,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -1052,9 +1054,7 @@ class _PublishBar extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             child: const Text('Discard'),
           ),
         ],
@@ -1063,8 +1063,9 @@ class _PublishBar extends ConsumerWidget {
 
     if (confirmed != true || !context.mounted) return;
 
-    final success =
-        await ref.read(guideFormProvider(guideId).notifier).discardDraft();
+    final success = await ref
+        .read(guideFormProvider(guideId).notifier)
+        .discardDraft();
 
     if (!context.mounted) return;
 
@@ -1073,16 +1074,19 @@ class _PublishBar extends ConsumerWidget {
         SnackBar(
           content: const Text('Draft discarded'),
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       // Go back to the published guide
       final formState = ref.read(guideFormProvider(guideId));
       if (formState.publishedVersionId != null) {
         context.pushReplacement(
-          RoutePaths.guideDetail
-              .replaceFirst(':guideId', formState.publishedVersionId!),
+          RoutePaths.guideDetail.replaceFirst(
+            ':guideId',
+            formState.publishedVersionId!,
+          ),
         );
       } else {
         context.pop();

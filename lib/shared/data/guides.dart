@@ -17,12 +17,13 @@ class Guides extends Table {
   IntColumn get viewCount => integer().withDefault(const Constant(0))();
   IntColumn get likeCount => integer().withDefault(const Constant(0))();
   BoolColumn get isPublished => boolean().withDefault(const Constant(false))();
-  
+
   /// If this is a draft version of a published guide, this references the published guide ID
   TextColumn get publishedVersionId => text().nullable()();
+
   /// If this is a published guide with a draft, this references the draft guide ID
   TextColumn get draftVersionId => text().nullable()();
-  
+
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get publishedAt => dateTime().nullable()();

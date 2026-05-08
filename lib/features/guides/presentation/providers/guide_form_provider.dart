@@ -40,11 +40,13 @@ class GuideFormState {
   final bool isSaving;
   final bool isPublishing;
   final String? errorMessage;
-  
+
   /// True if editing a published guide (working on a draft version)
   final bool isEditingPublished;
+
   /// The ID of the published version (if this is a draft)
   final String? publishedVersionId;
+
   /// True if the published guide has a draft version
   final bool hasDraftVersion;
 
@@ -76,8 +78,9 @@ class GuideFormState {
       description: description ?? this.description,
       destination: destination ?? this.destination,
       content: content ?? this.content,
-      coverImageUrl:
-          clearCoverImage ? null : (coverImageUrl ?? this.coverImageUrl),
+      coverImageUrl: clearCoverImage
+          ? null
+          : (coverImageUrl ?? this.coverImageUrl),
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       tags: tags ?? this.tags,
@@ -131,7 +134,7 @@ class GuideForm extends _$GuideForm {
 
     // Check if this guide is a draft of a published guide
     final isDraft = guide.publishedVersionId != null;
-    
+
     state = GuideFormState(
       title: guide.title,
       description: guide.description,
@@ -156,13 +159,11 @@ class GuideForm extends _$GuideForm {
   void updateDestination(String value) =>
       state = state.copyWith(destination: value, clearError: true);
 
-  void updateContent(String value) =>
-      state = state.copyWith(content: value);
+  void updateContent(String value) => state = state.copyWith(content: value);
 
-  void updateCoverImageUrl(String? url) =>
-      state = url == null
-          ? state.copyWith(clearCoverImage: true)
-          : state.copyWith(coverImageUrl: url);
+  void updateCoverImageUrl(String? url) => state = url == null
+      ? state.copyWith(clearCoverImage: true)
+      : state.copyWith(coverImageUrl: url);
 
   void updateLocation(double lat, double lng) =>
       state = state.copyWith(latitude: lat, longitude: lng);
@@ -175,15 +176,15 @@ class GuideForm extends _$GuideForm {
   }
 
   void removeTag(String tag) {
-    state = state.copyWith(
-      tags: state.tags.where((t) => t != tag).toList(),
-    );
+    state = state.copyWith(tags: state.tags.where((t) => t != tag).toList());
   }
 
   /// Save as draft (create or update).
   Future<String?> saveDraft() async {
     if (!state.isValid) {
-      state = state.copyWith(errorMessage: 'Please fill in all required fields');
+      state = state.copyWith(
+        errorMessage: 'Please fill in all required fields',
+      );
       return null;
     }
 
@@ -239,7 +240,9 @@ class GuideForm extends _$GuideForm {
   /// Save and publish the guide (or apply draft to published).
   Future<String?> publish() async {
     if (!state.isValid) {
-      state = state.copyWith(errorMessage: 'Please fill in all required fields');
+      state = state.copyWith(
+        errorMessage: 'Please fill in all required fields',
+      );
       return null;
     }
 

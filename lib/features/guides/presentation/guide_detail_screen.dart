@@ -30,9 +30,7 @@ class _GuideDetailScreenState extends ConsumerState<GuideDetailScreen>
     _tabController = TabController(length: 2, vsync: this);
     // Track view after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(guideDetailActionsProvider.notifier)
-          .trackView(widget.guideId);
+      ref.read(guideDetailActionsProvider.notifier).trackView(widget.guideId);
     });
   }
 
@@ -48,9 +46,8 @@ class _GuideDetailScreenState extends ConsumerState<GuideDetailScreen>
     final guideAsync = ref.watch(guideDetailProvider(widget.guideId));
 
     return guideAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(
         appBar: AppBar(),
         body: Center(child: Text('Failed to load guide: $e')),
@@ -101,10 +98,7 @@ class _GuideDetailView extends ConsumerWidget {
             pinned: true,
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
-            actions: [
-              if (isAuthor)
-                _EditButton(guide: guide),
-            ],
+            actions: [if (isAuthor) _EditButton(guide: guide)],
             flexibleSpace: FlexibleSpaceBar(
               background: _CoverImageHeader(imageUrl: guide.coverImageUrl),
             ),
@@ -181,10 +175,7 @@ class _CoverImageHeader extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Colors.transparent,
-                Colors.black.withValues(alpha: 0.4),
-              ],
+              colors: [Colors.transparent, Colors.black.withValues(alpha: 0.4)],
             ),
           ),
         ),
@@ -193,15 +184,15 @@ class _CoverImageHeader extends StatelessWidget {
   }
 
   Widget _placeholder() => Container(
-        color: AppColors.primaryLight.withValues(alpha: 0.2),
-        child: Center(
-          child: Icon(
-            Icons.menu_book_rounded,
-            size: 64,
-            color: AppColors.primaryLight.withValues(alpha: 0.4),
-          ),
-        ),
-      );
+    color: AppColors.primaryLight.withValues(alpha: 0.2),
+    child: Center(
+      child: Icon(
+        Icons.menu_book_rounded,
+        size: 64,
+        color: AppColors.primaryLight.withValues(alpha: 0.4),
+      ),
+    ),
+  );
 }
 
 // ─── Guide Metadata ───────────────────────────────────────────────────────────
@@ -225,8 +216,11 @@ class _GuideMetadata extends StatelessWidget {
           // Destination
           Row(
             children: [
-              const Icon(Icons.location_on_rounded,
-                  size: 14, color: AppColors.primary),
+              const Icon(
+                Icons.location_on_rounded,
+                size: 14,
+                color: AppColors.primary,
+              ),
               const SizedBox(width: 4),
               Text(
                 guide.destination,
@@ -269,9 +263,11 @@ class _GuideMetadata extends StatelessWidget {
           // Stats
           Row(
             children: [
-              Icon(Icons.favorite_rounded,
-                  size: 14,
-                  color: isLiked ? Colors.redAccent : AppColors.textSecondary),
+              Icon(
+                Icons.favorite_rounded,
+                size: 14,
+                color: isLiked ? Colors.redAccent : AppColors.textSecondary,
+              ),
               const SizedBox(width: 4),
               Text(
                 '${guide.likeCount} likes',
@@ -280,8 +276,11 @@ class _GuideMetadata extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              const Icon(Icons.visibility_rounded,
-                  size: 14, color: AppColors.textSecondary),
+              const Icon(
+                Icons.visibility_rounded,
+                size: 14,
+                color: AppColors.textSecondary,
+              ),
               const SizedBox(width: 4),
               Text(
                 '${guide.viewCount} views',
@@ -291,8 +290,11 @@ class _GuideMetadata extends StatelessWidget {
               ),
               if (guide.publishedAt != null) ...[
                 const SizedBox(width: 16),
-                const Icon(Icons.calendar_today_rounded,
-                    size: 14, color: AppColors.textSecondary),
+                const Icon(
+                  Icons.calendar_today_rounded,
+                  size: 14,
+                  color: AppColors.textSecondary,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   _formatDate(guide.publishedAt!),
@@ -310,8 +312,18 @@ class _GuideMetadata extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
@@ -427,8 +439,8 @@ class _ItineraryTab extends ConsumerWidget {
                 Text(
                   'No itinerary added yet',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -473,8 +485,10 @@ class _DaySection extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
@@ -515,10 +529,7 @@ class _ItineraryItemTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.surfaceVariant,
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.surfaceVariant, width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -565,8 +576,11 @@ class _ItineraryItemTile extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined,
-                          size: 12, color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 12,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 3),
                       Expanded(
                         child: Text(
@@ -644,10 +658,7 @@ class _BottomBar extends ConsumerWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           border: Border(
-            top: BorderSide(
-              color: AppColors.surfaceVariant,
-              width: 1,
-            ),
+            top: BorderSide(color: AppColors.surfaceVariant, width: 1),
           ),
         ),
         child: Row(
@@ -732,8 +743,8 @@ class _LikeButton extends ConsumerWidget {
       onTap: isLoading
           ? null
           : () => ref
-              .read(guideDetailActionsProvider.notifier)
-              .toggleLike(guideId),
+                .read(guideDetailActionsProvider.notifier)
+                .toggleLike(guideId),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -786,10 +797,7 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return Container(
-      color: AppColors.surface,
-      child: tabBar,
-    );
+    return Container(color: AppColors.surface, child: tabBar);
   }
 
   @override
@@ -816,7 +824,7 @@ class _EditButton extends ConsumerWidget {
     // If this is a published guide, we need to get or create the draft version
     if (guide.isPublished) {
       final repo = ref.read(guideRepositoryProvider);
-      
+
       // Check if draft already exists
       String draftId;
       if (guide.draftVersionId != null) {
@@ -825,19 +833,14 @@ class _EditButton extends ConsumerWidget {
         // Create draft version
         draftId = await repo.createDraftVersion(guide.id);
       }
-      
+
       // Navigate to edit the draft
       if (context.mounted) {
-        context.push(
-          RoutePaths.guideEdit.replaceFirst(':guideId', draftId),
-        );
+        context.push(RoutePaths.guideEdit.replaceFirst(':guideId', draftId));
       }
     } else {
       // For unpublished guides, edit directly
-      context.push(
-        RoutePaths.guideEdit.replaceFirst(':guideId', guide.id),
-      );
+      context.push(RoutePaths.guideEdit.replaceFirst(':guideId', guide.id));
     }
   }
 }
-

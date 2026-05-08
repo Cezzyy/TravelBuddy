@@ -54,16 +54,12 @@ class GuideItineraryScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               if (index == days.length) {
                 // Add new day button
-                final nextDay =
-                    days.isEmpty ? 1 : days.last + 1;
+                final nextDay = days.isEmpty ? 1 : days.last + 1;
                 return Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: OutlinedButton.icon(
-                    onPressed: () => _showAddItemSheet(
-                      context,
-                      ref,
-                      dayNumber: nextDay,
-                    ),
+                    onPressed: () =>
+                        _showAddItemSheet(context, ref, dayNumber: nextDay),
                     icon: const Icon(Icons.add_rounded),
                     label: Text('Add Day $nextDay'),
                     style: OutlinedButton.styleFrom(
@@ -85,10 +81,8 @@ class GuideItineraryScreen extends ConsumerWidget {
                 items: dayItems,
                 onAddItem: () =>
                     _showAddItemSheet(context, ref, dayNumber: day),
-                onEditItem: (item) =>
-                    _showEditItemSheet(context, ref, item),
-                onDeleteItem: (item) =>
-                    _confirmDeleteItem(context, ref, item),
+                onEditItem: (item) => _showEditItemSheet(context, ref, item),
+                onDeleteItem: (item) => _confirmDeleteItem(context, ref, item),
               );
             },
           );
@@ -110,7 +104,9 @@ class GuideItineraryScreen extends ConsumerWidget {
         guideId: guideId,
         dayNumber: dayNumber,
         onSave: (data) async {
-          await ref.read(guideItineraryFormProvider.notifier).addItem(
+          await ref
+              .read(guideItineraryFormProvider.notifier)
+              .addItem(
                 guideId: guideId,
                 title: data['title'] as String,
                 description: data['description'] as String?,
@@ -139,7 +135,9 @@ class GuideItineraryScreen extends ConsumerWidget {
         dayNumber: item.dayNumber,
         existingItem: item,
         onSave: (data) async {
-          await ref.read(guideItineraryFormProvider.notifier).updateItem(
+          await ref
+              .read(guideItineraryFormProvider.notifier)
+              .updateItem(
                 itemId: item.id,
                 title: data['title'] as String?,
                 description: data['description'] as String?,
@@ -179,9 +177,7 @@ class GuideItineraryScreen extends ConsumerWidget {
     );
 
     if (confirmed == true) {
-      await ref
-          .read(guideItineraryFormProvider.notifier)
-          .deleteItem(item.id);
+      await ref.read(guideItineraryFormProvider.notifier).deleteItem(item.id);
     }
   }
 }
@@ -214,8 +210,10 @@ class _DaySection extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
@@ -236,8 +234,10 @@ class _DaySection extends StatelessWidget {
                 label: const Text('Add'),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.primary,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                 ),
               ),
             ],
@@ -281,8 +281,7 @@ class _EditableItemTile extends StatelessWidget {
         border: Border.all(color: AppColors.surfaceVariant),
       ),
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -340,20 +339,20 @@ class _EditableItemTile extends StatelessWidget {
   }
 
   IconData _categoryIcon(String category) => switch (category) {
-        'transport' => Icons.directions_rounded,
-        'food' => Icons.restaurant_rounded,
-        'activity' => Icons.local_activity_rounded,
-        'accommodation' => Icons.hotel_rounded,
-        _ => Icons.place_rounded,
-      };
+    'transport' => Icons.directions_rounded,
+    'food' => Icons.restaurant_rounded,
+    'activity' => Icons.local_activity_rounded,
+    'accommodation' => Icons.hotel_rounded,
+    _ => Icons.place_rounded,
+  };
 
   Color _categoryColor(String category) => switch (category) {
-        'transport' => Colors.blueAccent,
-        'food' => Colors.orangeAccent,
-        'activity' => AppColors.accent,
-        'accommodation' => AppColors.primary,
-        _ => AppColors.textSecondary,
-      };
+    'transport' => Colors.blueAccent,
+    'food' => Colors.orangeAccent,
+    'activity' => AppColors.accent,
+    'accommodation' => AppColors.primary,
+    _ => AppColors.textSecondary,
+  };
 }
 
 // ─── Item Form Sheet ──────────────────────────────────────────────────────────
@@ -448,9 +447,9 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
 
             Text(
               isEditing ? 'Edit Item' : 'Add Item — Day ${widget.dayNumber}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 20),
 
@@ -473,10 +472,10 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
                           Text(cat.$2),
                         ],
                       ),
-                      onSelected: (_) =>
-                          setState(() => _category = cat.$1),
-                      selectedColor:
-                          AppColors.primaryLight.withValues(alpha: 0.2),
+                      onSelected: (_) => setState(() => _category = cat.$1),
+                      selectedColor: AppColors.primaryLight.withValues(
+                        alpha: 0.2,
+                      ),
                       checkmarkColor: AppColors.primary,
                       labelStyle: TextStyle(
                         color: isSelected
@@ -536,12 +535,9 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
                   child: DropdownButton<String>(
                     value: _currency,
                     items: _currencies
-                        .map(
-                          (c) => DropdownMenuItem(value: c, child: Text(c)),
-                        )
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                         .toList(),
-                    onChanged: (v) =>
-                        setState(() => _currency = v ?? 'USD'),
+                    onChanged: (v) => setState(() => _currency = v ?? 'USD'),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -581,9 +577,9 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
 
   Future<void> _save() async {
     if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Title is required')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Title is required')));
       return;
     }
 
@@ -608,24 +604,23 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
   }
 
   InputDecoration _inputDec(String hint) => InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: AppColors.surfaceVariant.withValues(alpha: 0.5),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.surfaceVariant),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.surfaceVariant),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-      );
+    hintText: hint,
+    filled: true,
+    fillColor: AppColors.surfaceVariant.withValues(alpha: 0.5),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: AppColors.surfaceVariant),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: AppColors.surfaceVariant),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+    ),
+  );
 }
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
@@ -669,9 +664,7 @@ class _EmptyItinerary extends StatelessWidget {
               onPressed: onAdd,
               icon: const Icon(Icons.add_rounded),
               label: const Text('Add First Item'),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primary,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
             ),
           ],
         ),

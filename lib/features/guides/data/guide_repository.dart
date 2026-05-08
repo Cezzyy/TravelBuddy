@@ -99,24 +99,27 @@ class GuideRepository {
       destination: destination != null
           ? drift.Value(destination)
           : const drift.Value.absent(),
-      latitude:
-          latitude != null ? drift.Value(latitude) : const drift.Value.absent(),
+      latitude: latitude != null
+          ? drift.Value(latitude)
+          : const drift.Value.absent(),
       longitude: longitude != null
           ? drift.Value(longitude)
           : const drift.Value.absent(),
       coverImageUrl: coverImageUrl != null
           ? drift.Value(coverImageUrl)
           : const drift.Value.absent(),
-      content:
-          content != null ? drift.Value(content) : const drift.Value.absent(),
+      content: content != null
+          ? drift.Value(content)
+          : const drift.Value.absent(),
       tags: tags != null
           ? drift.Value(jsonEncode(tags))
           : const drift.Value.absent(),
       updatedAt: drift.Value(now),
     );
 
-    await (_db.update(_db.guides)..where((g) => g.id.equals(guideId)))
-        .write(companion);
+    await (_db.update(
+      _db.guides,
+    )..where((g) => g.id.equals(guideId))).write(companion);
     AppLogger.talker.info('Guide updated locally: $guideId');
 
     // Queue for sync
@@ -179,10 +182,7 @@ class GuideRepository {
       targetTable: 'guides',
       recordId: guideId,
       operation: 'update',
-      payload: {
-        'isPublished': false,
-        'updatedAt': now.toIso8601String(),
-      },
+      payload: {'isPublished': false, 'updatedAt': now.toIso8601String()},
     );
 
     // Attempt immediate sync
@@ -207,10 +207,7 @@ class GuideRepository {
       targetTable: 'guides',
       recordId: guideId,
       operation: 'delete',
-      payload: {
-        'isDeleted': true,
-        'updatedAt': now.toIso8601String(),
-      },
+      payload: {'isDeleted': true, 'updatedAt': now.toIso8601String()},
     );
 
     // Attempt immediate sync
@@ -234,8 +231,9 @@ class GuideRepository {
   /// Get all guides by a specific author.
   Future<List<Guide>> getMyGuides(String authorId) async {
     return await (_db.select(_db.guides)
-          ..where((g) =>
-              g.authorId.equals(authorId) & g.isDeleted.equals(false))
+          ..where(
+            (g) => g.authorId.equals(authorId) & g.isDeleted.equals(false),
+          )
           ..orderBy([(g) => drift.OrderingTerm.desc(g.updatedAt)]))
         .get();
   }
@@ -243,8 +241,9 @@ class GuideRepository {
   /// Watch all guides by a specific author.
   Stream<List<Guide>> watchMyGuides(String authorId) {
     return (_db.select(_db.guides)
-          ..where((g) =>
-              g.authorId.equals(authorId) & g.isDeleted.equals(false))
+          ..where(
+            (g) => g.authorId.equals(authorId) & g.isDeleted.equals(false),
+          )
           ..orderBy([(g) => drift.OrderingTerm.desc(g.updatedAt)]))
         .watch();
   }
@@ -255,8 +254,7 @@ class GuideRepository {
     int offset = 0,
   }) async {
     return await (_db.select(_db.guides)
-          ..where((g) =>
-              g.isPublished.equals(true) & g.isDeleted.equals(false))
+          ..where((g) => g.isPublished.equals(true) & g.isDeleted.equals(false))
           ..orderBy([(g) => drift.OrderingTerm.desc(g.publishedAt)])
           ..limit(limit, offset: offset))
         .get();
@@ -265,8 +263,7 @@ class GuideRepository {
   /// Watch published guides.
   Stream<List<Guide>> watchPublishedGuides({int limit = 50}) {
     return (_db.select(_db.guides)
-          ..where((g) =>
-              g.isPublished.equals(true) & g.isDeleted.equals(false))
+          ..where((g) => g.isPublished.equals(true) & g.isDeleted.equals(false))
           ..orderBy([(g) => drift.OrderingTerm.desc(g.publishedAt)])
           ..limit(limit))
         .watch();
@@ -277,14 +274,16 @@ class GuideRepository {
     final lowerQuery = query.toLowerCase();
 
     // Get all published guides
-    final guides = await (_db.select(_db.guides)
-          ..where((g) =>
-              g.isPublished.equals(true) & g.isDeleted.equals(false)))
-        .get();
+    final guides =
+        await (_db.select(_db.guides)..where(
+              (g) => g.isPublished.equals(true) & g.isDeleted.equals(false),
+            ))
+            .get();
 
     // Filter in memory (Drift doesn't support full-text search)
     return guides.where((guide) {
-      final matchesText = guide.title.toLowerCase().contains(lowerQuery) ||
+      final matchesText =
+          guide.title.toLowerCase().contains(lowerQuery) ||
           guide.description.toLowerCase().contains(lowerQuery) ||
           guide.destination.toLowerCase().contains(lowerQuery);
 
@@ -292,8 +291,9 @@ class GuideRepository {
         final guideTags = guide.tags != null
             ? List<String>.from(jsonDecode(guide.tags!))
             : <String>[];
-        final matchesTags =
-            tags.any((tag) => guideTags.contains(tag.toLowerCase()));
+        final matchesTags = tags.any(
+          (tag) => guideTags.contains(tag.toLowerCase()),
+        );
         return matchesText && matchesTags;
       }
 
@@ -309,9 +309,7 @@ class GuideRepository {
     final newCount = guide.viewCount + 1;
 
     await (_db.update(_db.guides)..where((g) => g.id.equals(guideId))).write(
-      GuidesCompanion(
-        viewCount: drift.Value(newCount),
-      ),
+      GuidesCompanion(viewCount: drift.Value(newCount)),
     );
 
     // Queue for sync (low priority, don't need immediate sync)
@@ -328,12 +326,12 @@ class GuideRepository {
     final guide = await getGuide(guideId);
     if (guide == null) return;
 
-    final newCount = (guide.likeCount + delta).clamp(0, double.infinity).toInt();
+    final newCount = (guide.likeCount + delta)
+        .clamp(0, double.infinity)
+        .toInt();
 
     await (_db.update(_db.guides)..where((g) => g.id.equals(guideId))).write(
-      GuidesCompanion(
-        likeCount: drift.Value(newCount),
-      ),
+      GuidesCompanion(likeCount: drift.Value(newCount)),
     );
 
     // Queue for sync
@@ -387,16 +385,18 @@ class GuideRepository {
     await _db.into(_db.guides).insert(draftCompanion);
 
     // Update published guide to reference the draft
-    await (_db.update(_db.guides)
-          ..where((g) => g.id.equals(publishedGuideId)))
-        .write(
+    await (_db.update(
+      _db.guides,
+    )..where((g) => g.id.equals(publishedGuideId))).write(
       GuidesCompanion(
         draftVersionId: drift.Value(draftId),
         updatedAt: drift.Value(now),
       ),
     );
 
-    AppLogger.talker.info('Draft version created: $draftId for $publishedGuideId');
+    AppLogger.talker.info(
+      'Draft version created: $draftId for $publishedGuideId',
+    );
 
     // Queue for sync
     await _queueSync(
@@ -420,8 +420,9 @@ class GuideRepository {
     final now = DateTime.now();
 
     // Update published guide with draft content
-    await (_db.update(_db.guides)..where((g) => g.id.equals(publishedId)))
-        .write(
+    await (_db.update(
+      _db.guides,
+    )..where((g) => g.id.equals(publishedId))).write(
       GuidesCompanion(
         title: drift.Value(draft.title),
         description: drift.Value(draft.description),
@@ -444,7 +445,9 @@ class GuideRepository {
       ),
     );
 
-    AppLogger.talker.info('Draft applied to published: $draftId -> $publishedId');
+    AppLogger.talker.info(
+      'Draft applied to published: $draftId -> $publishedId',
+    );
 
     // Queue for sync
     await _queueSync(
@@ -478,8 +481,9 @@ class GuideRepository {
     final now = DateTime.now();
 
     // Clear draft reference from published guide
-    await (_db.update(_db.guides)..where((g) => g.id.equals(publishedId)))
-        .write(
+    await (_db.update(
+      _db.guides,
+    )..where((g) => g.id.equals(publishedId))).write(
       GuidesCompanion(
         draftVersionId: const drift.Value(null),
         updatedAt: drift.Value(now),
@@ -535,8 +539,9 @@ class GuideRepository {
         'isPublished': guide.isPublished,
         'createdAt': Timestamp.fromDate(guide.createdAt),
         'updatedAt': FieldValue.serverTimestamp(),
-        'publishedAt':
-            guide.publishedAt != null ? Timestamp.fromDate(guide.publishedAt!) : null,
+        'publishedAt': guide.publishedAt != null
+            ? Timestamp.fromDate(guide.publishedAt!)
+            : null,
         'isDeleted': guide.isDeleted,
       };
 
@@ -604,7 +609,9 @@ class GuideRepository {
     required String operation,
     required Map<String, dynamic> payload,
   }) async {
-    await _db.into(_db.syncQueue).insert(
+    await _db
+        .into(_db.syncQueue)
+        .insert(
           SyncQueueCompanion.insert(
             targetTable: targetTable,
             recordId: recordId,

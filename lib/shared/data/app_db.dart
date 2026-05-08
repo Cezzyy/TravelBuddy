@@ -67,7 +67,7 @@ class AppDatabase extends _$AppDatabase {
           // Add trip invitations table
           await m.createTable(tripInvitations);
         }
-        
+
         // Migration from v2 to v3: Add draft versioning to guides
         if (from < 3) {
           await m.addColumn(guides, guides.publishedVersionId);

@@ -106,8 +106,9 @@ class GuideItineraryRepository {
       locationName: locationName != null
           ? drift.Value(locationName)
           : const drift.Value.absent(),
-      latitude:
-          latitude != null ? drift.Value(latitude) : const drift.Value.absent(),
+      latitude: latitude != null
+          ? drift.Value(latitude)
+          : const drift.Value.absent(),
       longitude: longitude != null
           ? drift.Value(longitude)
           : const drift.Value.absent(),
@@ -120,8 +121,9 @@ class GuideItineraryRepository {
       suggestedEndTime: suggestedEndTime != null
           ? drift.Value(suggestedEndTime)
           : const drift.Value.absent(),
-      category:
-          category != null ? drift.Value(category) : const drift.Value.absent(),
+      category: category != null
+          ? drift.Value(category)
+          : const drift.Value.absent(),
       sortOrder: sortOrder != null
           ? drift.Value(sortOrder)
           : const drift.Value.absent(),
@@ -134,9 +136,9 @@ class GuideItineraryRepository {
       updatedAt: drift.Value(now),
     );
 
-    await (_db.update(_db.guideItineraryItems)
-          ..where((i) => i.id.equals(itemId)))
-        .write(companion);
+    await (_db.update(
+      _db.guideItineraryItems,
+    )..where((i) => i.id.equals(itemId))).write(companion);
     AppLogger.talker.info('Itinerary item updated locally: $itemId');
 
     // Queue for sync
@@ -155,9 +157,9 @@ class GuideItineraryRepository {
   Future<void> deleteItineraryItem(String itemId) async {
     final now = DateTime.now();
 
-    await (_db.update(_db.guideItineraryItems)
-          ..where((i) => i.id.equals(itemId)))
-        .write(
+    await (_db.update(
+      _db.guideItineraryItems,
+    )..where((i) => i.id.equals(itemId))).write(
       GuideItineraryItemsCompanion(
         isDeleted: const drift.Value(true),
         updatedAt: drift.Value(now),
@@ -171,10 +173,7 @@ class GuideItineraryRepository {
       targetTable: 'guide_itinerary_items',
       recordId: itemId,
       operation: 'delete',
-      payload: {
-        'isDeleted': true,
-        'updatedAt': now.toIso8601String(),
-      },
+      payload: {'isDeleted': true, 'updatedAt': now.toIso8601String()},
     );
 
     // Attempt immediate sync
@@ -217,10 +216,7 @@ class GuideItineraryRepository {
     List<String> itemIds,
   ) async {
     for (var i = 0; i < itemIds.length; i++) {
-      await updateItineraryItem(
-        itemId: itemIds[i],
-        sortOrder: i,
-      );
+      await updateItineraryItem(itemId: itemIds[i], sortOrder: i);
     }
 
     AppLogger.talker.info(
@@ -252,8 +248,7 @@ class GuideItineraryRepository {
         return;
       }
 
-      final docRef =
-          _firestore.collection('guide_itinerary_items').doc(itemId);
+      final docRef = _firestore.collection('guide_itinerary_items').doc(itemId);
       final data = {
         'guideId': item.guideId,
         'title': item.title,
@@ -281,12 +276,10 @@ class GuideItineraryRepository {
       AppLogger.talker.info('Itinerary item synced to Firestore: $itemId');
 
       // Update lastSyncedAt
-      await (_db.update(_db.guideItineraryItems)
-            ..where((i) => i.id.equals(itemId)))
-          .write(
-        GuideItineraryItemsCompanion(
-          lastSyncedAt: drift.Value(DateTime.now()),
-        ),
+      await (_db.update(
+        _db.guideItineraryItems,
+      )..where((i) => i.id.equals(itemId))).write(
+        GuideItineraryItemsCompanion(lastSyncedAt: drift.Value(DateTime.now())),
       );
     } catch (e, st) {
       AppLogger.talker.warning(
@@ -304,7 +297,9 @@ class GuideItineraryRepository {
     required String operation,
     required Map<String, dynamic> payload,
   }) async {
-    await _db.into(_db.syncQueue).insert(
+    await _db
+        .into(_db.syncQueue)
+        .insert(
           SyncQueueCompanion.insert(
             targetTable: targetTable,
             recordId: recordId,
@@ -330,12 +325,11 @@ class GuideItineraryRepository {
       if (companion.dayNumber.present) 'dayNumber': companion.dayNumber.value,
       if (companion.suggestedStartTime.present &&
           companion.suggestedStartTime.value != null)
-        'suggestedStartTime':
-            companion.suggestedStartTime.value!.toIso8601String(),
+        'suggestedStartTime': companion.suggestedStartTime.value!
+            .toIso8601String(),
       if (companion.suggestedEndTime.present &&
           companion.suggestedEndTime.value != null)
-        'suggestedEndTime':
-            companion.suggestedEndTime.value!.toIso8601String(),
+        'suggestedEndTime': companion.suggestedEndTime.value!.toIso8601String(),
       if (companion.category.present) 'category': companion.category.value,
       if (companion.sortOrder.present) 'sortOrder': companion.sortOrder.value,
       if (companion.estimatedCost.present)

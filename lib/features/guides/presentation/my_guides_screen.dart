@@ -33,12 +33,7 @@ class MyGuidesScreen extends ConsumerWidget {
             ],
           ),
         ),
-        body: const TabBarView(
-          children: [
-            _PublishedTab(),
-            _DraftsTab(),
-          ],
-        ),
+        body: const TabBarView(children: [_PublishedTab(), _DraftsTab()]),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => context.push(RoutePaths.guideCreate),
           backgroundColor: AppColors.accent,
@@ -62,9 +57,8 @@ class _PublishedTab extends ConsumerWidget {
 
     return guidesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _ErrorState(
-        onRetry: () => ref.invalidate(myPublishedGuidesProvider),
-      ),
+      error: (e, _) =>
+          _ErrorState(onRetry: () => ref.invalidate(myPublishedGuidesProvider)),
       data: (guides) {
         if (guides.isEmpty) {
           return _EmptyState(
@@ -93,9 +87,8 @@ class _DraftsTab extends ConsumerWidget {
 
     return guidesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _ErrorState(
-        onRetry: () => ref.invalidate(myDraftGuidesProvider),
-      ),
+      error: (e, _) =>
+          _ErrorState(onRetry: () => ref.invalidate(myDraftGuidesProvider)),
       data: (guides) {
         if (guides.isEmpty) {
           return _EmptyState(
@@ -137,8 +130,7 @@ class _GuidesList extends ConsumerWidget {
           onEdit: () => context.push(
             RoutePaths.guideEdit.replaceFirst(':guideId', guide.id),
           ),
-          onTogglePublish: () =>
-              _togglePublish(context, ref, guide),
+          onTogglePublish: () => _togglePublish(context, ref, guide),
           onDelete: () => _confirmDelete(context, ref, guide),
         );
       },
@@ -151,7 +143,7 @@ class _GuidesList extends ConsumerWidget {
     dynamic guide,
   ) async {
     final repo = ref.read(guideRepositoryProvider);
-    
+
     try {
       if (guide.isPublished) {
         // Unpublish a published guide
@@ -161,8 +153,11 @@ class _GuidesList extends ConsumerWidget {
             SnackBar(
               content: Row(
                 children: [
-                  const Icon(Icons.check_circle_rounded,
-                      color: Colors.white, size: 20),
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                   const SizedBox(width: 10),
                   const Expanded(
                     child: Text(
@@ -175,7 +170,8 @@ class _GuidesList extends ConsumerWidget {
               behavior: SnackBarBehavior.floating,
               backgroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           );
         }
@@ -189,8 +185,11 @@ class _GuidesList extends ConsumerWidget {
               SnackBar(
                 content: Row(
                   children: [
-                    const Icon(Icons.celebration_rounded,
-                        color: Colors.white, size: 20),
+                    const Icon(
+                      Icons.celebration_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                     const SizedBox(width: 10),
                     const Expanded(
                       child: Text(
@@ -203,7 +202,8 @@ class _GuidesList extends ConsumerWidget {
                 behavior: SnackBarBehavior.floating,
                 backgroundColor: AppColors.success,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 duration: const Duration(seconds: 4),
               ),
             );
@@ -216,8 +216,11 @@ class _GuidesList extends ConsumerWidget {
               SnackBar(
                 content: Row(
                   children: [
-                    const Icon(Icons.celebration_rounded,
-                        color: Colors.white, size: 20),
+                    const Icon(
+                      Icons.celebration_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                     const SizedBox(width: 10),
                     const Expanded(
                       child: Text(
@@ -230,7 +233,8 @@ class _GuidesList extends ConsumerWidget {
                 behavior: SnackBarBehavior.floating,
                 backgroundColor: AppColors.success,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 duration: const Duration(seconds: 4),
               ),
             );
@@ -243,15 +247,18 @@ class _GuidesList extends ConsumerWidget {
         final String errorMessage = guide.isPublished
             ? 'Failed to unpublish guide. Please try again.'
             : guide.publishedVersionId != null
-                ? 'Failed to apply changes. Please check your connection and try again.'
-                : 'Failed to publish guide. Please check your connection and try again.';
+            ? 'Failed to apply changes. Please check your connection and try again.'
+            : 'Failed to publish guide. Please check your connection and try again.';
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.error_outline_rounded,
-                    color: Colors.white, size: 20),
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -263,8 +270,9 @@ class _GuidesList extends ConsumerWidget {
             ),
             behavior: SnackBarBehavior.floating,
             backgroundColor: AppColors.error,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
             duration: const Duration(seconds: 4),
             action: SnackBarAction(
               label: 'Retry',
@@ -312,8 +320,9 @@ class _GuidesList extends ConsumerWidget {
           SnackBar(
             content: const Text('Guide deleted'),
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -372,9 +381,7 @@ class _EmptyState extends StatelessWidget {
               onPressed: onAction,
               icon: const Icon(Icons.add_rounded),
               label: Text(actionLabel),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.accent,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.accent),
             ),
           ],
         ),
@@ -405,10 +412,7 @@ class _ErrorState extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 12),
-          FilledButton.tonal(
-            onPressed: onRetry,
-            child: const Text('Retry'),
-          ),
+          FilledButton.tonal(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );
