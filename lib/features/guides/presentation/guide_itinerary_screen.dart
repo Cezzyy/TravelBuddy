@@ -177,7 +177,51 @@ class GuideItineraryScreen extends ConsumerWidget {
     );
 
     if (confirmed == true) {
-      await ref.read(guideItineraryFormProvider.notifier).deleteItem(item.id);
+      try {
+        await ref.read(guideItineraryFormProvider.notifier).deleteItem(item.id);
+        
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white, size: 20),
+                  SizedBox(width: 10),
+                  Text('Item removed successfully'),
+                ],
+              ),
+              backgroundColor: AppColors.success,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.white, size: 20),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text('Failed to remove item. Please try again.'),
+                  ),
+                ],
+              ),
+              backgroundColor: AppColors.error,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
     }
   }
 }
@@ -577,30 +621,98 @@ class _ItemFormSheetState extends State<_ItemFormSheet> {
 
   Future<void> _save() async {
     if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Title is required')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white, size: 20),
+              SizedBox(width: 10),
+              Text('Please enter a title'),
+            ],
+          ),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
       return;
     }
 
     setState(() => _isSaving = true);
 
-    final cost = double.tryParse(_costController.text.trim());
+    try {
+      final cost = double.tryParse(_costController.text.trim());
 
-    await widget.onSave({
-      'title': _titleController.text.trim(),
-      'description': _descController.text.trim().isEmpty
-          ? null
-          : _descController.text.trim(),
-      'locationName': _locationController.text.trim().isEmpty
-          ? null
-          : _locationController.text.trim(),
-      'category': _category,
-      'estimatedCost': cost,
-      'costCurrency': cost != null ? _currency : null,
-    });
+      await widget.onSave({
+        'title': _titleController.text.trim(),
+        'description': _descController.text.trim().isEmpty
+            ? null
+            : _descController.text.trim(),
+        'locationName': _locationController.text.trim().isEmpty
+            ? null
+            : _locationController.text.trim(),
+        'category': _category,
+        'estimatedCost': cost,
+        'costCurrency': cost != null ? _currency : null,
+      });
 
-    if (mounted) Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+        
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                const SizedBox(width: 10),
+                Text(
+                  widget.existingItem != null
+                      ? 'Item updated successfully'
+                      : 'Item added successfully',
+                ),
+              ],
+            ),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isSaving = false);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.existingItem != null
+                        ? 'Failed to update item. Please try again.'
+                        : 'Failed to add item. Please try again.',
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 
   InputDecoration _inputDec(String hint) => InputDecoration(

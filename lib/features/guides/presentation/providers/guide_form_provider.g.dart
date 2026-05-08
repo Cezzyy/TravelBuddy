@@ -64,7 +64,7 @@ final class GuideFormProvider
   }
 }
 
-String _$guideFormHash() => r'880065faddae0ec9396efef47f3d410abf55ad2a';
+String _$guideFormHash() => r'6e9d51283631d66e8267d8dd48d30919c366ecd6';
 
 /// Manages the create/edit guide form.
 /// Pass [guideId] to edit an existing guide; null to create a new one.
