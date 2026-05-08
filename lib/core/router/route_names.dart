@@ -13,6 +13,13 @@ abstract class RoutePaths {
   static const profile = '/profile';
   static const tripDetail = '/trips/:tripId';
   static const createSelection = '/create';
+
+  // Guide routes
+  static const guideCreate = '/guides/create';
+  static const guideDetail = '/guides/:guideId';
+  static const guideEdit = '/guides/:guideId/edit';
+  static const guideItinerary = '/guides/:guideId/itinerary';
+  static const myGuides = '/guides/my';
 }
 
 abstract class RouteNames {
@@ -28,4 +35,11 @@ abstract class RouteNames {
   static const profile = 'profile';
   static const tripDetail = 'trip-detail';
   static const createSelection = 'create-selection';
+
+  // Guide routes
+  static const guideCreate = 'guide-create';
+  static const guideDetail = 'guide-detail';
+  static const guideEdit = 'guide-edit';
+  static const guideItinerary = 'guide-itinerary';
+  static const myGuides = 'my-guides';
 }

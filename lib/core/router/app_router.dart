@@ -14,6 +14,10 @@ import '../../features/auth/presentation/auth_screen.dart';
 import '../../features/auth/presentation/email_auth_screen.dart';
 import '../../features/create/presentation/create_selection_screen.dart';
 import '../../features/guides/presentation/guides_screen.dart';
+import '../../features/guides/presentation/guide_detail_screen.dart';
+import '../../features/guides/presentation/guide_form_screen.dart';
+import '../../features/guides/presentation/guide_itinerary_screen.dart';
+import '../../features/guides/presentation/my_guides_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/onboarding/domain/onboarding_step.dart';
 import '../../features/onboarding/presentation/preferences_screen.dart';
@@ -256,6 +260,87 @@ GoRouter appRouter(Ref ref) {
             return SlideTransition(position: slide, child: child);
           },
         ),
+      ),
+
+      // Guide — Create
+      GoRoute(
+        path: RoutePaths.guideCreate,
+        name: RouteNames.guideCreate,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const GuideFormScreen(),
+          transitionDuration: const Duration(milliseconds: 350),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final slide = Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+            );
+            return SlideTransition(position: slide, child: child);
+          },
+        ),
+      ),
+
+      // Guide — My Guides
+      GoRoute(
+        path: RoutePaths.myGuides,
+        name: RouteNames.myGuides,
+        pageBuilder: (context, state) => _fadeTransitionPage(
+          key: state.pageKey,
+          child: const MyGuidesScreen(),
+        ),
+      ),
+
+      // Guide — Detail
+      GoRoute(
+        path: RoutePaths.guideDetail,
+        name: RouteNames.guideDetail,
+        pageBuilder: (context, state) {
+          final guideId = state.pathParameters['guideId']!;
+          return _fadeTransitionPage(
+            key: state.pageKey,
+            child: GuideDetailScreen(guideId: guideId),
+          );
+        },
+      ),
+
+      // Guide — Edit
+      GoRoute(
+        path: RoutePaths.guideEdit,
+        name: RouteNames.guideEdit,
+        pageBuilder: (context, state) {
+          final guideId = state.pathParameters['guideId']!;
+          return CustomTransitionPage<void>(
+            key: state.pageKey,
+            child: GuideFormScreen(guideId: guideId),
+            transitionDuration: const Duration(milliseconds: 350),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              final slide = Tween<Offset>(
+                begin: const Offset(0, 1),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(
+                    parent: animation, curve: Curves.easeOutCubic),
+              );
+              return SlideTransition(position: slide, child: child);
+            },
+          );
+        },
+      ),
+
+      // Guide — Itinerary Builder
+      GoRoute(
+        path: RoutePaths.guideItinerary,
+        name: RouteNames.guideItinerary,
+        pageBuilder: (context, state) {
+          final guideId = state.pathParameters['guideId']!;
+          return _fadeTransitionPage(
+            key: state.pageKey,
+            child: GuideItineraryScreen(guideId: guideId),
+          );
+        },
       ),
 
       StatefulShellRoute.indexedStack(

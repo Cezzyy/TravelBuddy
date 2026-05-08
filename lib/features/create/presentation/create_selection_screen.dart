@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/router/route_names.dart';
 import '../../../core/theme/app_colors.dart';
 
 /// Screen that allows users to choose between creating a Trip or Guide.
@@ -105,13 +107,7 @@ class CreateSelectionScreen extends ConsumerWidget {
 
   void _handleCreateGuide(BuildContext context) {
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Create Guide - Coming Soon'),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    context.push(RoutePaths.guideCreate);
   }
 }
 
