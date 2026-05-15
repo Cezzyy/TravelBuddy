@@ -7,7 +7,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/logging/app_logger.dart';
 import 'providers/user_preferences_provider.dart';
 
-/// Screen for editing travel preferences.
+/// Screen for managing travel preferences from profile.
+/// Different from onboarding - shows current selections and requires at least one per category.
 class TravelPreferencesScreen extends ConsumerStatefulWidget {
   const TravelPreferencesScreen({super.key});
 
@@ -24,76 +25,42 @@ class _TravelPreferencesScreenState
   bool _isLoading = false;
   bool _isInitialized = false;
 
-  // Travel style options
+  // Track initial values to show what's being changed
+  String? _initialTravelStyle;
+  String? _initialBudgetLevel;
+  Set<String> _initialActivities = {};
+
+  // Travel style options - matching onboarding
   static const travelStyles = [
-    {'value': 'adventure', 'label': 'Adventure', 'icon': Icons.hiking_rounded},
-    {'value': 'relaxation', 'label': 'Relaxation', 'icon': Icons.spa_rounded},
-    {'value': 'cultural', 'label': 'Cultural', 'icon': Icons.museum_rounded},
-    {'value': 'foodie', 'label': 'Foodie', 'icon': Icons.restaurant_rounded},
-    {'value': 'nature', 'label': 'Nature', 'icon': Icons.forest_rounded},
-    {'value': 'urban', 'label': 'Urban', 'icon': Icons.location_city_rounded},
+    {'value': 'Adventure', 'icon': Icons.terrain_rounded},
+    {'value': 'Relaxation', 'icon': Icons.spa_rounded},
+    {'value': 'Cultural', 'icon': Icons.account_balance_rounded},
+    {'value': 'Foodie', 'icon': Icons.restaurant_rounded},
+    {'value': 'Backpacking', 'icon': Icons.hiking_rounded},
+    {'value': 'Luxury', 'icon': Icons.diamond_rounded},
   ];
 
   // Budget level options
   static const budgetLevels = [
-    {
-      'value': 'budget',
-      'label': 'Budget',
-      'icon': Icons.savings_rounded,
-      'description': 'Cost-conscious travel',
-    },
-    {
-      'value': 'mid-range',
-      'label': 'Mid-Range',
-      'icon': Icons.account_balance_wallet_rounded,
-      'description': 'Balanced comfort & value',
-    },
-    {
-      'value': 'luxury',
-      'label': 'Luxury',
-      'icon': Icons.diamond_rounded,
-      'description': 'Premium experiences',
-    },
+    {'value': 'Budget', 'icon': Icons.savings_rounded},
+    {'value': 'Mid-range', 'icon': Icons.account_balance_wallet_rounded},
+    {'value': 'Luxury', 'icon': Icons.workspace_premium_rounded},
   ];
 
   // Activity options
   static const activities = [
-    {'value': 'hiking', 'label': 'Hiking', 'icon': Icons.hiking_rounded},
-    {
-      'value': 'beaches',
-      'label': 'Beaches',
-      'icon': Icons.beach_access_rounded,
-    },
-    {'value': 'museums', 'label': 'Museums', 'icon': Icons.museum_rounded},
-    {'value': 'food', 'label': 'Food Tours', 'icon': Icons.restaurant_rounded},
-    {
-      'value': 'shopping',
-      'label': 'Shopping',
-      'icon': Icons.shopping_bag_rounded,
-    },
-    {
-      'value': 'nightlife',
-      'label': 'Nightlife',
-      'icon': Icons.nightlife_rounded,
-    },
-    {
-      'value': 'photography',
-      'label': 'Photography',
-      'icon': Icons.camera_alt_rounded,
-    },
-    {'value': 'wildlife', 'label': 'Wildlife', 'icon': Icons.pets_rounded},
-    {'value': 'sports', 'label': 'Sports', 'icon': Icons.sports_soccer_rounded},
-    {
-      'value': 'wellness',
-      'label': 'Wellness',
-      'icon': Icons.self_improvement_rounded,
-    },
-    {'value': 'history', 'label': 'History', 'icon': Icons.history_edu_rounded},
-    {
-      'value': 'festivals',
-      'label': 'Festivals',
-      'icon': Icons.celebration_rounded,
-    },
+    {'value': 'Hiking', 'icon': Icons.terrain_rounded},
+    {'value': 'Beach', 'icon': Icons.beach_access_rounded},
+    {'value': 'Museums', 'icon': Icons.museum_rounded},
+    {'value': 'Nightlife', 'icon': Icons.nightlife_rounded},
+    {'value': 'Road Trips', 'icon': Icons.directions_car_rounded},
+    {'value': 'Local Food', 'icon': Icons.ramen_dining_rounded},
+    {'value': 'Photography', 'icon': Icons.camera_alt_rounded},
+    {'value': 'Shopping', 'icon': Icons.shopping_bag_rounded},
+    {'value': 'Water Sports', 'icon': Icons.surfing_rounded},
+    {'value': 'Wildlife', 'icon': Icons.pets_rounded},
+    {'value': 'Festivals', 'icon': Icons.celebration_rounded},
+    {'value': 'Wellness', 'icon': Icons.self_improvement_rounded},
   ];
 
   @override
@@ -120,10 +87,23 @@ class _TravelPreferencesScreenState
               AppLogger.talker.error('Failed to parse activities: $e');
             }
           }
+
+          // Store initial values
+          _initialTravelStyle = _selectedTravelStyle;
+          _initialBudgetLevel = _selectedBudgetLevel;
+          _initialActivities = Set.from(_selectedActivities);
+
           _isInitialized = true;
         });
       }
     });
+  }
+
+  bool _hasChanges() {
+    return _selectedTravelStyle != _initialTravelStyle ||
+        _selectedBudgetLevel != _initialBudgetLevel ||
+        !_selectedActivities.containsAll(_initialActivities) ||
+        !_initialActivities.containsAll(_selectedActivities);
   }
 
   @override
@@ -136,159 +116,267 @@ class _TravelPreferencesScreenState
         title: const Text('Travel Preferences'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          // Travel Style Section
-          Text(
-            'Travel Style',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'What kind of traveler are you?',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: travelStyles.map((style) {
-              final isSelected = _selectedTravelStyle == style['value'];
-              return _StyleChip(
-                label: style['label'] as String,
-                icon: style['icon'] as IconData,
-                isSelected: isSelected,
-                onTap: () {
-                  setState(() {
-                    _selectedTravelStyle = style['value'] as String;
-                  });
-                },
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 32),
-
-          // Budget Level Section
-          Text(
-            'Budget Level',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'What\'s your typical travel budget?',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ...budgetLevels.map((budget) {
-            final isSelected = _selectedBudgetLevel == budget['value'];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _BudgetCard(
-                label: budget['label'] as String,
-                description: budget['description'] as String,
-                icon: budget['icon'] as IconData,
-                isSelected: isSelected,
-                onTap: () {
-                  setState(() {
-                    _selectedBudgetLevel = budget['value'] as String;
-                  });
-                },
-              ),
-            );
-          }),
-          const SizedBox(height: 32),
-
-          // Preferred Activities Section
-          Text(
-            'Preferred Activities',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Select all that interest you',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: activities.map((activity) {
-              final isSelected = _selectedActivities.contains(
-                activity['value'],
-              );
-              return _ActivityChip(
-                label: activity['label'] as String,
-                icon: activity['icon'] as IconData,
-                isSelected: isSelected,
-                onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      _selectedActivities.remove(activity['value']);
-                    } else {
-                      _selectedActivities.add(activity['value'] as String);
-                    }
-                  });
-                },
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 32),
-
-          // Save Button
-          FilledButton(
-            onPressed: _isLoading ? null : _handleSave,
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: _isLoading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : const Text(
-                    'Save Preferences',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        actions: [
+          if (_hasChanges())
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
                   ),
-          ),
-          const SizedBox(height: 16),
-
-          // Cancel Button
-          OutlinedButton(
-            onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    'Modified',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                // Info card
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline_rounded,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'You must have at least one selection in each category',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Travel Style Section
+                _SectionHeader(
+                  icon: Icons.explore_rounded,
+                  label: 'Travel Style',
+                  count: _selectedTravelStyle != null ? 1 : 0,
+                  required: true,
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: travelStyles.map((style) {
+                    final value = style['value'] as String;
+                    final isSelected = _selectedTravelStyle == value;
+                    final wasInitial = _initialTravelStyle == value;
+                    return _SelectableChip(
+                      label: value,
+                      icon: style['icon'] as IconData,
+                      isSelected: isSelected,
+                      wasInitial: wasInitial,
+                      onTap: () {
+                        setState(() {
+                          _selectedTravelStyle = value;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 32),
+
+                // Budget Level Section
+                _SectionHeader(
+                  icon: Icons.payments_rounded,
+                  label: 'Budget Level',
+                  count: _selectedBudgetLevel != null ? 1 : 0,
+                  required: true,
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: budgetLevels.map((budget) {
+                    final value = budget['value'] as String;
+                    final isSelected = _selectedBudgetLevel == value;
+                    final wasInitial = _initialBudgetLevel == value;
+                    return _SelectableChip(
+                      label: value,
+                      icon: budget['icon'] as IconData,
+                      isSelected: isSelected,
+                      wasInitial: wasInitial,
+                      onTap: () {
+                        setState(() {
+                          _selectedBudgetLevel = value;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 32),
+
+                // Preferred Activities Section
+                _SectionHeader(
+                  icon: Icons.local_activity_rounded,
+                  label: 'Preferred Activities',
+                  count: _selectedActivities.length,
+                  required: true,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Select all that interest you',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: activities.map((activity) {
+                    final value = activity['value'] as String;
+                    final isSelected = _selectedActivities.contains(value);
+                    final wasInitial = _initialActivities.contains(value);
+                    return _SelectableChip(
+                      label: value,
+                      icon: activity['icon'] as IconData,
+                      isSelected: isSelected,
+                      wasInitial: wasInitial,
+                      onTap: () {
+                        setState(() {
+                          if (isSelected) {
+                            // Don't allow removing if it's the last one
+                            if (_selectedActivities.length > 1) {
+                              _selectedActivities.remove(value);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text(
+                                    'You must have at least one activity selected',
+                                  ),
+                                  backgroundColor: AppColors.error,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              );
+                            }
+                          } else {
+                            _selectedActivities.add(value);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+
+          // Bottom action buttons
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Save Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: _isLoading || !_canSave() ? null : _handleSave,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                          : const Text(
+                              'Save Changes',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Cancel Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: _isLoading
+                          ? null
+                          : () => Navigator.of(context).pop(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -296,16 +384,34 @@ class _TravelPreferencesScreenState
     );
   }
 
+  bool _canSave() {
+    return _selectedTravelStyle != null &&
+        _selectedBudgetLevel != null &&
+        _selectedActivities.isNotEmpty;
+  }
+
   Future<void> _handleSave() async {
+    if (!_canSave()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please complete all required selections'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
       final updatePreferences = ref.read(updateUserPreferencesProvider);
 
       // Encode activities as JSON
-      final activitiesJson = _selectedActivities.isNotEmpty
-          ? jsonEncode(_selectedActivities.toList())
-          : null;
+      final activitiesJson = jsonEncode(_selectedActivities.toList());
 
       await updatePreferences(
         travelStyle: _selectedTravelStyle,
@@ -348,206 +454,153 @@ class _TravelPreferencesScreenState
   }
 }
 
-class _StyleChip extends StatelessWidget {
-  const _StyleChip({
-    required this.label,
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({
     required this.icon,
-    required this.isSelected,
-    required this.onTap,
+    required this.label,
+    required this.count,
+    required this.required,
   });
 
-  final String label;
   final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
+  final String label;
+  final int count;
+  final bool required;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: isSelected ? AppColors.primary : Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.textSecondary.withValues(alpha: 0.2),
-              width: isSelected ? 2 : 1,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 20,
-                color: isSelected ? Colors.white : AppColors.primary,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
-                ),
-              ),
-            ],
+    return Row(
+      children: [
+        Icon(icon, size: 22, color: AppColors.primary),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _BudgetCard extends StatelessWidget {
-  const _BudgetCard({
-    required this.label,
-    required this.description,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String label;
-  final String description;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: isSelected
-          ? AppColors.primary.withValues(alpha: 0.1)
-          : Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
+        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.textSecondary.withValues(alpha: 0.2),
-              width: isSelected ? 2 : 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  size: 24,
-                  color: isSelected ? Colors.white : AppColors.primary,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected
-                            ? AppColors.primary
-                            : AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary.withValues(alpha: 0.8),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isSelected)
-                const Icon(
-                  Icons.check_circle_rounded,
-                  color: AppColors.primary,
-                  size: 24,
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActivityChip extends StatelessWidget {
-  const _ActivityChip({
-    required this.label,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: isSelected ? AppColors.accent : Colors.white,
-      borderRadius: BorderRadius.circular(10),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(10),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
+            color: count > 0
+                ? AppColors.success.withValues(alpha: 0.15)
+                : AppColors.error.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isSelected
-                  ? AppColors.accent
-                  : AppColors.textSecondary.withValues(alpha: 0.2),
-              width: isSelected ? 2 : 1,
+          ),
+          child: Text(
+            '$count selected',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: count > 0 ? AppColors.success : AppColors.error,
             ),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 18,
-                color: isSelected ? Colors.white : AppColors.accent,
+        ),
+        if (required) ...[
+          const SizedBox(width: 4),
+          const Text(
+            '*',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.error,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _SelectableChip extends StatelessWidget {
+  const _SelectableChip({
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.wasInitial,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final bool wasInitial;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    // Determine the state
+    final isNew = isSelected && !wasInitial;
+    final isRemoved = !isSelected && wasInitial;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.12)
+              : isRemoved
+              ? AppColors.error.withValues(alpha: 0.05)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.primary
+                : isRemoved
+                ? AppColors.error.withValues(alpha: 0.3)
+                : AppColors.surfaceVariant.withValues(alpha: 0.5),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected
+                  ? AppColors.primary
+                  : isRemoved
+                  ? AppColors.textSecondary.withValues(alpha: 0.5)
+                  : AppColors.textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected
+                    ? AppColors.primary
+                    : isRemoved
+                    ? AppColors.textSecondary.withValues(alpha: 0.5)
+                    : AppColors.textPrimary,
+                decoration: isRemoved ? TextDecoration.lineThrough : null,
               ),
+            ),
+            if (isNew) ...[
               const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.accent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'NEW',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
-          ),
+          ],
         ),
       ),
     );

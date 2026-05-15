@@ -25,6 +25,7 @@ import '../../features/onboarding/presentation/providers/onboarding_provider.dar
 import '../../features/onboarding/presentation/profile_setup_screen.dart';
 import '../../features/onboarding/presentation/rules_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
+import '../../features/profile/presentation/travel_preferences_screen.dart';
 import '../../features/trips/presentation/trips_screen.dart';
 import '../../features/trips/presentation/trip_detail_screen.dart';
 import '../../features/trips/presentation/trip_form_screen.dart';
@@ -429,6 +430,30 @@ GoRouter appRouter(Ref ref) {
             child: TripItineraryScreen(tripId: tripId),
           );
         },
+      ),
+
+      // Profile — Travel Preferences (Standalone full screen)
+      GoRoute(
+        path: RoutePaths.travelPreferences,
+        name: RouteNames.travelPreferences,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const TravelPreferencesScreen(),
+          transitionDuration: const Duration(milliseconds: 350),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final slide =
+                Tween<Offset>(
+                  begin: const Offset(0, 1),
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  ),
+                );
+            return SlideTransition(position: slide, child: child);
+          },
+        ),
       ),
 
       StatefulShellRoute.indexedStack(

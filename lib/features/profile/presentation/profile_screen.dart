@@ -2,16 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/logging/app_logger.dart';
+import '../../../core/router/route_names.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 import '../../auth/presentation/providers/firestore_user_provider.dart';
 import 'providers/profile_stats_provider.dart';
 import 'providers/user_preferences_provider.dart';
 import 'edit_profile_screen.dart';
-import 'travel_preferences_screen.dart';
 
 /// Profile screen — shows user info, travel stats, and settings.
 class ProfileScreen extends ConsumerWidget {
@@ -278,9 +279,7 @@ class _ProfileContent extends ConsumerWidget {
   }
 
   void _navigateToTravelPreferences(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const TravelPreferencesScreen()));
+    context.pushNamed(RouteNames.travelPreferences);
   }
 
   Future<void> _handleSignOut(BuildContext context, WidgetRef ref) async {

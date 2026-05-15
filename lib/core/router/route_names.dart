@@ -25,6 +25,9 @@ abstract class RoutePaths {
   static const guideEdit = '/guides/:guideId/edit';
   static const guideItinerary = '/guides/:guideId/itinerary';
   static const myGuides = '/guides/my';
+
+  // Profile routes
+  static const travelPreferences = '/profile/travel-preferences';
 }
 
 abstract class RouteNames {
@@ -52,4 +55,7 @@ abstract class RouteNames {
   static const guideEdit = 'guide-edit';
   static const guideItinerary = 'guide-itinerary';
   static const myGuides = 'my-guides';
+
+  // Profile routes
+  static const travelPreferences = 'travel-preferences';
 }
