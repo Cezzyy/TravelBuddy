@@ -64,9 +64,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             Text(
               'Display Name',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
             ),
             const SizedBox(height: 8),
             TextFormField(
@@ -148,10 +148,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
               child: const Text(
                 'Cancel',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -172,7 +169,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     try {
       final userRepo = ref.read(userRepositoryProvider);
-      
+
       final newName = _nameController.text.trim();
 
       await userRepo.updateUserProfile(

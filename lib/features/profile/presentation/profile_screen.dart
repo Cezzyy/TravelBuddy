@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,7 +9,9 @@ import '../../auth/presentation/providers/auth_provider.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 import '../../auth/presentation/providers/firestore_user_provider.dart';
 import 'providers/profile_stats_provider.dart';
+import 'providers/user_preferences_provider.dart';
 import 'edit_profile_screen.dart';
+import 'travel_preferences_screen.dart';
 
 /// Profile screen — shows user info, travel stats, and settings.
 class ProfileScreen extends ConsumerWidget {
@@ -198,6 +202,14 @@ class _ProfileContent extends ConsumerWidget {
           ),
         ),
 
+        // Travel Preferences Summary
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: _TravelPreferencesSummary(),
+          ),
+        ),
+
         // Account Section
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
@@ -225,7 +237,7 @@ class _ProfileContent extends ConsumerWidget {
                 iconColor: AppColors.accent,
                 title: 'Travel Preferences',
                 subtitle: 'Your travel style and interests',
-                onTap: () => _comingSoon(context),
+                onTap: () => _navigateToTravelPreferences(context),
               ),
               const SizedBox(height: 32),
               // Sign Out Button
@@ -259,22 +271,16 @@ class _ProfileContent extends ConsumerWidget {
     return 'Joined ${months[createdAt.month - 1]} ${createdAt.year}';
   }
 
-  void _comingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Coming Soon'),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+  void _navigateToEditProfile(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const EditProfileScreen()));
   }
 
-  void _navigateToEditProfile(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const EditProfileScreen(),
-      ),
-    );
+  void _navigateToTravelPreferences(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const TravelPreferencesScreen()));
   }
 
   Future<void> _handleSignOut(BuildContext context, WidgetRef ref) async {
@@ -710,6 +716,154 @@ class _SignOutButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _TravelPreferencesSummary extends ConsumerWidget {
+  const _TravelPreferencesSummary();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prefsAsync = ref.watch(userPreferencesProvider);
+    final theme = Theme.of(context);
+
+    return prefsAsync.when(
+      data: (prefs) {
+        // Only show if user has set preferences
+        if (prefs == null ||
+            (prefs.travelStyle == null &&
+                prefs.budgetLevel == null &&
+                prefs.preferredActivities == null)) {
+          return const SizedBox.shrink();
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.accent.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.favorite_rounded,
+                      size: 20,
+                      color: AppColors.accent,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Travel Preferences',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (prefs.travelStyle != null) ...[
+                _PreferenceRow(
+                  icon: Icons.explore_rounded,
+                  label: 'Style',
+                  value: _formatTravelStyle(prefs.travelStyle!),
+                ),
+                const SizedBox(height: 8),
+              ],
+              if (prefs.budgetLevel != null) ...[
+                _PreferenceRow(
+                  icon: Icons.account_balance_wallet_rounded,
+                  label: 'Budget',
+                  value: _formatBudgetLevel(prefs.budgetLevel!),
+                ),
+                const SizedBox(height: 8),
+              ],
+              if (prefs.preferredActivities != null) ...[
+                _PreferenceRow(
+                  icon: Icons.local_activity_rounded,
+                  label: 'Activities',
+                  value: _formatActivitiesCount(prefs.preferredActivities!),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+    );
+  }
+
+  String _formatTravelStyle(String style) {
+    return style[0].toUpperCase() + style.substring(1);
+  }
+
+  String _formatBudgetLevel(String level) {
+    if (level == 'mid-range') return 'Mid-Range';
+    return level[0].toUpperCase() + level.substring(1);
+  }
+
+  String _formatActivitiesCount(String activitiesJson) {
+    try {
+      final activities = (jsonDecode(activitiesJson) as List).length;
+      return '$activities selected';
+    } catch (e) {
+      return 'Set';
+    }
+  }
+}
+
+class _PreferenceRow extends StatelessWidget {
+  const _PreferenceRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.primary),
+        const SizedBox(width: 12),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary.withValues(alpha: 0.8),
+          ),
+        ),
+        const Spacer(),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+      ],
     );
   }
 }
