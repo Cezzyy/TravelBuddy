@@ -176,6 +176,8 @@ class UserRepository {
     required String userId,
     String? displayName,
     String? photoUrl,
+    String? bio,
+    String? location,
     bool? isProfileComplete,
     bool? hasAgreedToRules,
   }) async {
@@ -189,6 +191,10 @@ class UserRepository {
             : const drift.Value.absent(),
         photoUrl: photoUrl != null
             ? drift.Value(photoUrl)
+            : const drift.Value.absent(),
+        bio: bio != null ? drift.Value(bio) : const drift.Value.absent(),
+        location: location != null
+            ? drift.Value(location)
             : const drift.Value.absent(),
         isProfileComplete: isProfileComplete != null
             ? drift.Value(isProfileComplete)
@@ -204,10 +210,12 @@ class UserRepository {
 
     // Queue for sync
     final payload = <String, dynamic>{
-      'displayName': ?displayName,
-      'photoUrl': ?photoUrl,
-      'isProfileComplete': ?isProfileComplete,
-      'hasAgreedToRules': ?hasAgreedToRules,
+      'displayName': displayName,
+      'photoUrl': photoUrl,
+      'bio': bio,
+      'location': location,
+      'isProfileComplete': isProfileComplete,
+      'hasAgreedToRules': hasAgreedToRules,
       'updatedAt': now.toIso8601String(),
     };
 

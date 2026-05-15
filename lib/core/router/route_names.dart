@@ -28,6 +28,7 @@ abstract class RoutePaths {
 
   // Profile routes
   static const travelPreferences = '/profile/travel-preferences';
+  static const editProfile = '/profile/edit';
 }
 
 abstract class RouteNames {
@@ -58,4 +59,5 @@ abstract class RouteNames {
 
   // Profile routes
   static const travelPreferences = 'travel-preferences';
+  static const editProfile = 'edit-profile';
 }

@@ -9,6 +9,10 @@ class Users extends Table {
   TextColumn get displayName => text().nullable()();
   TextColumn get photoUrl => text().nullable()();
 
+  // Additional profile info
+  TextColumn get bio => text().nullable()();
+  TextColumn get location => text().nullable()();
+
   // Onboarding gates
   BoolColumn get isProfileComplete =>
       boolean().withDefault(const Constant(false))();

@@ -12,7 +12,6 @@ import '../../auth/presentation/providers/current_user_provider.dart';
 import '../../auth/presentation/providers/firestore_user_provider.dart';
 import 'providers/profile_stats_provider.dart';
 import 'providers/user_preferences_provider.dart';
-import 'edit_profile_screen.dart';
 
 /// Profile screen — shows user info, travel stats, and settings.
 class ProfileScreen extends ConsumerWidget {
@@ -273,9 +272,7 @@ class _ProfileContent extends ConsumerWidget {
   }
 
   void _navigateToEditProfile(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const EditProfileScreen()));
+    context.pushNamed(RouteNames.editProfile);
   }
 
   void _navigateToTravelPreferences(BuildContext context) {

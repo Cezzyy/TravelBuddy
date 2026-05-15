@@ -48,6 +48,26 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _bioMeta = const VerificationMeta('bio');
+  @override
+  late final GeneratedColumn<String> bio = GeneratedColumn<String>(
+    'bio',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _locationMeta = const VerificationMeta(
+    'location',
+  );
+  @override
+  late final GeneratedColumn<String> location = GeneratedColumn<String>(
+    'location',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _isProfileCompleteMeta = const VerificationMeta(
     'isProfileComplete',
   );
@@ -117,6 +137,8 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     email,
     displayName,
     photoUrl,
+    bio,
+    location,
     isProfileComplete,
     hasAgreedToRules,
     createdAt,
@@ -161,6 +183,18 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       context.handle(
         _photoUrlMeta,
         photoUrl.isAcceptableOrUnknown(data['photo_url']!, _photoUrlMeta),
+      );
+    }
+    if (data.containsKey('bio')) {
+      context.handle(
+        _bioMeta,
+        bio.isAcceptableOrUnknown(data['bio']!, _bioMeta),
+      );
+    }
+    if (data.containsKey('location')) {
+      context.handle(
+        _locationMeta,
+        location.isAcceptableOrUnknown(data['location']!, _locationMeta),
       );
     }
     if (data.containsKey('is_profile_complete')) {
@@ -231,6 +265,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.string,
         data['${effectivePrefix}photo_url'],
       ),
+      bio: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bio'],
+      ),
+      location: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location'],
+      ),
       isProfileComplete: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_profile_complete'],
@@ -265,6 +307,8 @@ class User extends DataClass implements Insertable<User> {
   final String email;
   final String? displayName;
   final String? photoUrl;
+  final String? bio;
+  final String? location;
   final bool isProfileComplete;
   final bool hasAgreedToRules;
   final DateTime createdAt;
@@ -275,6 +319,8 @@ class User extends DataClass implements Insertable<User> {
     required this.email,
     this.displayName,
     this.photoUrl,
+    this.bio,
+    this.location,
     required this.isProfileComplete,
     required this.hasAgreedToRules,
     required this.createdAt,
@@ -291,6 +337,12 @@ class User extends DataClass implements Insertable<User> {
     }
     if (!nullToAbsent || photoUrl != null) {
       map['photo_url'] = Variable<String>(photoUrl);
+    }
+    if (!nullToAbsent || bio != null) {
+      map['bio'] = Variable<String>(bio);
+    }
+    if (!nullToAbsent || location != null) {
+      map['location'] = Variable<String>(location);
     }
     map['is_profile_complete'] = Variable<bool>(isProfileComplete);
     map['has_agreed_to_rules'] = Variable<bool>(hasAgreedToRules);
@@ -312,6 +364,10 @@ class User extends DataClass implements Insertable<User> {
       photoUrl: photoUrl == null && nullToAbsent
           ? const Value.absent()
           : Value(photoUrl),
+      bio: bio == null && nullToAbsent ? const Value.absent() : Value(bio),
+      location: location == null && nullToAbsent
+          ? const Value.absent()
+          : Value(location),
       isProfileComplete: Value(isProfileComplete),
       hasAgreedToRules: Value(hasAgreedToRules),
       createdAt: Value(createdAt),
@@ -332,6 +388,8 @@ class User extends DataClass implements Insertable<User> {
       email: serializer.fromJson<String>(json['email']),
       displayName: serializer.fromJson<String?>(json['displayName']),
       photoUrl: serializer.fromJson<String?>(json['photoUrl']),
+      bio: serializer.fromJson<String?>(json['bio']),
+      location: serializer.fromJson<String?>(json['location']),
       isProfileComplete: serializer.fromJson<bool>(json['isProfileComplete']),
       hasAgreedToRules: serializer.fromJson<bool>(json['hasAgreedToRules']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -347,6 +405,8 @@ class User extends DataClass implements Insertable<User> {
       'email': serializer.toJson<String>(email),
       'displayName': serializer.toJson<String?>(displayName),
       'photoUrl': serializer.toJson<String?>(photoUrl),
+      'bio': serializer.toJson<String?>(bio),
+      'location': serializer.toJson<String?>(location),
       'isProfileComplete': serializer.toJson<bool>(isProfileComplete),
       'hasAgreedToRules': serializer.toJson<bool>(hasAgreedToRules),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -360,6 +420,8 @@ class User extends DataClass implements Insertable<User> {
     String? email,
     Value<String?> displayName = const Value.absent(),
     Value<String?> photoUrl = const Value.absent(),
+    Value<String?> bio = const Value.absent(),
+    Value<String?> location = const Value.absent(),
     bool? isProfileComplete,
     bool? hasAgreedToRules,
     DateTime? createdAt,
@@ -370,6 +432,8 @@ class User extends DataClass implements Insertable<User> {
     email: email ?? this.email,
     displayName: displayName.present ? displayName.value : this.displayName,
     photoUrl: photoUrl.present ? photoUrl.value : this.photoUrl,
+    bio: bio.present ? bio.value : this.bio,
+    location: location.present ? location.value : this.location,
     isProfileComplete: isProfileComplete ?? this.isProfileComplete,
     hasAgreedToRules: hasAgreedToRules ?? this.hasAgreedToRules,
     createdAt: createdAt ?? this.createdAt,
@@ -384,6 +448,8 @@ class User extends DataClass implements Insertable<User> {
           ? data.displayName.value
           : this.displayName,
       photoUrl: data.photoUrl.present ? data.photoUrl.value : this.photoUrl,
+      bio: data.bio.present ? data.bio.value : this.bio,
+      location: data.location.present ? data.location.value : this.location,
       isProfileComplete: data.isProfileComplete.present
           ? data.isProfileComplete.value
           : this.isProfileComplete,
@@ -405,6 +471,8 @@ class User extends DataClass implements Insertable<User> {
           ..write('email: $email, ')
           ..write('displayName: $displayName, ')
           ..write('photoUrl: $photoUrl, ')
+          ..write('bio: $bio, ')
+          ..write('location: $location, ')
           ..write('isProfileComplete: $isProfileComplete, ')
           ..write('hasAgreedToRules: $hasAgreedToRules, ')
           ..write('createdAt: $createdAt, ')
@@ -420,6 +488,8 @@ class User extends DataClass implements Insertable<User> {
     email,
     displayName,
     photoUrl,
+    bio,
+    location,
     isProfileComplete,
     hasAgreedToRules,
     createdAt,
@@ -434,6 +504,8 @@ class User extends DataClass implements Insertable<User> {
           other.email == this.email &&
           other.displayName == this.displayName &&
           other.photoUrl == this.photoUrl &&
+          other.bio == this.bio &&
+          other.location == this.location &&
           other.isProfileComplete == this.isProfileComplete &&
           other.hasAgreedToRules == this.hasAgreedToRules &&
           other.createdAt == this.createdAt &&
@@ -446,6 +518,8 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> email;
   final Value<String?> displayName;
   final Value<String?> photoUrl;
+  final Value<String?> bio;
+  final Value<String?> location;
   final Value<bool> isProfileComplete;
   final Value<bool> hasAgreedToRules;
   final Value<DateTime> createdAt;
@@ -457,6 +531,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.email = const Value.absent(),
     this.displayName = const Value.absent(),
     this.photoUrl = const Value.absent(),
+    this.bio = const Value.absent(),
+    this.location = const Value.absent(),
     this.isProfileComplete = const Value.absent(),
     this.hasAgreedToRules = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -469,6 +545,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     required String email,
     this.displayName = const Value.absent(),
     this.photoUrl = const Value.absent(),
+    this.bio = const Value.absent(),
+    this.location = const Value.absent(),
     this.isProfileComplete = const Value.absent(),
     this.hasAgreedToRules = const Value.absent(),
     required DateTime createdAt,
@@ -484,6 +562,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? email,
     Expression<String>? displayName,
     Expression<String>? photoUrl,
+    Expression<String>? bio,
+    Expression<String>? location,
     Expression<bool>? isProfileComplete,
     Expression<bool>? hasAgreedToRules,
     Expression<DateTime>? createdAt,
@@ -496,6 +576,8 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (email != null) 'email': email,
       if (displayName != null) 'display_name': displayName,
       if (photoUrl != null) 'photo_url': photoUrl,
+      if (bio != null) 'bio': bio,
+      if (location != null) 'location': location,
       if (isProfileComplete != null) 'is_profile_complete': isProfileComplete,
       if (hasAgreedToRules != null) 'has_agreed_to_rules': hasAgreedToRules,
       if (createdAt != null) 'created_at': createdAt,
@@ -510,6 +592,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<String>? email,
     Value<String?>? displayName,
     Value<String?>? photoUrl,
+    Value<String?>? bio,
+    Value<String?>? location,
     Value<bool>? isProfileComplete,
     Value<bool>? hasAgreedToRules,
     Value<DateTime>? createdAt,
@@ -522,6 +606,8 @@ class UsersCompanion extends UpdateCompanion<User> {
       email: email ?? this.email,
       displayName: displayName ?? this.displayName,
       photoUrl: photoUrl ?? this.photoUrl,
+      bio: bio ?? this.bio,
+      location: location ?? this.location,
       isProfileComplete: isProfileComplete ?? this.isProfileComplete,
       hasAgreedToRules: hasAgreedToRules ?? this.hasAgreedToRules,
       createdAt: createdAt ?? this.createdAt,
@@ -545,6 +631,12 @@ class UsersCompanion extends UpdateCompanion<User> {
     }
     if (photoUrl.present) {
       map['photo_url'] = Variable<String>(photoUrl.value);
+    }
+    if (bio.present) {
+      map['bio'] = Variable<String>(bio.value);
+    }
+    if (location.present) {
+      map['location'] = Variable<String>(location.value);
     }
     if (isProfileComplete.present) {
       map['is_profile_complete'] = Variable<bool>(isProfileComplete.value);
@@ -574,6 +666,8 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('email: $email, ')
           ..write('displayName: $displayName, ')
           ..write('photoUrl: $photoUrl, ')
+          ..write('bio: $bio, ')
+          ..write('location: $location, ')
           ..write('isProfileComplete: $isProfileComplete, ')
           ..write('hasAgreedToRules: $hasAgreedToRules, ')
           ..write('createdAt: $createdAt, ')
@@ -8009,6 +8103,8 @@ typedef $$UsersTableCreateCompanionBuilder =
       required String email,
       Value<String?> displayName,
       Value<String?> photoUrl,
+      Value<String?> bio,
+      Value<String?> location,
       Value<bool> isProfileComplete,
       Value<bool> hasAgreedToRules,
       required DateTime createdAt,
@@ -8022,6 +8118,8 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String> email,
       Value<String?> displayName,
       Value<String?> photoUrl,
+      Value<String?> bio,
+      Value<String?> location,
       Value<bool> isProfileComplete,
       Value<bool> hasAgreedToRules,
       Value<DateTime> createdAt,
@@ -8196,6 +8294,16 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<String> get photoUrl => $composableBuilder(
     column: $table.photoUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bio => $composableBuilder(
+    column: $table.bio,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get location => $composableBuilder(
+    column: $table.location,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8429,6 +8537,16 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get bio => $composableBuilder(
+    column: $table.bio,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isProfileComplete => $composableBuilder(
     column: $table.isProfileComplete,
     builder: (column) => ColumnOrderings(column),
@@ -8477,6 +8595,12 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<String> get photoUrl =>
       $composableBuilder(column: $table.photoUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get bio =>
+      $composableBuilder(column: $table.bio, builder: (column) => column);
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
 
   GeneratedColumn<bool> get isProfileComplete => $composableBuilder(
     column: $table.isProfileComplete,
@@ -8716,6 +8840,8 @@ class $$UsersTableTableManager
                 Value<String> email = const Value.absent(),
                 Value<String?> displayName = const Value.absent(),
                 Value<String?> photoUrl = const Value.absent(),
+                Value<String?> bio = const Value.absent(),
+                Value<String?> location = const Value.absent(),
                 Value<bool> isProfileComplete = const Value.absent(),
                 Value<bool> hasAgreedToRules = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -8727,6 +8853,8 @@ class $$UsersTableTableManager
                 email: email,
                 displayName: displayName,
                 photoUrl: photoUrl,
+                bio: bio,
+                location: location,
                 isProfileComplete: isProfileComplete,
                 hasAgreedToRules: hasAgreedToRules,
                 createdAt: createdAt,
@@ -8740,6 +8868,8 @@ class $$UsersTableTableManager
                 required String email,
                 Value<String?> displayName = const Value.absent(),
                 Value<String?> photoUrl = const Value.absent(),
+                Value<String?> bio = const Value.absent(),
+                Value<String?> location = const Value.absent(),
                 Value<bool> isProfileComplete = const Value.absent(),
                 Value<bool> hasAgreedToRules = const Value.absent(),
                 required DateTime createdAt,
@@ -8751,6 +8881,8 @@ class $$UsersTableTableManager
                 email: email,
                 displayName: displayName,
                 photoUrl: photoUrl,
+                bio: bio,
+                location: location,
                 isProfileComplete: isProfileComplete,
                 hasAgreedToRules: hasAgreedToRules,
                 createdAt: createdAt,
