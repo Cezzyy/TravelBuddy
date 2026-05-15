@@ -63,6 +63,8 @@ class MockUserRepository implements UserRepository {
     required String userId,
     String? displayName,
     String? photoUrl,
+    String? bio,
+    String? location,
     bool? isProfileComplete,
     bool? hasAgreedToRules,
   }) async {}
