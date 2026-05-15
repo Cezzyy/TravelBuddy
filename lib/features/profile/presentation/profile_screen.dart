@@ -197,7 +197,7 @@ class _ProfileContent extends ConsumerWidget {
           ),
         ),
 
-        // Settings Section
+        // Account Section
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
           sliver: SliverList(
@@ -224,64 +224,6 @@ class _ProfileContent extends ConsumerWidget {
                 iconColor: AppColors.accent,
                 title: 'Travel Preferences',
                 subtitle: 'Your travel style and interests',
-                onTap: () => _comingSoon(context),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Settings',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _MenuTile(
-                icon: Icons.notifications_none_rounded,
-                iconColor: AppColors.primaryLight,
-                title: 'Notifications',
-                subtitle: 'Manage your alerts',
-                onTap: () => _comingSoon(context),
-              ),
-              const SizedBox(height: 8),
-              _MenuTile(
-                icon: Icons.shield_outlined,
-                iconColor: AppColors.primary,
-                title: 'Privacy & Security',
-                subtitle: 'Control your data',
-                onTap: () => _comingSoon(context),
-              ),
-              const SizedBox(height: 8),
-              _MenuTile(
-                icon: Icons.language_rounded,
-                iconColor: AppColors.primaryLight,
-                title: 'Language',
-                subtitle: 'English',
-                onTap: () => _comingSoon(context),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Support',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _MenuTile(
-                icon: Icons.help_outline_rounded,
-                iconColor: AppColors.accent,
-                title: 'Help Center',
-                subtitle: 'FAQs and support',
-                onTap: () => _comingSoon(context),
-              ),
-              const SizedBox(height: 8),
-              _MenuTile(
-                icon: Icons.info_outline_rounded,
-                iconColor: AppColors.primary,
-                title: 'About',
-                subtitle: 'Version 1.0.0',
                 onTap: () => _comingSoon(context),
               ),
               const SizedBox(height: 32),
@@ -463,7 +405,7 @@ class _TravelStatsCard extends ConsumerWidget {
             ),
           ],
         ),
-        error: (_, __) => const Row(
+        error: (_, _) => const Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _StatItem(
@@ -572,7 +514,7 @@ class _GuideStatsCard extends ConsumerWidget {
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 }
