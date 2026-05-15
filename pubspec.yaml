@@ -61,6 +61,9 @@ dependencies:
   intl: ^0.20.2
   uuid: ^4.5.1
 
+  # Local Notifications
+  flutter_local_notifications: ^19.0.0
+
 dev_dependencies:
   sentry_dart_plugin: ^3.2.1
   flutter_test:

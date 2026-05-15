@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shared/data/app_db.dart';
 import '../../shared/data/providers/database_provider.dart';
 import '../logging/app_logger.dart';
+import '../notifications/local_notification_service.dart';
 
 /// Manages real-time Firestore listeners that push remote changes into the
 /// local Drift database.
@@ -24,11 +25,25 @@ import '../logging/app_logger.dart';
 /// - The service uses the Firebase Auth state to determine which data to
 ///   subscribe to.
 class FirestoreSyncService {
-  FirestoreSyncService(this._db, this._firestore, this._auth);
+  FirestoreSyncService(
+    this._db,
+    this._firestore,
+    this._auth, {
+    this.onNewInvitation,
+  });
 
   final AppDatabase _db;
   final FirebaseFirestore _firestore;
   final auth.FirebaseAuth _auth;
+
+  /// Callback triggered when a new pending invitation is received from Firestore.
+  /// Provides (invitationId, tripTitle, inviterName) for showing a local notification.
+  final void Function(
+    String invitationId,
+    String tripTitle,
+    String inviterName,
+  )?
+  onNewInvitation;
 
   /// Active Firestore subscription cancellations.
   final List<StreamSubscription<void>> _subscriptions = [];
@@ -376,6 +391,9 @@ class FirestoreSyncService {
 
       switch (change.type) {
         case DocumentChangeType.added:
+          await _upsertInvitationToLocal(change.doc.id, data);
+          _maybeNotifyNewInvitation(change.doc.id, data);
+          break;
         case DocumentChangeType.modified:
           await _upsertInvitationToLocal(change.doc.id, data);
           break;
@@ -387,6 +405,29 @@ class FirestoreSyncService {
           break;
       }
     }
+  }
+
+  /// Show a local notification only for new pending invitations
+  /// that were sent by someone else (not our own invites).
+  void _maybeNotifyNewInvitation(
+    String invitationId,
+    Map<String, dynamic> data,
+  ) {
+    if (onNewInvitation == null) return;
+
+    final status = data['status'] as String? ?? '';
+    if (status != 'pending') return;
+
+    final invitedByUserId = data['invitedByUserId'] as String? ?? '';
+    final currentUserId = _auth.currentUser?.uid;
+
+    // Don't notify about invitations we sent ourselves
+    if (currentUserId != null && invitedByUserId == currentUserId) return;
+
+    final tripTitle = data['tripId'] as String? ?? 'a trip';
+    final inviterName = data['invitedByUserId'] as String? ?? 'Someone';
+
+    onNewInvitation!(invitationId, tripTitle, inviterName);
   }
 
   Future<void> _upsertInvitationToLocal(
@@ -641,9 +682,17 @@ class FirestoreSyncService {
 /// authentication and [FirestoreSyncService.stopListeners] on sign-out.
 final firestoreSyncServiceProvider = Provider<FirestoreSyncService>((ref) {
   final db = ref.watch(appDatabaseProvider);
+  final notificationService = ref.watch(localNotificationServiceProvider);
   return FirestoreSyncService(
     db,
     FirebaseFirestore.instance,
     auth.FirebaseAuth.instance,
+    onNewInvitation: (invitationId, tripTitle, inviterName) {
+      notificationService.showInvitationNotification(
+        invitationId: invitationId,
+        tripTitle: tripTitle,
+        inviterName: inviterName,
+      );
+    },
   );
 });

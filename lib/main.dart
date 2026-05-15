@@ -6,6 +6,7 @@ import 'package:talker_riverpod_logger/talker_riverpod_logger.dart';
 
 import 'config/app_config.dart';
 import 'core/logging/app_logger.dart';
+import 'core/notifications/local_notification_service.dart';
 import 'firebase_options.dart';
 import 'shared/data/app_db.dart';
 import 'shared/data/providers/database_provider.dart';
@@ -20,6 +21,14 @@ Future<void> main() async {
 
   final database = AppDatabase();
   AppLogger.talker.info('Drift database initialized');
+
+  // Create a temporary ProviderScope just for initializing notifications
+  // This is needed because LocalNotificationService requires a Ref
+  final container = ProviderContainer(
+    overrides: [appDatabaseProvider.overrideWithValue(database)],
+  );
+  await container.read(localNotificationServiceProvider).init();
+  AppLogger.talker.info('Local notifications initialized');
 
   await SentryFlutter.init(
     (options) {
