@@ -11,9 +11,7 @@ import '../domain/trip_role.dart';
 part 'trip_invitation_repository.g.dart';
 
 @riverpod
-TripInvitationRepository tripInvitationRepository(
-  Ref ref,
-) {
+TripInvitationRepository tripInvitationRepository(Ref ref) {
   final db = ref.watch(appDatabaseProvider);
   return TripInvitationRepository(db, FirebaseFirestore.instance);
 }
@@ -121,6 +119,10 @@ class TripInvitationRepository {
   }
 
   /// Accept an invitation
+  ///
+  /// Uses a Firestore WriteBatch to atomically update both the invitation
+  /// status and create the collaborator record. This prevents partial writes
+  /// where the invitation is accepted but the collaborator isn't created.
   Future<void> acceptInvitation({
     required String invitationId,
     required String userId,
@@ -150,18 +152,20 @@ class TripInvitationRepository {
       throw Exception('Invitation has expired');
     }
 
-    // Update invitation status
+    final now = DateTime.now();
+
+    // Update invitation status locally
     await (_db.update(
       _db.tripInvitations,
     )..where((t) => t.id.equals(invitationId))).write(
       TripInvitationsCompanion(
         status: drift.Value(InvitationStatus.accepted.value),
         invitedUserId: drift.Value(userId),
-        respondedAt: drift.Value(DateTime.now()),
+        respondedAt: drift.Value(now),
       ),
     );
 
-    // Add user as collaborator
+    // Add user as collaborator locally
     await _db
         .into(_db.tripCollaborators)
         .insert(
@@ -169,15 +173,89 @@ class TripInvitationRepository {
             tripId: invitation.tripId,
             userId: userId,
             role: drift.Value(invitation.role),
-            addedAt: DateTime.now(),
+            addedAt: now,
           ),
         );
 
     AppLogger.talker.info('Accepted invitation: $invitationId');
 
-    // Sync to Firestore
-    await _syncInvitationToFirestore(invitationId);
-    await _syncCollaboratorToFirestore(invitation.tripId, userId);
+    // Sync both changes to Firestore atomically using a WriteBatch
+    await _acceptInvitationBatch(
+      invitationId,
+      invitation.tripId,
+      userId,
+      invitation.role,
+      now,
+    );
+  }
+
+  /// Atomically sync invitation acceptance to Firestore using a WriteBatch.
+  ///
+  /// Both the invitation update and collaborator creation are committed as
+  /// a single atomic operation. If either fails, neither is written.
+  Future<void> _acceptInvitationBatch(
+    String invitationId,
+    String tripId,
+    String userId,
+    String role,
+    DateTime respondedAt,
+  ) async {
+    try {
+      final batch = _firestore.batch();
+
+      // Update invitation document (use set with merge for idempotency)
+      final invitationRef = _firestore
+          .collection('trip_invitations')
+          .doc(invitationId);
+      batch.set(invitationRef, {
+        'status': InvitationStatus.accepted.value,
+        'invitedUserId': userId,
+        'respondedAt': Timestamp.fromDate(respondedAt),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      // Create collaborator document with composite key
+      final collaboratorDocId = '${userId}_$tripId';
+      final collaboratorRef = _firestore
+          .collection('trip_collaborators')
+          .doc(collaboratorDocId);
+      batch.set(collaboratorRef, {
+        'tripId': tripId,
+        'userId': userId,
+        'role': role,
+        'addedAt': Timestamp.fromDate(respondedAt),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      await batch.commit();
+      AppLogger.talker.info(
+        'Batch committed: invitation $invitationId accepted, '
+        'collaborator $userId added to trip $tripId',
+      );
+
+      // Update lastSyncedAt timestamps locally
+      await (_db.update(
+        _db.tripInvitations,
+      )..where((t) => t.id.equals(invitationId))).write(
+        TripInvitationsCompanion(lastSyncedAt: drift.Value(DateTime.now())),
+      );
+      await (_db.update(
+        _db.tripCollaborators,
+      )..where((t) => t.tripId.equals(tripId) & t.userId.equals(userId))).write(
+        TripCollaboratorsCompanion(lastSyncedAt: drift.Value(DateTime.now())),
+      );
+    } catch (e, st) {
+      AppLogger.talker.warning(
+        'Batch commit failed for invitation acceptance, '
+        'falling back to individual syncs',
+        e,
+        st,
+      );
+
+      // Fallback: attempt individual syncs (non-atomic but still functional)
+      await _syncInvitationToFirestore(invitationId);
+      await _syncCollaboratorToFirestore(tripId, userId);
+    }
   }
 
   /// Decline an invitation
@@ -215,9 +293,9 @@ class TripInvitationRepository {
     await _deleteInvitationFromFirestore(invitationId);
 
     // Then delete from local DB
-    await (_db.delete(_db.tripInvitations)
-          ..where((t) => t.id.equals(invitationId)))
-        .go();
+    await (_db.delete(
+      _db.tripInvitations,
+    )..where((t) => t.id.equals(invitationId))).go();
 
     AppLogger.talker.info('Cancelled invitation: $invitationId');
   }
@@ -306,11 +384,15 @@ class TripInvitationRepository {
       )..where((t) => t.id.equals(invitationId))).getSingleOrNull();
 
       if (invitation == null) {
-        AppLogger.talker.warning('Invitation not found for sync: $invitationId');
+        AppLogger.talker.warning(
+          'Invitation not found for sync: $invitationId',
+        );
         return;
       }
 
-      final docRef = _firestore.collection('trip_invitations').doc(invitationId);
+      final docRef = _firestore
+          .collection('trip_invitations')
+          .doc(invitationId);
       final data = {
         'tripId': invitation.tripId,
         'invitedByUserId': invitation.invitedByUserId,
@@ -340,7 +422,10 @@ class TripInvitationRepository {
   /// Delete invitation from Firestore
   Future<void> _deleteInvitationFromFirestore(String invitationId) async {
     try {
-      await _firestore.collection('trip_invitations').doc(invitationId).delete();
+      await _firestore
+          .collection('trip_invitations')
+          .doc(invitationId)
+          .delete();
       AppLogger.talker.info('Invitation deleted from Firestore: $invitationId');
     } catch (e, st) {
       AppLogger.talker.warning(
@@ -358,8 +443,9 @@ class TripInvitationRepository {
   ) async {
     try {
       final collaborator =
-          await (_db.select(_db.tripCollaborators)
-                ..where((t) => t.tripId.equals(tripId) & t.userId.equals(userId)))
+          await (_db.select(_db.tripCollaborators)..where(
+                (t) => t.tripId.equals(tripId) & t.userId.equals(userId),
+              ))
               .getSingleOrNull();
 
       if (collaborator == null) {
@@ -384,12 +470,10 @@ class TripInvitationRepository {
       AppLogger.talker.info('Collaborator synced to Firestore: $docId');
 
       // Update lastSyncedAt in local DB
-      await (_db.update(_db.tripCollaborators)
-            ..where((t) => t.tripId.equals(tripId) & t.userId.equals(userId)))
-          .write(
-        TripCollaboratorsCompanion(
-          lastSyncedAt: drift.Value(DateTime.now()),
-        ),
+      await (_db.update(
+        _db.tripCollaborators,
+      )..where((t) => t.tripId.equals(tripId) & t.userId.equals(userId))).write(
+        TripCollaboratorsCompanion(lastSyncedAt: drift.Value(DateTime.now())),
       );
     } catch (e, st) {
       AppLogger.talker.warning(
@@ -421,8 +505,9 @@ class TripInvitationRepository {
   /// Sync invitation from Firestore to local DB
   Future<void> syncInvitationFromFirestore(String invitationId) async {
     try {
-      final docRef =
-          _firestore.collection('trip_invitations').doc(invitationId);
+      final docRef = _firestore
+          .collection('trip_invitations')
+          .doc(invitationId);
       final docSnapshot = await docRef.get();
 
       if (!docSnapshot.exists) {

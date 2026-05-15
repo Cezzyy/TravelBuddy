@@ -29,7 +29,7 @@ abstract class RoutePaths {
   // Profile routes
   static const travelPreferences = '/profile/travel-preferences';
   static const editProfile = '/profile/edit';
-  
+
   // Trip invitation routes
   static const tripInvitations = '/trips/invitations';
 }
@@ -63,7 +63,7 @@ abstract class RouteNames {
   // Profile routes
   static const travelPreferences = 'travel-preferences';
   static const editProfile = 'edit-profile';
-  
+
   // Trip invitation routes
   static const tripInvitations = 'trip-invitations';
 }
