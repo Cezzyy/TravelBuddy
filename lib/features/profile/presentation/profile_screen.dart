@@ -6,6 +6,7 @@ import '../../../core/logging/app_logger.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 import '../../auth/presentation/providers/firestore_user_provider.dart';
+import 'providers/profile_stats_provider.dart';
 
 /// Profile screen — shows user info, travel stats, and settings.
 class ProfileScreen extends ConsumerWidget {
@@ -184,42 +185,15 @@ class _ProfileContent extends ConsumerWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(20),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _StatItem(
-                    icon: Icons.flight_takeoff_rounded,
-                    value: '0',
-                    label: 'Trips',
-                  ),
-                  _VerticalDivider(),
-                  _StatItem(
-                    icon: Icons.location_on_outlined,
-                    value: '0',
-                    label: 'Places',
-                  ),
-                  _VerticalDivider(),
-                  _StatItem(
-                    icon: Icons.calendar_today_outlined,
-                    value: '0',
-                    label: 'Days',
-                  ),
-                ],
-              ),
-            ),
+            child: _TravelStatsCard(),
+          ),
+        ),
+
+        // Guide Stats
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: _GuideStatsCard(),
           ),
         ),
 
@@ -419,6 +393,218 @@ class _ProfileContent extends ConsumerWidget {
     if (confirmed == true && context.mounted) {
       await ref.read(emailAuthControllerProvider.notifier).signOut();
     }
+  }
+}
+
+class _TravelStatsCard extends ConsumerWidget {
+  const _TravelStatsCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tripStatsAsync = ref.watch(userTripStatsProvider);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(20),
+      child: tripStatsAsync.when(
+        data: (tripStats) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _StatItem(
+                icon: Icons.flight_takeoff_rounded,
+                value: '${tripStats.tripCount}',
+                label: 'Trips',
+              ),
+              const _VerticalDivider(),
+              _StatItem(
+                icon: Icons.location_on_outlined,
+                value: '${tripStats.placesCount}',
+                label: 'Places',
+              ),
+              const _VerticalDivider(),
+              _StatItem(
+                icon: Icons.calendar_today_outlined,
+                value: '${tripStats.totalDays}',
+                label: 'Days',
+              ),
+            ],
+          );
+        },
+        loading: () => const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _StatItem(
+              icon: Icons.flight_takeoff_rounded,
+              value: '...',
+              label: 'Trips',
+            ),
+            _VerticalDivider(),
+            _StatItem(
+              icon: Icons.location_on_outlined,
+              value: '...',
+              label: 'Places',
+            ),
+            _VerticalDivider(),
+            _StatItem(
+              icon: Icons.calendar_today_outlined,
+              value: '...',
+              label: 'Days',
+            ),
+          ],
+        ),
+        error: (_, __) => const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _StatItem(
+              icon: Icons.flight_takeoff_rounded,
+              value: '0',
+              label: 'Trips',
+            ),
+            _VerticalDivider(),
+            _StatItem(
+              icon: Icons.location_on_outlined,
+              value: '0',
+              label: 'Places',
+            ),
+            _VerticalDivider(),
+            _StatItem(
+              icon: Icons.calendar_today_outlined,
+              value: '0',
+              label: 'Days',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GuideStatsCard extends ConsumerWidget {
+  const _GuideStatsCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final guideStatsAsync = ref.watch(userGuideStatsProvider);
+    final theme = Theme.of(context);
+
+    return guideStatsAsync.when(
+      data: (guideStats) {
+        // Only show if user has guides
+        if (guideStats.totalGuides == 0) {
+          return const SizedBox.shrink();
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.menu_book_rounded,
+                      size: 20,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Guide Stats',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _MiniStatItem(
+                    value: '${guideStats.totalGuides}',
+                    label: 'Guides',
+                  ),
+                  _MiniStatItem(
+                    value: '${guideStats.publishedGuides}',
+                    label: 'Published',
+                  ),
+                  _MiniStatItem(
+                    value: '${guideStats.totalLikes}',
+                    label: 'Likes',
+                  ),
+                  _MiniStatItem(
+                    value: '${guideStats.totalViews}',
+                    label: 'Views',
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _MiniStatItem extends StatelessWidget {
+  const _MiniStatItem({required this.value, required this.label});
+
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: AppColors.textSecondary.withValues(alpha: 0.8),
+          ),
+        ),
+      ],
+    );
   }
 }
 
