@@ -64,6 +64,9 @@ dependencies:
   # Local Notifications
   flutter_local_notifications: ^19.0.0
 
+  # Connectivity
+  connectivity_plus: ^6.1.4
+
 dev_dependencies:
   sentry_dart_plugin: ^3.2.1
   flutter_test:
