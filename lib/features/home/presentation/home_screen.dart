@@ -6,12 +6,17 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/data/providers/database_provider.dart';
 import '../../auth/data/auth_repository.dart';
 import '../../auth/data/background_sync.dart';
+import '../../auth/data/user_repository.dart';
 import '../../../core/logging/app_logger.dart';
+import 'providers/home_providers.dart';
 import 'widgets/guide_card.dart';
 import 'widgets/hero_banner.dart';
 import 'widgets/landmark_card.dart';
 import 'widgets/section_header.dart';
 import 'widgets/trip_card.dart';
+import '../../guides/presentation/guide_detail_screen.dart';
+import '../../trips/presentation/trip_detail_screen.dart';
+import '../../trips/presentation/trip_form_screen.dart';
 
 /// Home screen with hero banner, guides, landmarks, and trips.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -59,13 +64,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final featuredGuidesAsync = ref.watch(featuredGuidesProvider);
+    final upcomingTripsAsync = ref.watch(homeUpcomingTripsProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
           // Hero Banner - Full width, no padding
           SliverToBoxAdapter(
-            child: HeroBanner(onCreateTrip: () => _showComingSoon(context)),
+            child: HeroBanner(onCreateTrip: _navigateToCreateTrip),
           ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
@@ -81,35 +89,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           SliverToBoxAdapter(
             child: SizedBox(
               height: 260,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: [
-                  GuideCard(
-                    title: '5 Days in Tokyo: A Complete Guide',
-                    destination: 'Tokyo, Japan',
-                    authorName: 'Sarah Chen',
-                    imageUrl: null,
-                    likeCount: 234,
-                    onTap: () => _showComingSoon(context),
-                  ),
-                  GuideCard(
-                    title: 'Paris on a Budget',
-                    destination: 'Paris, France',
-                    authorName: 'Mike Johnson',
-                    imageUrl: null,
-                    likeCount: 189,
-                    onTap: () => _showComingSoon(context),
-                  ),
-                  GuideCard(
-                    title: 'Bali Adventure Guide',
-                    destination: 'Bali, Indonesia',
-                    authorName: 'Emma Wilson',
-                    imageUrl: null,
-                    likeCount: 312,
-                    onTap: () => _showComingSoon(context),
-                  ),
-                ],
+              child: featuredGuidesAsync.when(
+                data: (guides) {
+                  if (guides.isEmpty) {
+                    return _buildEmptyState('No guides available yet');
+                  }
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: guides.length,
+                    itemBuilder: (context, index) {
+                      final guide = guides[index];
+                      return FutureBuilder(
+                        future: ref
+                            .read(userRepositoryProvider)
+                            .getLocalUser(guide.authorId),
+                        builder: (context, snapshot) {
+                          final authorName =
+                              snapshot.data?.displayName ?? 'Unknown';
+                          return GuideCard(
+                            title: guide.title,
+                            destination: guide.destination,
+                            authorName: authorName,
+                            imageUrl: guide.coverImageUrl,
+                            likeCount: guide.likeCount,
+                            onTap: () => _navigateToGuideDetail(guide.id),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, _) => _buildEmptyState('Failed to load guides'),
               ),
             ),
           ),
@@ -134,25 +146,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     name: 'Eiffel Tower',
                     location: 'Paris, France',
                     imageUrl: null,
-                    onTap: () => _showComingSoon(context),
+                    onTap: () {
+                      // Coming soon - landmarks feature
+                    },
                   ),
                   LandmarkCard(
                     name: 'Great Wall',
                     location: 'Beijing, China',
                     imageUrl: null,
-                    onTap: () => _showComingSoon(context),
+                    onTap: () {
+                      // Coming soon - landmarks feature
+                    },
                   ),
                   LandmarkCard(
                     name: 'Colosseum',
                     location: 'Rome, Italy',
                     imageUrl: null,
-                    onTap: () => _showComingSoon(context),
+                    onTap: () {
+                      // Coming soon - landmarks feature
+                    },
                   ),
                   LandmarkCard(
                     name: 'Taj Mahal',
                     location: 'Agra, India',
                     imageUrl: null,
-                    onTap: () => _showComingSoon(context),
+                    onTap: () {
+                      // Coming soon - landmarks feature
+                    },
                   ),
                 ],
               ),
@@ -170,63 +190,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                TripCard(
-                  title: 'Summer Vacation',
-                  destination: 'Bali, Indonesia',
-                  startDate: DateTime.now().add(const Duration(days: 15)),
-                  endDate: DateTime.now().add(const Duration(days: 22)),
-                  coverImageUrl: null,
-                  daysUntil: 15,
-                  onTap: () => _showComingSoon(context),
-                ),
-                TripCard(
-                  title: 'Weekend Getaway',
-                  destination: 'Kyoto, Japan',
-                  startDate: DateTime.now().add(const Duration(days: 30)),
-                  endDate: DateTime.now().add(const Duration(days: 33)),
-                  coverImageUrl: null,
-                  daysUntil: 30,
-                  onTap: () => _showComingSoon(context),
-                ),
-              ]),
-            ),
-          ),
-
-          // Continue Planning Section
-          const SliverToBoxAdapter(child: SizedBox(height: 32)),
-          const SliverToBoxAdapter(
-            child: SectionHeader(title: 'Continue Planning'),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
-          // Integrated list items (no card containers)
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                _buildPlanningItem(
-                  context,
-                  title: 'Europe Backpacking',
-                  subtitle: '12 days • 5 cities',
-                  imageUrl: null,
-                ),
-                const SizedBox(height: 20),
-                _buildPlanningItem(
-                  context,
-                  title: 'Southeast Asia Guide',
-                  subtitle: 'Draft • 8 destinations',
-                  imageUrl: null,
-                ),
-                const SizedBox(height: 20),
-                _buildPlanningItem(
-                  context,
-                  title: 'New York City Trip',
-                  subtitle: '5 days • 15 activities',
-                  imageUrl: null,
-                ),
-              ]),
+            sliver: upcomingTripsAsync.when(
+              data: (trips) {
+                if (trips.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: _buildEmptyState('No upcoming trips'),
+                  );
+                }
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final trip = trips[index];
+                    final daysUntil = trip.startDate
+                        .difference(DateTime.now())
+                        .inDays;
+                    return TripCard(
+                      title: trip.title,
+                      destination: trip.destination,
+                      startDate: trip.startDate,
+                      endDate: trip.endDate,
+                      coverImageUrl: trip.coverImageUrl,
+                      daysUntil: daysUntil,
+                      onTap: () => _navigateToTripDetail(trip.id),
+                    );
+                  }, childCount: trips.length > 2 ? 2 : trips.length),
+                );
+              },
+              loading: () => const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (_, _) => SliverToBoxAdapter(
+                child: _buildEmptyState('Failed to load trips'),
+              ),
             ),
           ),
 
@@ -236,91 +230,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildPlanningItem(
-    BuildContext context, {
-    required String title,
-    required String subtitle,
-    required String? imageUrl,
-  }) {
-    return GestureDetector(
-      onTap: () => _showComingSoon(context),
-      behavior: HitTestBehavior.opaque,
-      child: Row(
-        children: [
-          // Square image
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: imageUrl != null
-                  ? Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Icon(
-                        Icons.image_outlined,
-                        size: 28,
-                        color: AppColors.primary.withValues(alpha: 0.4),
-                      ),
-                    )
-                  : Icon(
-                      Icons.image_outlined,
-                      size: 28,
-                      color: AppColors.primary.withValues(alpha: 0.4),
-                    ),
-            ),
+  Widget _buildEmptyState(String message) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: Center(
+        child: Text(
+          message,
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary.withValues(alpha: 0.6),
           ),
-          const SizedBox(width: 14),
-          // Text content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textSecondary.withValues(alpha: 0.8),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.textSecondary.withValues(alpha: 0.3),
-            size: 20,
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Coming Soon'),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
+  void _navigateToGuideDetail(String guideId) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => GuideDetailScreen(guideId: guideId)),
     );
+  }
+
+  void _navigateToTripDetail(String tripId) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => TripDetailScreen(tripId: tripId)));
+  }
+
+  void _navigateToCreateTrip() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const TripFormScreen()));
   }
 }
