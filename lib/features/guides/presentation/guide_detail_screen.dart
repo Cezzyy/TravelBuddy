@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/router/route_names.dart';
 import '../../../shared/data/app_db.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
+import '../../auth/data/user_repository.dart';
 import '../data/guide_repository.dart';
 import 'providers/guide_detail_provider.dart';
 
@@ -27,7 +28,7 @@ class _GuideDetailScreenState extends ConsumerState<GuideDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     // Track view after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(guideDetailActionsProvider.notifier).trackView(widget.guideId);
@@ -122,6 +123,7 @@ class _GuideDetailView extends ConsumerWidget {
                 tabs: const [
                   Tab(text: 'Guide'),
                   Tab(text: 'Itinerary'),
+                  Tab(text: 'Comments'),
                 ],
               ),
             ),
@@ -135,6 +137,9 @@ class _GuideDetailView extends ConsumerWidget {
 
             // Itinerary tab
             _ItineraryTab(guideId: guide.id),
+
+            // Comments tab
+            _CommentsTab(guideId: guide.id),
           ],
         ),
       ),
@@ -197,15 +202,17 @@ class _CoverImageHeader extends StatelessWidget {
 
 // ─── Guide Metadata ───────────────────────────────────────────────────────────
 
-class _GuideMetadata extends StatelessWidget {
+class _GuideMetadata extends ConsumerWidget {
   const _GuideMetadata({required this.guide, required this.isLiked});
 
   final Guide guide;
   final bool isLiked;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final commentsAsync = ref.watch(guideCommentsProvider(guide.id));
+    final commentCount = commentsAsync.value?.length ?? 0;
 
     return Container(
       color: AppColors.surface,
@@ -284,6 +291,19 @@ class _GuideMetadata extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 '${guide.viewCount} views',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Icon(
+                Icons.comment_outlined,
+                size: 14,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '$commentCount comments',
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -631,6 +651,260 @@ class _ItineraryItemTile extends StatelessWidget {
       'accommodation' => AppColors.primary,
       _ => AppColors.textSecondary,
     };
+  }
+}
+
+// ─── Comments Tab ─────────────────────────────────────────────────────────────
+
+class _CommentsTab extends ConsumerWidget {
+  const _CommentsTab({required this.guideId});
+
+  final String guideId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final commentsAsync = ref.watch(guideCommentsProvider(guideId));
+    final currentUserAsync = ref.watch(currentUserProvider);
+    final currentUser = currentUserAsync.value;
+
+    return commentsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(child: Text('Failed to load comments: $e')),
+      data: (comments) {
+        if (comments.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.comment_outlined,
+                  size: 48,
+                  color: AppColors.textSecondary.withValues(alpha: 0.3),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'No comments yet',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Be the first to comment!',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+          itemCount: comments.length,
+          itemBuilder: (context, index) {
+            final comment = comments[index];
+            final isOwnComment = currentUser?.id == comment.userId;
+            return _CommentTile(comment: comment, isOwnComment: isOwnComment);
+          },
+        );
+      },
+    );
+  }
+}
+
+class _CommentTile extends ConsumerWidget {
+  const _CommentTile({required this.comment, required this.isOwnComment});
+
+  final GuideComment comment;
+  final bool isOwnComment;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
+    return FutureBuilder(
+      future: ref.read(userRepositoryProvider).getLocalUser(comment.userId),
+      builder: (context, snapshot) {
+        final user = snapshot.data;
+        final userName = user?.displayName ?? 'Unknown User';
+        final userPhotoUrl = user?.photoUrl;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isOwnComment
+                  ? AppColors.primary.withValues(alpha: 0.3)
+                  : AppColors.surfaceVariant,
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // User info and actions
+              Row(
+                children: [
+                  // Avatar
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AppColors.primaryLight,
+                    backgroundImage: userPhotoUrl != null
+                        ? NetworkImage(userPhotoUrl)
+                        : null,
+                    child: userPhotoUrl == null
+                        ? Text(
+                            userName.isNotEmpty
+                                ? userName[0].toUpperCase()
+                                : '?',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 10),
+
+                  // Name and time
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              userName,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            if (isOwnComment) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  'You',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: AppColors.primary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _formatTimestamp(comment.createdAt),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Delete button for own comments
+                  if (isOwnComment)
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                      color: AppColors.textSecondary,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => _showDeleteDialog(context, ref),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 10),
+
+              // Comment content
+              Text(
+                comment.content,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatTimestamp(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inHours < 1) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inDays < 1) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d ago';
+    } else {
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      return '${months[timestamp.month - 1]} ${timestamp.day}';
+    }
+  }
+
+  Future<void> _showDeleteDialog(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Comment'),
+        content: const Text('Are you sure you want to delete this comment?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      await ref
+          .read(guideDetailActionsProvider.notifier)
+          .deleteComment(comment.id);
+    }
   }
 }
 
