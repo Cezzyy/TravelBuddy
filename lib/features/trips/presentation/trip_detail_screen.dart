@@ -5,8 +5,12 @@ import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/router/route_names.dart';
+import '../../auth/presentation/providers/current_user_provider.dart';
 import 'providers/trip_detail_provider.dart';
 import 'providers/trip_form_provider.dart';
+import 'providers/trip_collaborators_provider.dart';
+import 'widgets/invite_collaborator_modal.dart';
+import 'widgets/collaborator_list.dart';
 
 /// Trip detail screen showing full trip information.
 class TripDetailScreen extends ConsumerWidget {
@@ -17,6 +21,8 @@ class TripDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tripAsync = ref.watch(tripDetailProvider(tripId));
+    final userRoleAsync = ref.watch(userTripRoleProvider(tripId));
+    final currentUser = ref.watch(currentUserProvider).value;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -29,6 +35,12 @@ class TripDetailScreen extends ConsumerWidget {
           if (trip == null) {
             return const _NotFoundState();
           }
+
+          // Determine user role
+          final userRole = userRoleAsync.value;
+          final canEdit = userRole?.canEdit ?? (trip.ownerId == currentUser?.id);
+          final canDelete = userRole?.canDelete ?? (trip.ownerId == currentUser?.id);
+          final canInvite = userRole?.canInvite ?? (trip.ownerId == currentUser?.id);
 
           return CustomScrollView(
             slivers: [
@@ -47,27 +59,29 @@ class TripDetailScreen extends ConsumerWidget {
                       : _buildPlaceholder(),
                 ),
                 actions: [
-                  // Edit button
-                  IconButton(
-                    onPressed: () => context.push(
-                      RoutePaths.tripEdit.replaceFirst(':tripId', tripId),
+                  // Edit button (only if user can edit)
+                  if (canEdit)
+                    IconButton(
+                      onPressed: () => context.push(
+                        RoutePaths.tripEdit.replaceFirst(':tripId', tripId),
+                      ),
+                      icon: const Icon(Icons.edit_outlined),
+                      tooltip: 'Edit trip',
                     ),
-                    icon: const Icon(Icons.edit_outlined),
-                    tooltip: 'Edit trip',
-                  ),
                   // More options
                   PopupMenuButton(
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete_outline, color: AppColors.error),
-                            SizedBox(width: 12),
-                            Text('Delete Trip'),
-                          ],
+                      if (canDelete)
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete_outline, color: AppColors.error),
+                              SizedBox(width: 12),
+                              Text('Delete Trip'),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                     onSelected: (value) {
                       if (value == 'delete') {
@@ -161,6 +175,55 @@ class TripDetailScreen extends ConsumerWidget {
                       const Divider(),
                       const SizedBox(height: 24),
 
+                      // Collaborators section
+                      if (canInvite) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.people_outline_rounded,
+                                    size: 24,
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Collaborators',
+                                    style: Theme.of(context).textTheme.titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            FilledButton.icon(
+                              onPressed: () => _showInviteModal(context),
+                              icon: const Icon(Icons.person_add_outlined, size: 18),
+                              label: const Text('Invite'),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 10,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        CollaboratorList(
+                          tripId: tripId,
+                          ownerId: trip.ownerId,
+                          userRole: userRole,
+                        ),
+                        const SizedBox(height: 24),
+                        const Divider(),
+                        const SizedBox(height: 24),
+                      ],
+
                       // Itinerary section
                       Row(
                         children: [
@@ -213,6 +276,15 @@ class TripDetailScreen extends ConsumerWidget {
   String _formatDuration(DateTime start, DateTime end) {
     final days = end.difference(start).inDays + 1;
     return '$days ${days == 1 ? 'day' : 'days'}';
+  }
+
+  void _showInviteModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => InviteCollaboratorModal(tripId: tripId),
+    );
   }
 
   Future<void> _showDeleteDialog(BuildContext context, WidgetRef ref) async {

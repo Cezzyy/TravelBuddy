@@ -31,6 +31,7 @@ import '../../features/trips/presentation/trips_screen.dart';
 import '../../features/trips/presentation/trip_detail_screen.dart';
 import '../../features/trips/presentation/trip_form_screen.dart';
 import '../../features/trips/presentation/trip_itinerary_screen.dart';
+import '../../features/trips/presentation/trip_invitations_screen.dart';
 import 'route_names.dart';
 
 part 'app_router.g.dart';
@@ -431,6 +432,16 @@ GoRouter appRouter(Ref ref) {
             child: TripItineraryScreen(tripId: tripId),
           );
         },
+      ),
+
+      // Trip — Invitations
+      GoRoute(
+        path: RoutePaths.tripInvitations,
+        name: RouteNames.tripInvitations,
+        pageBuilder: (context, state) => _fadeTransitionPage(
+          key: state.pageKey,
+          child: const TripInvitationsScreen(),
+        ),
       ),
 
       // Profile — Travel Preferences (Standalone full screen)
