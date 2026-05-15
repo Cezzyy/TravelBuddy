@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../core/router/route_names.dart';
+import '../../../core/errors/error_state_widget.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 import '../../auth/presentation/providers/firestore_user_provider.dart';
@@ -72,7 +73,10 @@ class ProfileScreen extends ConsumerWidget {
       },
       error: (error, _) {
         AppLogger.talker.error('Profile screen - Firestore error: $error');
-        return Center(child: Text('Error: $error'));
+        return ErrorStateWidget.fromException(
+          error,
+          onRetry: () => ref.invalidate(firestoreUserProvider),
+        );
       },
     );
   }

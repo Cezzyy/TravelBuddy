@@ -22,6 +22,7 @@ abstract class AppColors {
   // ── Semantic ──
   static const error = Color(0xFFD32F2F);
   static const success = Color(0xFF388E3C);
+  static const warning = Color(0xFFF9A825);
 
   // ── Gradients ──
   static const splashGradient = LinearGradient(

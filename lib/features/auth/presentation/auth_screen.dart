@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/errors/error_state_widget.dart';
 import '../../../core/router/route_names.dart';
 import '../../../core/theme/app_colors.dart';
 import 'providers/auth_provider.dart';
@@ -414,15 +415,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     } catch (e) {
       if (!mounted) return;
 
-      // Show user-friendly error message
-      final errorMessage = e.toString().replaceAll('Exception: ', '');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          backgroundColor: Colors.red.shade700,
-          duration: const Duration(seconds: 4),
-        ),
-      );
+      AppErrorSnackBar.show(context, e);
     }
   }
 }

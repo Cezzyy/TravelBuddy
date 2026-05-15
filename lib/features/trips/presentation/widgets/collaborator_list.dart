@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/logging/app_logger.dart';
+import '../../../../core/errors/error_state_widget.dart';
 import '../../../../shared/data/app_db.dart';
 import '../../../auth/data/user_repository.dart';
 import '../../data/trip_invitation_repository.dart';
@@ -208,16 +209,7 @@ class CollaboratorList extends ConsumerWidget {
       } catch (e) {
         AppLogger.talker.error('Failed to remove collaborator: $e');
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to remove collaborator: $e'),
-              backgroundColor: AppColors.error,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
+          AppErrorSnackBar.show(context, e);
         }
       }
     }
@@ -352,16 +344,7 @@ class CollaboratorList extends ConsumerWidget {
       } catch (e) {
         AppLogger.talker.error('Failed to change role: $e');
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to change role: $e'),
-              backgroundColor: AppColors.error,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
+          AppErrorSnackBar.show(context, e);
         }
       }
     }

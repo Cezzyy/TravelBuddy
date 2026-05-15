@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/errors/error_state_widget.dart';
 import '../../../shared/data/app_db.dart';
 import '../../auth/data/user_repository.dart';
 import '../data/trip_repository.dart';
@@ -97,28 +98,9 @@ class TripInvitationsScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 64, color: AppColors.error),
-              const SizedBox(height: 16),
-              Text(
-                'Failed to load invitations',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: AppColors.error,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                error.toString(),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+        error: (error, _) => ErrorStateWidget.fromException(
+          error,
+          onRetry: () => ref.invalidate(userPendingInvitationsProvider),
         ),
       ),
     );

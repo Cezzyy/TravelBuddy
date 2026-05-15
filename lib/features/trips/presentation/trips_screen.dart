@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/router/route_names.dart';
+import '../../../core/errors/error_state_widget.dart';
 import 'providers/trip_list_provider.dart';
 import 'widgets/trip_card.dart';
 
@@ -108,8 +109,10 @@ class _UpcomingTripsTab extends ConsumerWidget {
 
     return tripsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) =>
-          _ErrorState(onRetry: () => ref.invalidate(upcomingTripsProvider)),
+      error: (e, _) => ErrorStateWidget.fromException(
+        e,
+        onRetry: () => ref.invalidate(upcomingTripsProvider),
+      ),
       data: (trips) {
         if (trips.isEmpty) {
           return const _EmptyState(
@@ -149,8 +152,10 @@ class _PastTripsTab extends ConsumerWidget {
 
     return tripsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) =>
-          _ErrorState(onRetry: () => ref.invalidate(pastTripsProvider)),
+      error: (e, _) => ErrorStateWidget.fromException(
+        e,
+        onRetry: () => ref.invalidate(pastTripsProvider),
+      ),
       data: (trips) {
         if (trips.isEmpty) {
           return const _EmptyState(
@@ -223,35 +228,6 @@ class _EmptyState extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.wifi_off_rounded,
-            size: 48,
-            color: AppColors.textSecondary.withValues(alpha: 0.4),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Could not load trips',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          const SizedBox(height: 12),
-          FilledButton.tonal(onPressed: onRetry, child: const Text('Retry')),
-        ],
       ),
     );
   }

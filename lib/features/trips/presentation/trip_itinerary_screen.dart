@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/errors/error_state_widget.dart';
+import '../../../core/errors/app_exceptions.dart';
 import '../../../shared/data/app_db.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 import 'providers/trip_detail_provider.dart';
@@ -50,11 +52,17 @@ class TripItineraryScreen extends ConsumerWidget {
       ),
       body: itemsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => ErrorStateWidget.fromException(
+          e,
+          onRetry: () => ref.invalidate(tripItineraryProvider(tripId)),
+        ),
         data: (items) {
           return tripAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text('Error: $e')),
+            error: (e, _) => ErrorStateWidget.fromException(
+              e,
+              onRetry: () => ref.invalidate(tripDetailProvider(tripId)),
+            ),
             data: (trip) {
               if (trip == null) {
                 return const Center(child: Text('Trip not found'));
@@ -174,7 +182,10 @@ class TripItineraryScreen extends ConsumerWidget {
           final currentUserAsync = ref.read(currentUserProvider);
           final currentUser = currentUserAsync.value;
           if (currentUser == null) {
-            throw Exception('Not authenticated');
+            throw AuthException(
+              errorType: AuthErrorType.unknown,
+              userMessage: 'Not authenticated',
+            );
           }
 
           await ref

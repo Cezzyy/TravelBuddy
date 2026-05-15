@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/errors/app_exceptions.dart';
 import '../../../core/logging/app_logger.dart';
 
 part 'auth_repository.g.dart';
@@ -69,7 +70,6 @@ class AuthRepository {
       AppLogger.talker.info('Attempting Google sign in');
 
       if (kIsWeb) {
-        // Web: use popup
         final googleProvider = GoogleAuthProvider();
         final credential = await _auth.signInWithPopup(googleProvider);
         AppLogger.talker.info(
@@ -77,13 +77,11 @@ class AuthRepository {
         );
         return credential;
       } else {
-        // Mobile: use google_sign_in package for better Android support
-        // This avoids the browser redirect issues
         final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
         if (googleUser == null) {
           AppLogger.talker.warning('Google sign in cancelled by user');
-          throw 'Sign in cancelled';
+          throw AuthException(errorType: AuthErrorType.googleSignInFailed);
         }
 
         final GoogleSignInAuthentication googleAuth =
@@ -100,12 +98,14 @@ class AuthRepository {
         );
         return userCredential;
       }
+    } on AuthException {
+      rethrow;
     } on FirebaseAuthException catch (e, st) {
       AppLogger.talker.error('Google sign in failed', e, st);
       throw _handleAuthException(e);
     } catch (e, st) {
       AppLogger.talker.error('Google sign in error', e, st);
-      rethrow;
+      throw AuthException(errorType: AuthErrorType.googleSignInFailed);
     }
   }
 
@@ -113,14 +113,11 @@ class AuthRepository {
   Future<void> signOut() async {
     try {
       AppLogger.talker.info('Signing out user: ${_auth.currentUser?.uid}');
-      await Future.wait([
-        _auth.signOut(),
-        _googleSignIn.signOut(), // Also sign out from Google
-      ]);
+      await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
       AppLogger.talker.info('Sign out successful');
     } catch (e, st) {
       AppLogger.talker.error('Sign out failed', e, st);
-      rethrow;
+      throw AuthException(errorType: AuthErrorType.signOutFailed);
     }
   }
 
@@ -128,45 +125,31 @@ class AuthRepository {
   Future<void> clearLocalData() async {
     try {
       AppLogger.talker.info('Clearing local data for account switch');
-      // This will be called when signing out to ensure clean state
     } catch (e, st) {
       AppLogger.talker.error('Failed to clear local data', e, st);
     }
   }
 
-  /// Convert FirebaseAuthException to user-friendly messages.
-  String _handleAuthException(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'user-not-found':
-        return 'No account found with this email.';
-      case 'wrong-password':
-        return 'Incorrect password. Please try again.';
-      case 'invalid-credential':
-        return 'Invalid email or password. Please check your credentials.';
-      case 'email-already-in-use':
-        return 'An account already exists with this email.';
-      case 'invalid-email':
-        return 'Invalid email address format.';
-      case 'weak-password':
-        return 'Password is too weak. Please use a stronger password.';
-      case 'operation-not-allowed':
-        return 'Email/password sign-in is not enabled.';
-      case 'user-disabled':
-        return 'This account has been disabled.';
-      case 'too-many-requests':
-        return 'Too many attempts. Please try again later.';
-      case 'network-request-failed':
-        return 'Network error. Please check your connection.';
-      default:
-        // Check if the message contains specific text patterns
-        final message = e.message?.toLowerCase() ?? '';
-        if (message.contains('credential') &&
-            (message.contains('incorrect') ||
-                message.contains('malformed') ||
-                message.contains('expired'))) {
-          return 'Invalid email or password. Please check your credentials.';
-        }
-        return e.message ?? 'An authentication error occurred.';
-    }
+  /// Convert FirebaseAuthException to typed AppException.
+  AuthException _handleAuthException(FirebaseAuthException e) {
+    final errorType = switch (e.code) {
+      'user-not-found' => AuthErrorType.userNotFound,
+      'wrong-password' => AuthErrorType.invalidCredentials,
+      'invalid-credential' => AuthErrorType.invalidCredentials,
+      'email-already-in-use' => AuthErrorType.emailAlreadyInUse,
+      'invalid-email' => AuthErrorType.invalidCredentials,
+      'weak-password' => AuthErrorType.weakPassword,
+      'operation-not-allowed' => AuthErrorType.unknown,
+      'user-disabled' => AuthErrorType.userDisabled,
+      'too-many-requests' => AuthErrorType.tooManyRequests,
+      'network-request-failed' => AuthErrorType.networkError,
+      _ => AuthErrorType.unknown,
+    };
+
+    return AuthException(
+      errorType: errorType,
+      technicalDetails: 'FirebaseAuth: ${e.code} - ${e.message}',
+      originalException: e,
+    );
   }
 }

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/logging/app_logger.dart';
+import '../../../../core/errors/error_state_widget.dart';
+import '../../../../core/errors/app_exceptions.dart';
 import '../../../auth/presentation/providers/current_user_provider.dart';
 import '../../data/trip_invitation_repository.dart';
 import '../../domain/trip_role.dart';
@@ -221,7 +223,15 @@ class _InviteCollaboratorModalState
 
     final currentUser = ref.read(currentUserProvider).value;
     if (currentUser == null) {
-      _showError('You must be logged in to send invitations');
+      if (mounted) {
+        AppErrorSnackBar.show(
+          context,
+          AuthException(
+            errorType: AuthErrorType.unknown,
+            userMessage: 'You must be logged in to send invitations',
+          ),
+        );
+      }
       return;
     }
 
@@ -251,24 +261,14 @@ class _InviteCollaboratorModalState
       }
     } catch (e) {
       AppLogger.talker.error('Failed to send invitation: $e');
-      _showError(e.toString());
+      if (mounted) {
+        AppErrorSnackBar.show(context, e);
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
-  }
-
-  void _showError(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.error,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
   }
 }
 

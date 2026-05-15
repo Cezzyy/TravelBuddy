@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../auth/presentation/providers/current_user_provider.dart';
+import '../../../../core/errors/app_exceptions.dart';
 import '../../data/guide_itinerary_repository.dart';
 import '../../data/guide_repository.dart';
 
@@ -193,7 +194,11 @@ class GuideForm extends _$GuideForm {
     try {
       final currentUserAsync = ref.read(currentUserProvider);
       final currentUser = currentUserAsync.value;
-      if (currentUser == null) throw Exception('Not authenticated');
+      if (currentUser == null)
+        throw AuthException(
+          errorType: AuthErrorType.unknown,
+          userMessage: 'Not authenticated',
+        );
 
       final repo = ref.read(guideRepositoryProvider);
 
@@ -229,9 +234,10 @@ class GuideForm extends _$GuideForm {
         return guide.id;
       }
     } catch (e) {
+      final appError = e is AppException ? e : convertException(e);
       state = state.copyWith(
         isSaving: false,
-        errorMessage: 'Failed to save guide. Please try again.',
+        errorMessage: appError.userMessage,
       );
       return null;
     }
@@ -295,7 +301,11 @@ class GuideForm extends _$GuideForm {
         // Create then publish
         final currentUserAsync = ref.read(currentUserProvider);
         final currentUser = currentUserAsync.value;
-        if (currentUser == null) throw Exception('Not authenticated');
+        if (currentUser == null)
+          throw AuthException(
+            errorType: AuthErrorType.unknown,
+            userMessage: 'Not authenticated',
+          );
 
         final guide = await repo.createGuide(
           authorId: currentUser.id,
@@ -315,9 +325,10 @@ class GuideForm extends _$GuideForm {
       state = state.copyWith(isPublishing: false);
       return targetId;
     } catch (e) {
+      final appError = e is AppException ? e : convertException(e);
       state = state.copyWith(
         isPublishing: false,
-        errorMessage: 'Failed to publish guide. Please try again.',
+        errorMessage: appError.userMessage,
       );
       return null;
     }
@@ -334,9 +345,8 @@ class GuideForm extends _$GuideForm {
       await repo.discardDraft(guideId!);
       return true;
     } catch (e) {
-      state = state.copyWith(
-        errorMessage: 'Failed to discard draft. Please try again.',
-      );
+      final appError = e is AppException ? e : convertException(e);
+      state = state.copyWith(errorMessage: appError.userMessage);
       return false;
     }
   }

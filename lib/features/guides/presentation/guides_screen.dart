@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/router/route_names.dart';
+import '../../../core/errors/error_state_widget.dart';
 import '../../../shared/data/app_db.dart';
 import '../data/guide_repository.dart';
 import 'providers/guide_list_provider.dart';
@@ -137,7 +138,8 @@ class _BrowseSliver extends ConsumerWidget {
         child: Center(child: CircularProgressIndicator()),
       ),
       error: (e, _) => SliverFillRemaining(
-        child: _ErrorState(
+        child: ErrorStateWidget.fromException(
+          e,
           onRetry: () => ref.invalidate(publishedGuidesProvider),
         ),
       ),
@@ -188,8 +190,11 @@ class _SearchResultsSliver extends ConsumerWidget {
         }
 
         if (snapshot.hasError) {
-          return const SliverFillRemaining(
-            child: Center(child: Text('Error loading search results')),
+          return SliverFillRemaining(
+            child: ErrorStateWidget.fromException(
+              snapshot.error!,
+              onRetry: () => ref.invalidate(guideRepositoryProvider),
+            ),
           );
         }
 
@@ -298,35 +303,6 @@ class _EmptySearchState extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.wifi_off_rounded,
-            size: 48,
-            color: AppColors.textSecondary.withValues(alpha: 0.4),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Could not load guides',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          const SizedBox(height: 12),
-          FilledButton.tonal(onPressed: onRetry, child: const Text('Retry')),
-        ],
       ),
     );
   }

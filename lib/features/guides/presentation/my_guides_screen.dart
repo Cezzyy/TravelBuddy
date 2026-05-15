@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/router/route_names.dart';
+import '../../../core/errors/error_state_widget.dart';
 import '../data/guide_repository.dart';
 import 'providers/my_guides_provider.dart';
 import 'widgets/guide_card.dart';
@@ -57,8 +58,10 @@ class _PublishedTab extends ConsumerWidget {
 
     return guidesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) =>
-          _ErrorState(onRetry: () => ref.invalidate(myPublishedGuidesProvider)),
+      error: (e, _) => ErrorStateWidget.fromException(
+        e,
+        onRetry: () => ref.invalidate(myPublishedGuidesProvider),
+      ),
       data: (guides) {
         if (guides.isEmpty) {
           return _EmptyState(
@@ -87,8 +90,10 @@ class _DraftsTab extends ConsumerWidget {
 
     return guidesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) =>
-          _ErrorState(onRetry: () => ref.invalidate(myDraftGuidesProvider)),
+      error: (e, _) => ErrorStateWidget.fromException(
+        e,
+        onRetry: () => ref.invalidate(myDraftGuidesProvider),
+      ),
       data: (guides) {
         if (guides.isEmpty) {
           return _EmptyState(
@@ -385,35 +390,6 @@ class _EmptyState extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.error_outline_rounded,
-            size: 48,
-            color: AppColors.textSecondary.withValues(alpha: 0.4),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Something went wrong',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          const SizedBox(height: 12),
-          FilledButton.tonal(onPressed: onRetry, child: const Text('Retry')),
-        ],
       ),
     );
   }

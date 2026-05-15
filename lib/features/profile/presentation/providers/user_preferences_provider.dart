@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/data/user_repository.dart';
 import '../../../auth/presentation/providers/current_user_provider.dart';
+import '../../../../core/errors/app_exceptions.dart';
 import '../../../../shared/data/app_db.dart';
 
 /// Provider for watching user preferences
@@ -31,7 +32,10 @@ final updateUserPreferencesProvider =
       }) async {
         final currentUser = ref.read(currentUserProvider).value;
         if (currentUser == null) {
-          throw Exception('No user logged in');
+          throw AuthException(
+            errorType: AuthErrorType.unknown,
+            userMessage: 'No user logged in',
+          );
         }
 
         final userRepo = ref.read(userRepositoryProvider);

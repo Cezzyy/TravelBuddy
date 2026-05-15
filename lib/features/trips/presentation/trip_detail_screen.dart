@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/router/route_names.dart';
+import '../../../core/errors/error_state_widget.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 import 'providers/trip_detail_provider.dart';
 import 'providers/trip_form_provider.dart';
@@ -28,7 +29,8 @@ class TripDetailScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       body: tripAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => _ErrorState(
+        error: (e, _) => ErrorStateWidget.fromException(
+          e,
           onRetry: () => ref.invalidate(tripDetailProvider(tripId)),
         ),
         data: (trip) {
@@ -547,36 +549,7 @@ class _ItineraryButton extends StatelessWidget {
   }
 }
 
-// ─── Error / Not Found States ─────────────────────────────────────────────────
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.wifi_off_rounded,
-            size: 48,
-            color: AppColors.textSecondary.withValues(alpha: 0.4),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Could not load trip',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          const SizedBox(height: 12),
-          FilledButton.tonal(onPressed: onRetry, child: const Text('Retry')),
-        ],
-      ),
-    );
-  }
-}
+// ─── Not Found State ──────────────────────────────────────────────────────────
 
 class _NotFoundState extends StatelessWidget {
   const _NotFoundState();

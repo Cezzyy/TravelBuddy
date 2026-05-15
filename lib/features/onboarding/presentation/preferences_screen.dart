@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../auth/data/auth_repository.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/errors/error_state_widget.dart';
 
 class _TravelStyleOption {
   const _TravelStyleOption(this.label, this.icon, this.description);
@@ -144,9 +145,7 @@ class _PreferencesScreenState extends ConsumerState<PreferencesScreen> {
       // Router will automatically navigate based on onboarding status
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        AppErrorSnackBar.show(context, e);
       }
     } finally {
       if (mounted) {

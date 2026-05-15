@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../errors/offline_banner.dart';
 import '../router/route_names.dart';
 import '../theme/app_colors.dart';
 
@@ -86,15 +87,7 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
           IconButton(
             icon: const Icon(Icons.notifications_none_rounded),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Notifications - Coming Soon'),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              );
+              context.push(RoutePaths.tripInvitations);
             },
             tooltip: 'Notifications',
             color: AppColors.textSecondary,
@@ -102,7 +95,12 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: widget.navigationShell,
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(child: widget.navigationShell),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -120,27 +118,22 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // Home
                 _NavItem(
                   tab: _tabs[0],
                   isSelected: currentIndex == 0,
                   onTap: () => _onTabSelected(0),
                 ),
-                // Trips
                 _NavItem(
                   tab: _tabs[1],
                   isSelected: currentIndex == 1,
                   onTap: () => _onTabSelected(1),
                 ),
-                // Plus Button (Center)
                 _PlusButton(onTap: () => _showAddOptions(context)),
-                // Guides
                 _NavItem(
                   tab: _tabs[2],
                   isSelected: currentIndex == 2,
                   onTap: () => _onTabSelected(2),
                 ),
-                // Profile
                 _NavItem(
                   tab: _tabs[3],
                   isSelected: currentIndex == 3,

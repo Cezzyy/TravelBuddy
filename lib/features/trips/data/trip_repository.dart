@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/errors/app_exceptions.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../shared/data/app_db.dart';
 import '../../../shared/data/providers/database_provider.dart';
@@ -330,7 +331,10 @@ class TripRepository {
     final docSnapshot = await docRef.get();
 
     if (!docSnapshot.exists) {
-      throw Exception('Trip not found in Firestore: $tripId');
+      throw DataException(
+        errorType: DataErrorType.notFound,
+        technicalDetails: 'Trip not found in Firestore: $tripId',
+      );
     }
 
     final data = docSnapshot.data()!;

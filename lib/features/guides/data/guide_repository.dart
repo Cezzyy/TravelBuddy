@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/errors/app_exceptions.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../shared/data/app_db.dart';
 import '../../../shared/data/providers/database_provider.dart';
@@ -348,7 +349,10 @@ class GuideRepository {
   Future<String> createDraftVersion(String publishedGuideId) async {
     final publishedGuide = await getGuide(publishedGuideId);
     if (publishedGuide == null) {
-      throw Exception('Published guide not found: $publishedGuideId');
+      throw DataException(
+        errorType: DataErrorType.notFound,
+        technicalDetails: 'Published guide not found: $publishedGuideId',
+      );
     }
 
     // Check if draft already exists
@@ -413,7 +417,10 @@ class GuideRepository {
   Future<void> applyDraftToPublished(String draftId) async {
     final draft = await getGuide(draftId);
     if (draft == null || draft.publishedVersionId == null) {
-      throw Exception('Draft not found or not linked to published guide');
+      throw DataException(
+        errorType: DataErrorType.notFound,
+        userMessage: 'Draft not found or not linked to published guide',
+      );
     }
 
     final publishedId = draft.publishedVersionId!;
@@ -474,7 +481,10 @@ class GuideRepository {
   Future<void> discardDraft(String draftId) async {
     final draft = await getGuide(draftId);
     if (draft == null || draft.publishedVersionId == null) {
-      throw Exception('Draft not found or not linked to published guide');
+      throw DataException(
+        errorType: DataErrorType.notFound,
+        userMessage: 'Draft not found or not linked to published guide',
+      );
     }
 
     final publishedId = draft.publishedVersionId!;
@@ -567,7 +577,10 @@ class GuideRepository {
     final docSnapshot = await docRef.get();
 
     if (!docSnapshot.exists) {
-      throw Exception('Guide not found in Firestore: $guideId');
+      throw DataException(
+        errorType: DataErrorType.notFound,
+        technicalDetails: 'Guide not found in Firestore: $guideId',
+      );
     }
 
     final data = docSnapshot.data()!;

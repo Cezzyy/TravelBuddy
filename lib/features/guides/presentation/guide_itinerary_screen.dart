@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/errors/error_state_widget.dart';
 import '../../../shared/data/app_db.dart';
 import 'providers/guide_detail_provider.dart';
 import 'providers/guide_form_provider.dart';
@@ -33,7 +34,10 @@ class GuideItineraryScreen extends ConsumerWidget {
       ),
       body: itemsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => ErrorStateWidget.fromException(
+          e,
+          onRetry: () => ref.invalidate(guideItineraryProvider(guideId)),
+        ),
         data: (items) {
           if (items.isEmpty) {
             return _EmptyItinerary(

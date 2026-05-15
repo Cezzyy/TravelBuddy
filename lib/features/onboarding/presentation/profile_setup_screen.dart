@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../auth/data/auth_repository.dart';
 import '../../../core/logging/app_logger.dart';
+import '../../../core/errors/error_state_widget.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -106,9 +107,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     } catch (e) {
       AppLogger.talker.error('Error updating profile', e);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+        AppErrorSnackBar.show(context, e);
       }
     } finally {
       if (mounted) {

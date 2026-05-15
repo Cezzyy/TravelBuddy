@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/errors/app_exceptions.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../shared/data/app_db.dart';
 import '../../../shared/data/providers/database_provider.dart';
@@ -307,7 +308,7 @@ class UserRepository {
       AppLogger.talker.info('All local data cleared');
     } catch (e, st) {
       AppLogger.talker.error('Failed to clear local data', e, st);
-      rethrow;
+      throw convertException(e);
     }
   }
 

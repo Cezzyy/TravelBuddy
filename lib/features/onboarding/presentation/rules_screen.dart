@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../auth/data/auth_repository.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/errors/error_state_widget.dart';
 
 class RulesScreen extends ConsumerStatefulWidget {
   const RulesScreen({super.key});
@@ -41,9 +42,7 @@ class _RulesScreenState extends ConsumerState<RulesScreen> {
       // Router will automatically navigate to home
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        AppErrorSnackBar.show(context, e);
       }
     } finally {
       if (mounted) {

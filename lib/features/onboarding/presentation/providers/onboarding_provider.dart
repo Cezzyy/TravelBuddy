@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/logging/app_logger.dart';
+import '../../../../core/errors/app_exceptions.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../domain/onboarding_step.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -54,8 +55,7 @@ final onboardingStatusProvider = StreamProvider<OnboardingStep>((ref) async* {
       }
     } catch (e, st) {
       AppLogger.talker.error('Error watching onboarding status', e, st);
-      // On error, assume needs profile setup
-      yield OnboardingStep.profile;
+      throw convertException(e);
     }
   }
 });

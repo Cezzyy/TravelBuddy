@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/router/route_names.dart';
+import '../../../core/errors/error_state_widget.dart';
 import '../../../shared/data/app_db.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 import '../../auth/data/user_repository.dart';
@@ -51,7 +52,10 @@ class _GuideDetailScreenState extends ConsumerState<GuideDetailScreen>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text('Failed to load guide: $e')),
+        body: ErrorStateWidget.fromException(
+          e,
+          onRetry: () => ref.invalidate(guideDetailProvider(widget.guideId)),
+        ),
       ),
       data: (guide) {
         if (guide == null) {
@@ -443,7 +447,10 @@ class _ItineraryTab extends ConsumerWidget {
 
     return itemsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load itinerary: $e')),
+      error: (e, _) => ErrorStateWidget.fromException(
+        e,
+        onRetry: () => ref.invalidate(guideItineraryProvider(guideId)),
+      ),
       data: (items) {
         if (items.isEmpty) {
           return Center(
@@ -669,7 +676,10 @@ class _CommentsTab extends ConsumerWidget {
 
     return commentsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load comments: $e')),
+      error: (e, _) => ErrorStateWidget.fromException(
+        e,
+        onRetry: () => ref.invalidate(guideCommentsProvider(guideId)),
+      ),
       data: (comments) {
         if (comments.isEmpty) {
           return Center(

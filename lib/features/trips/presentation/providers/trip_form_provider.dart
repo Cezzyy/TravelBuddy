@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../auth/presentation/providers/current_user_provider.dart';
+import '../../../../core/errors/app_exceptions.dart';
 import '../../data/trip_itinerary_repository.dart';
 import '../../data/trip_repository.dart';
 
@@ -151,7 +152,11 @@ class TripForm extends _$TripForm {
     try {
       final currentUserAsync = ref.read(currentUserProvider);
       final currentUser = currentUserAsync.value;
-      if (currentUser == null) throw Exception('Not authenticated');
+      if (currentUser == null)
+        throw AuthException(
+          errorType: AuthErrorType.unknown,
+          userMessage: 'Not authenticated',
+        );
 
       final repo = ref.read(tripRepositoryProvider);
 
@@ -189,9 +194,10 @@ class TripForm extends _$TripForm {
         return trip.id;
       }
     } catch (e) {
+      final appError = e is AppException ? e : convertException(e);
       state = state.copyWith(
         isSaving: false,
-        errorMessage: 'Failed to save trip. Please try again.',
+        errorMessage: appError.userMessage,
       );
       return null;
     }
@@ -206,9 +212,8 @@ class TripForm extends _$TripForm {
       await repo.deleteTrip(tripId!);
       return true;
     } catch (e) {
-      state = state.copyWith(
-        errorMessage: 'Failed to delete trip. Please try again.',
-      );
+      final appError = e is AppException ? e : convertException(e);
+      state = state.copyWith(errorMessage: appError.userMessage);
       return false;
     }
   }

@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/errors/app_exceptions.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../shared/data/app_db.dart';
 import '../../../shared/data/providers/database_provider.dart';
@@ -46,7 +47,10 @@ class TripInvitationRepository {
             .getSingleOrNull();
 
     if (existing != null) {
-      throw Exception('An invitation has already been sent to this email');
+      throw DataException(
+        errorType: DataErrorType.validationFailed,
+        userMessage: 'An invitation has already been sent to this email',
+      );
     }
 
     final companion = TripInvitationsCompanion.insert(
@@ -132,11 +136,14 @@ class TripInvitationRepository {
     )..where((t) => t.id.equals(invitationId))).getSingleOrNull();
 
     if (invitation == null) {
-      throw Exception('Invitation not found');
+      throw DataException(errorType: DataErrorType.notFound);
     }
 
     if (invitation.status != InvitationStatus.pending.value) {
-      throw Exception('Invitation is no longer pending');
+      throw DataException(
+        errorType: DataErrorType.validationFailed,
+        userMessage: 'Invitation is no longer pending',
+      );
     }
 
     if (invitation.expiresAt.isBefore(DateTime.now())) {
@@ -149,7 +156,10 @@ class TripInvitationRepository {
           respondedAt: drift.Value(DateTime.now()),
         ),
       );
-      throw Exception('Invitation has expired');
+      throw DataException(
+        errorType: DataErrorType.validationFailed,
+        userMessage: 'Invitation has expired',
+      );
     }
 
     final now = DateTime.now();
@@ -265,11 +275,14 @@ class TripInvitationRepository {
     )..where((t) => t.id.equals(invitationId))).getSingleOrNull();
 
     if (invitation == null) {
-      throw Exception('Invitation not found');
+      throw DataException(errorType: DataErrorType.notFound);
     }
 
     if (invitation.status != InvitationStatus.pending.value) {
-      throw Exception('Invitation is no longer pending');
+      throw DataException(
+        errorType: DataErrorType.validationFailed,
+        userMessage: 'Invitation is no longer pending',
+      );
     }
 
     await (_db.update(
@@ -511,7 +524,10 @@ class TripInvitationRepository {
       final docSnapshot = await docRef.get();
 
       if (!docSnapshot.exists) {
-        throw Exception('Invitation not found in Firestore: $invitationId');
+        throw DataException(
+          errorType: DataErrorType.notFound,
+          technicalDetails: 'Invitation not found in Firestore: $invitationId',
+        );
       }
 
       final data = docSnapshot.data()!;
@@ -537,7 +553,7 @@ class TripInvitationRepository {
       AppLogger.talker.info('Invitation synced from Firestore: $invitationId');
     } catch (e, st) {
       AppLogger.talker.error('Failed to sync invitation from Firestore', e, st);
-      rethrow;
+      throw convertException(e);
     }
   }
 
@@ -552,7 +568,10 @@ class TripInvitationRepository {
       final docSnapshot = await docRef.get();
 
       if (!docSnapshot.exists) {
-        throw Exception('Collaborator not found in Firestore: $docId');
+        throw DataException(
+          errorType: DataErrorType.notFound,
+          technicalDetails: 'Collaborator not found in Firestore: $docId',
+        );
       }
 
       final data = docSnapshot.data()!;
@@ -577,7 +596,7 @@ class TripInvitationRepository {
         e,
         st,
       );
-      rethrow;
+      throw convertException(e);
     }
   }
 
