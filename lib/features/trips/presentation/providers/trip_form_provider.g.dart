@@ -64,7 +64,7 @@ final class TripFormProvider
   }
 }
 
-String _$tripFormHash() => r'df9788401f279c24df6dd1bb15f3218743491d62';
+String _$tripFormHash() => r'255bdc878dda92a786a431177fdc21794c383ccd';
 
 /// Manages the create/edit trip form.
 /// Pass [tripId] to edit an existing trip; null to create a new one.
