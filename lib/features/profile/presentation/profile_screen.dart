@@ -7,6 +7,7 @@ import '../../auth/presentation/providers/auth_provider.dart';
 import '../../auth/presentation/providers/current_user_provider.dart';
 import '../../auth/presentation/providers/firestore_user_provider.dart';
 import 'providers/profile_stats_provider.dart';
+import 'edit_profile_screen.dart';
 
 /// Profile screen — shows user info, travel stats, and settings.
 class ProfileScreen extends ConsumerWidget {
@@ -215,8 +216,8 @@ class _ProfileContent extends ConsumerWidget {
                 icon: Icons.person_outline_rounded,
                 iconColor: AppColors.primary,
                 title: 'Edit Profile',
-                subtitle: 'Update your name and photo',
-                onTap: () => _comingSoon(context),
+                subtitle: 'Update your display name',
+                onTap: () => _navigateToEditProfile(context),
               ),
               const SizedBox(height: 8),
               _MenuTile(
@@ -264,6 +265,14 @@ class _ProfileContent extends ConsumerWidget {
         content: const Text('Coming Soon'),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  void _navigateToEditProfile(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const EditProfileScreen(),
       ),
     );
   }
