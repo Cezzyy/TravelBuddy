@@ -52,11 +52,7 @@ class CollaboratorItem extends ConsumerWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : Icon(
-                    Icons.person,
-                    size: 20,
-                    color: AppColors.primary,
-                  ),
+                : Icon(Icons.person, size: 20, color: AppColors.primary),
           ),
           const SizedBox(width: 12),
 

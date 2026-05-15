@@ -7,13 +7,14 @@ import '../../data/trip_invitation_repository.dart';
 /// Watch invitations for a specific trip
 final tripInvitationsProvider =
     StreamProvider.family<List<TripInvitation>, String>((ref, tripId) {
-  final repo = ref.watch(tripInvitationRepositoryProvider);
-  return repo.watchInvitationsForTrip(tripId);
-});
+      final repo = ref.watch(tripInvitationRepositoryProvider);
+      return repo.watchInvitationsForTrip(tripId);
+    });
 
 /// Watch pending invitations for the current user
-final userPendingInvitationsProvider =
-    StreamProvider<List<TripInvitation>>((ref) {
+final userPendingInvitationsProvider = StreamProvider<List<TripInvitation>>((
+  ref,
+) {
   final currentUser = ref.watch(currentUserProvider).value;
   if (currentUser == null) {
     return Stream.value([]);

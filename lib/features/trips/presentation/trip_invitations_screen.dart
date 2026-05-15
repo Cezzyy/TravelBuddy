@@ -61,7 +61,7 @@ class TripInvitationsScreen extends ConsumerWidget {
             itemCount: invitations.length,
             itemBuilder: (context, index) {
               final invitation = invitations[index];
-              
+
               return FutureBuilder<Trip?>(
                 future: ref
                     .read(tripRepositoryProvider)
@@ -96,18 +96,12 @@ class TripInvitationsScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: AppColors.error,
-              ),
+              Icon(Icons.error_outline, size: 64, color: AppColors.error),
               const SizedBox(height: 16),
               Text(
                 'Failed to load invitations',

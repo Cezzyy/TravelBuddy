@@ -114,20 +114,20 @@ class CollaboratorList extends ConsumerWidget {
                     canManage: canManage,
                     onRemove: canManage
                         ? () => _showRemoveDialog(
-                              context,
-                              ref,
-                              user,
-                              collaborator,
-                            )
+                            context,
+                            ref,
+                            user,
+                            collaborator,
+                          )
                         : null,
                     onChangeRole: canManage
                         ? () => _showChangeRoleDialog(
-                              context,
-                              ref,
-                              user,
-                              collaborator,
-                              role,
-                            )
+                            context,
+                            ref,
+                            user,
+                            collaborator,
+                            role,
+                          )
                         : null,
                   );
                 },
@@ -166,9 +166,7 @@ class CollaboratorList extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Remove Collaborator'),
         content: Text(
           'Are you sure you want to remove ${user.displayName ?? user.email} from this trip?',
@@ -180,9 +178,7 @@ class CollaboratorList extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             child: const Text('Remove'),
           ),
         ],
@@ -249,71 +245,72 @@ class CollaboratorList extends ConsumerWidget {
             children: TripRole.values
                 .where((role) => role != TripRole.owner)
                 .map((role) {
-              return InkWell(
-                onTap: () {
-                  setState(() {
-                    selectedRole = role;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 16,
-                  ),
-                  margin: const EdgeInsets.only(bottom: 8),
-                  decoration: BoxDecoration(
-                    color: selectedRole == role
-                        ? AppColors.primary.withValues(alpha: 0.1)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: selectedRole == role
-                          ? AppColors.primary
-                          : AppColors.surfaceVariant,
-                      width: selectedRole == role ? 2 : 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        selectedRole == role
-                            ? Icons.radio_button_checked
-                            : Icons.radio_button_unchecked,
-                        color: selectedRole == role
-                            ? AppColors.primary
-                            : AppColors.textSecondary,
-                        size: 20,
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedRole = role;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              role.displayName,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: selectedRole == role
-                                    ? AppColors.primary
-                                    : AppColors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              role.description,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
+                      margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: selectedRole == role
+                            ? AppColors.primary.withValues(alpha: 0.1)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: selectedRole == role
+                              ? AppColors.primary
+                              : AppColors.surfaceVariant,
+                          width: selectedRole == role ? 2 : 1,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+                      child: Row(
+                        children: [
+                          Icon(
+                            selectedRole == role
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_unchecked,
+                            color: selectedRole == role
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  role.displayName,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: selectedRole == role
+                                        ? AppColors.primary
+                                        : AppColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  role.description,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                })
+                .toList(),
           ),
           actions: [
             TextButton(

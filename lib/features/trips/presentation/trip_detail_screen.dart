@@ -38,9 +38,12 @@ class TripDetailScreen extends ConsumerWidget {
 
           // Determine user role
           final userRole = userRoleAsync.value;
-          final canEdit = userRole?.canEdit ?? (trip.ownerId == currentUser?.id);
-          final canDelete = userRole?.canDelete ?? (trip.ownerId == currentUser?.id);
-          final canInvite = userRole?.canInvite ?? (trip.ownerId == currentUser?.id);
+          final canEdit =
+              userRole?.canEdit ?? (trip.ownerId == currentUser?.id);
+          final canDelete =
+              userRole?.canDelete ?? (trip.ownerId == currentUser?.id);
+          final canInvite =
+              userRole?.canInvite ?? (trip.ownerId == currentUser?.id);
 
           return CustomScrollView(
             slivers: [
@@ -76,7 +79,10 @@ class TripDetailScreen extends ConsumerWidget {
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete_outline, color: AppColors.error),
+                              Icon(
+                                Icons.delete_outline,
+                                color: AppColors.error,
+                              ),
                               SizedBox(width: 12),
                               Text('Delete Trip'),
                             ],
@@ -190,7 +196,9 @@ class TripDetailScreen extends ConsumerWidget {
                                   const SizedBox(width: 8),
                                   Text(
                                     'Collaborators',
-                                    style: Theme.of(context).textTheme.titleLarge
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
                                         ?.copyWith(fontWeight: FontWeight.w700),
                                   ),
                                 ],
@@ -198,7 +206,10 @@ class TripDetailScreen extends ConsumerWidget {
                             ),
                             FilledButton.icon(
                               onPressed: () => _showInviteModal(context),
-                              icon: const Icon(Icons.person_add_outlined, size: 18),
+                              icon: const Icon(
+                                Icons.person_add_outlined,
+                                size: 18,
+                              ),
                               label: const Text('Invite'),
                               style: FilledButton.styleFrom(
                                 backgroundColor: AppColors.primary,
