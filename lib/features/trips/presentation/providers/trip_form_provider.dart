@@ -152,11 +152,12 @@ class TripForm extends _$TripForm {
     try {
       final currentUserAsync = ref.read(currentUserProvider);
       final currentUser = currentUserAsync.value;
-      if (currentUser == null)
+      if (currentUser == null) {
         throw AuthException(
           errorType: AuthErrorType.unknown,
           userMessage: 'Not authenticated',
         );
+      }
 
       final repo = ref.read(tripRepositoryProvider);
 

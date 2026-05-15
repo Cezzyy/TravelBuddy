@@ -194,11 +194,12 @@ class GuideForm extends _$GuideForm {
     try {
       final currentUserAsync = ref.read(currentUserProvider);
       final currentUser = currentUserAsync.value;
-      if (currentUser == null)
+      if (currentUser == null) {
         throw AuthException(
           errorType: AuthErrorType.unknown,
           userMessage: 'Not authenticated',
         );
+      }
 
       final repo = ref.read(guideRepositoryProvider);
 
@@ -301,11 +302,12 @@ class GuideForm extends _$GuideForm {
         // Create then publish
         final currentUserAsync = ref.read(currentUserProvider);
         final currentUser = currentUserAsync.value;
-        if (currentUser == null)
+        if (currentUser == null) {
           throw AuthException(
             errorType: AuthErrorType.unknown,
             userMessage: 'Not authenticated',
           );
+        }
 
         final guide = await repo.createGuide(
           authorId: currentUser.id,
