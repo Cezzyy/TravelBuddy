@@ -639,6 +639,9 @@ class GuideRepository {
   /// Convert guide companion to map for sync.
   Map<String, dynamic> _guideToMap(GuidesCompanion companion) {
     return {
+      // Always include authorId — Firestore security rules require it for
+      // create/update authorization even when only partial fields changed.
+      if (companion.authorId.present) 'authorId': companion.authorId.value,
       if (companion.title.present) 'title': companion.title.value,
       if (companion.description.present)
         'description': companion.description.value,

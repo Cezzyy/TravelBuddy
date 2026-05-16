@@ -8,20 +8,23 @@ import '../../../core/logging/app_logger.dart';
 import '../../../shared/data/app_db.dart';
 import '../../../shared/data/providers/database_provider.dart';
 import '../domain/trip_role.dart';
+import 'trip_repository.dart';
 
 part 'trip_invitation_repository.g.dart';
 
 @riverpod
 TripInvitationRepository tripInvitationRepository(Ref ref) {
   final db = ref.watch(appDatabaseProvider);
-  return TripInvitationRepository(db, FirebaseFirestore.instance);
+  final tripRepo = ref.watch(tripRepositoryProvider);
+  return TripInvitationRepository(db, FirebaseFirestore.instance, tripRepo);
 }
 
 class TripInvitationRepository {
-  TripInvitationRepository(this._db, this._firestore);
+  TripInvitationRepository(this._db, this._firestore, this._tripRepo);
 
   final AppDatabase _db;
   final FirebaseFirestore _firestore;
+  final TripRepository _tripRepo;
   final _uuid = const Uuid();
 
   /// Create a new trip invitation
@@ -185,7 +188,27 @@ class TripInvitationRepository {
             role: drift.Value(invitation.role),
             addedAt: now,
           ),
+          mode: drift.InsertMode.insertOrReplace,
         );
+
+    // Ensure trip data exists in local DB (may have failed to sync earlier
+    // due to Firestore permission rules)
+    try {
+      final existingTrip = await _tripRepo.getTrip(invitation.tripId);
+      if (existingTrip == null) {
+        await _tripRepo.syncTripFromFirestore(invitation.tripId);
+        AppLogger.talker.info(
+          'Fetched trip data for accepted invitation: ${invitation.tripId}',
+        );
+      }
+    } catch (e, st) {
+      AppLogger.talker.warning(
+        'Failed to fetch trip data for invitation ${invitation.id}',
+        e,
+        st,
+      );
+      // Don't fail the acceptance — the sync service will retry later
+    }
 
     AppLogger.talker.info('Accepted invitation: $invitationId');
 

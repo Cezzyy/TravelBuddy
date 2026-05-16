@@ -87,7 +87,7 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
           IconButton(
             icon: const Icon(Icons.notifications_none_rounded),
             onPressed: () {
-              context.push(RoutePaths.tripInvitations);
+              context.push(RoutePaths.notifications);
             },
             tooltip: 'Notifications',
             color: AppColors.textSecondary,

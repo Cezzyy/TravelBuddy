@@ -31,51 +31,42 @@ import '../../features/trips/presentation/trips_screen.dart';
 import '../../features/trips/presentation/trip_detail_screen.dart';
 import '../../features/trips/presentation/trip_form_screen.dart';
 import '../../features/trips/presentation/trip_itinerary_screen.dart';
-import '../../features/trips/presentation/trip_invitations_screen.dart';
+import '../../features/notifications/presentation/notifications_screen.dart';
 import 'route_names.dart';
 
 part 'app_router.g.dart';
 
-/// Helper class to refresh GoRouter when a stream emits.
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.listen((_) {
-      notifyListeners();
+/// Helper class to refresh GoRouter when Riverpod provider state changes.
+/// Debounces rapid state changes (e.g., during sign-out) to prevent
+/// multiple redirect evaluations that cause UI stuttering.
+class GoRouterRefreshNotifier extends ChangeNotifier {
+  GoRouterRefreshNotifier(Ref ref, List<ProviderListenable> providers) {
+    for (final provider in providers) {
+      ref.listen(provider, (_, _) => _scheduleNotify());
+    }
+  }
+
+  Timer? _debounceTimer;
+  bool _disposed = false;
+  bool _notifyScheduled = false;
+
+  void _scheduleNotify() {
+    if (_disposed || _notifyScheduled) return;
+
+    _notifyScheduled = true;
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      if (!_disposed) {
+        _notifyScheduled = false;
+        notifyListeners();
+      }
     });
   }
 
-  late final StreamSubscription<dynamic> _subscription;
-
   @override
   void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
-
-/// Helper class to refresh GoRouter when Riverpod provider state changes.
-class GoRouterRefreshNotifier extends ChangeNotifier {
-  GoRouterRefreshNotifier(
-    Ref ref,
-    List<ProviderListenable> providers, {
-    Stream<dynamic>? stream,
-  }) {
-    for (final provider in providers) {
-      ref.listen(provider, (_, _) => notifyListeners());
-    }
-
-    if (stream != null) {
-      notifyListeners();
-      _subscription = stream.listen((_) => notifyListeners());
-    }
-  }
-
-  StreamSubscription<dynamic>? _subscription;
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
+    _disposed = true;
+    _debounceTimer?.cancel();
     super.dispose();
   }
 }
@@ -97,9 +88,11 @@ CustomTransitionPage<void> _fadeTransitionPage({
 }
 
 @riverpod
-GoRouter appRouter(Ref ref) {
+Raw<GoRouter> appRouter(Ref ref) {
   final authRepo = ref.watch(authRepositoryProvider);
-  final onboardingAsync = ref.watch(onboardingStatusProvider);
+
+  // Keep router alive to prevent rebuilds during logout
+  ref.keepAlive();
 
   return GoRouter(
     initialLocation: RoutePaths.splash,
@@ -108,10 +101,12 @@ GoRouter appRouter(Ref ref) {
     refreshListenable: GoRouterRefreshNotifier(ref, [
       currentUserProvider,
       onboardingStatusProvider,
-    ], stream: authRepo.authStateChanges()),
+    ]),
 
     redirect: (context, state) {
       final firebaseUser = authRepo.currentUser;
+      // Read onboarding status inside redirect to avoid rebuilding router
+      final onboardingAsync = ref.read(onboardingStatusProvider);
       final isAuthenticated = firebaseUser != null;
       final location = state.matchedLocation;
       final isOnSplash = location == RoutePaths.splash;
@@ -434,13 +429,13 @@ GoRouter appRouter(Ref ref) {
         },
       ),
 
-      // Trip — Invitations
+      // Notifications
       GoRoute(
-        path: RoutePaths.tripInvitations,
-        name: RouteNames.tripInvitations,
+        path: RoutePaths.notifications,
+        name: RouteNames.notifications,
         pageBuilder: (context, state) => _fadeTransitionPage(
           key: state.pageKey,
-          child: const TripInvitationsScreen(),
+          child: const NotificationsScreen(),
         ),
       ),
 

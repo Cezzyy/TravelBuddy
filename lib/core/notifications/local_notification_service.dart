@@ -119,10 +119,10 @@ class LocalNotificationService {
   void _navigateToInvitations() {
     try {
       final router = _ref.read(appRouterProvider);
-      router.push(RoutePaths.tripInvitations);
-      AppLogger.talker.info('Navigated to invitations screen');
+      router.push(RoutePaths.notifications);
+      AppLogger.talker.info('Navigated to notifications screen');
     } catch (e, st) {
-      AppLogger.talker.error('Failed to navigate to invitations', e, st);
+      AppLogger.talker.error('Failed to navigate to notifications', e, st);
     }
   }
 }

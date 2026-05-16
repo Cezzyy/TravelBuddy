@@ -155,7 +155,6 @@ class EmailAuthController extends _$EmailAuthController {
 
   /// Sign out current user.
   Future<void> signOut() async {
-    state = const AsyncLoading();
     final repository = ref.read(authRepositoryProvider);
     final userRepo = ref.read(userRepositoryProvider);
 
@@ -168,20 +167,16 @@ class EmailAuthController extends _$EmailAuthController {
       await Future.delayed(const Duration(milliseconds: 150));
       AppLogger.talker.info('Local data cleared');
 
-      // Sign out from Firebase FIRST
+      // Sign out from Firebase — this triggers authStateProvider change,
+      // which syncLifecycleProvider picks up to stop listeners automatically
       await repository.signOut();
       AppLogger.talker.info('Firebase sign out completed');
 
-      // Check if still mounted before invalidating
+      // Invalidate stale providers after sign out
       if (ref.mounted) {
-        // Invalidate providers AFTER sign out
         ref.invalidate(firestoreUserProvider);
         ref.invalidate(currentUserProvider);
         ref.invalidate(onboardingStatusProvider);
-      }
-
-      if (ref.mounted) {
-        state = const AsyncData(null);
       }
     } catch (error, stackTrace) {
       AppLogger.talker.error('Sign out failed', error, stackTrace);

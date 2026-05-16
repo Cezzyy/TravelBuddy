@@ -16,7 +16,7 @@ final featuredGuidesProvider = FutureProvider<List<Guide>>((ref) async {
   return guides.take(5).toList();
 });
 
-/// Provider for upcoming trips on home screen.
+/// Provider for upcoming trips on home screen (owned + collaborated).
 final homeUpcomingTripsProvider = StreamProvider<List<Trip>>((ref) {
   final currentUserAsync = ref.watch(currentUserProvider);
   final currentUser = currentUserAsync.value;
@@ -26,5 +26,5 @@ final homeUpcomingTripsProvider = StreamProvider<List<Trip>>((ref) {
   }
 
   final repo = ref.watch(tripRepositoryProvider);
-  return repo.watchUpcomingTrips(currentUser.id);
+  return repo.watchAllUpcomingTrips(currentUser.id);
 });

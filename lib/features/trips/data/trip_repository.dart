@@ -264,14 +264,83 @@ class TripRepository {
         .watch();
   }
 
+  /// Watch all trips where the user is owner OR collaborator.
+  /// Reactively updates when either trips or collaborators change.
+  Stream<List<Trip>> watchAllUserTrips(String userId) {
+    final collaborators$ = (_db.select(
+      _db.tripCollaborators,
+    )..where((c) => c.userId.equals(userId))).watch();
+
+    return collaborators$.asyncMap((collaborators) {
+      final tripIds = collaborators.map((c) => c.tripId).toList();
+      return (_db.select(_db.trips)
+            ..where(
+              (t) =>
+                  t.isDeleted.equals(false) &
+                  (t.ownerId.equals(userId) | t.id.isIn(tripIds)),
+            )
+            ..orderBy([(t) => drift.OrderingTerm.desc(t.startDate)]))
+          .get();
+    });
+  }
+
+  /// Watch upcoming trips where the user is owner OR collaborator.
+  Stream<List<Trip>> watchAllUpcomingTrips(String userId) {
+    final collaborators$ = (_db.select(
+      _db.tripCollaborators,
+    )..where((c) => c.userId.equals(userId))).watch();
+
+    return collaborators$.asyncMap((collaborators) {
+      final tripIds = collaborators.map((c) => c.tripId).toList();
+      return (_db.select(_db.trips)
+            ..where(
+              (t) =>
+                  t.isDeleted.equals(false) &
+                  (t.status.equals('upcoming') | t.status.equals('ongoing')) &
+                  (t.ownerId.equals(userId) | t.id.isIn(tripIds)),
+            )
+            ..orderBy([(t) => drift.OrderingTerm.asc(t.startDate)]))
+          .get();
+    });
+  }
+
+  /// Watch past trips where the user is owner OR collaborator.
+  Stream<List<Trip>> watchAllPastTrips(String userId) {
+    final collaborators$ = (_db.select(
+      _db.tripCollaborators,
+    )..where((c) => c.userId.equals(userId))).watch();
+
+    return collaborators$.asyncMap((collaborators) {
+      final tripIds = collaborators.map((c) => c.tripId).toList();
+      return (_db.select(_db.trips)
+            ..where(
+              (t) =>
+                  t.isDeleted.equals(false) &
+                  (t.status.equals('completed') |
+                      t.status.equals('cancelled')) &
+                  (t.ownerId.equals(userId) | t.id.isIn(tripIds)),
+            )
+            ..orderBy([(t) => drift.OrderingTerm.desc(t.endDate)]))
+          .get();
+    });
+  }
+
   /// Search trips by title, description, or destination.
-  Future<List<Trip>> searchTrips(String ownerId, String query) async {
+  Future<List<Trip>> searchTrips(String userId, String query) async {
     final lowerQuery = query.toLowerCase();
 
-    // Get all trips for the owner
+    // Get collaborator trip IDs
+    final collaborators = await (_db.select(
+      _db.tripCollaborators,
+    )..where((c) => c.userId.equals(userId))).get();
+    final collaboratorTripIds = collaborators.map((c) => c.tripId).toList();
+
+    // Get trips where user is owner or collaborator
     final trips =
         await (_db.select(_db.trips)..where(
-              (t) => t.ownerId.equals(ownerId) & t.isDeleted.equals(false),
+              (t) =>
+                  t.isDeleted.equals(false) &
+                  (t.ownerId.equals(userId) | t.id.isIn(collaboratorTripIds)),
             ))
             .get();
 
@@ -390,6 +459,9 @@ class TripRepository {
   /// Convert trip companion to map for sync.
   Map<String, dynamic> _tripToMap(TripsCompanion companion) {
     return {
+      // Always include ownerId — Firestore security rules require it for
+      // create authorization even when only partial fields changed.
+      if (companion.ownerId.present) 'ownerId': companion.ownerId.value,
       if (companion.title.present) 'title': companion.title.value,
       if (companion.description.present)
         'description': companion.description.value,

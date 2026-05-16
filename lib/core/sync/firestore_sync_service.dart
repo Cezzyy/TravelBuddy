@@ -208,9 +208,12 @@ class FirestoreSyncService {
           // Upsert the collaborator record locally
           await _upsertCollaboratorToLocal(change.doc.id, data);
 
-          // When added as collaborator, also fetch the trip details
+          // When added as collaborator, also fetch the trip and user details
           if (change.type == DocumentChangeType.added) {
             final tripId = data['tripId'] as String;
+            final collaboratorUserId = data['userId'] as String?;
+
+            // Fetch trip details so the trip appears in the collaborator's list
             final tripDoc = await _firestore
                 .collection('trips')
                 .doc(tripId)
@@ -219,17 +222,48 @@ class FirestoreSyncService {
               await _upsertTripToLocal(tripId, tripDoc.data()!);
               _listenToItineraryItems(tripId);
             }
+
+            // Fetch the collaborator's user profile so their name/photo
+            // displays in collaborator lists and invitation cards
+            if (collaboratorUserId != null) {
+              await _syncUserForInvitation(collaboratorUserId);
+            }
           }
           break;
         case DocumentChangeType.removed:
-          // Collaborator was removed — delete locally
-          final tripId = data['tripId'] as String;
+          // Collaborator was removed from Firestore — verify there isn't
+          // a locally-accepted invitation before deleting. Firestore may
+          // fire a spuriously "removed" event during batch rollback, which
+          // would incorrectly delete a just-accepted collaborator entry.
+          final removedTripId = data['tripId'] as String;
+          final removedCollaboratorId = data['userId'] as String? ?? userId;
+
+          // Check if there's an accepted invitation for this trip/user.
+          // If so, the collaborator was just created locally and the
+          // "removed" event is a Firestore rollback artifact — skip deletion.
+          final acceptedInvitation =
+              await (_db.select(_db.tripInvitations)..where(
+                    (t) =>
+                        t.tripId.equals(removedTripId) &
+                        t.invitedUserId.equals(removedCollaboratorId) &
+                        t.status.equals('accepted'),
+                  ))
+                  .getSingleOrNull();
+
+          if (acceptedInvitation != null) {
+            AppLogger.talker.debug(
+              'FirestoreSync: Skipping collaborator removal for trip $removedTripId '
+              '(locally accepted invitation exists)',
+            );
+            break;
+          }
+
           await (_db.delete(_db.tripCollaborators)..where(
-                (t) => t.tripId.equals(tripId) & t.userId.equals(userId),
+                (t) => t.tripId.equals(removedTripId) & t.userId.equals(userId),
               ))
               .go();
           AppLogger.talker.debug(
-            'FirestoreSync: Removed collaborator for trip $tripId',
+            'FirestoreSync: Removed collaborator for trip $removedTripId',
           );
           break;
       }
@@ -393,6 +427,8 @@ class FirestoreSyncService {
         case DocumentChangeType.added:
           await _upsertInvitationToLocal(change.doc.id, data);
           _maybeNotifyNewInvitation(change.doc.id, data);
+          // Also fetch the related trip so the notification card can display it
+          await _syncTripForInvitation(data);
           break;
         case DocumentChangeType.modified:
           await _upsertInvitationToLocal(change.doc.id, data);
@@ -459,6 +495,88 @@ class FirestoreSyncService {
     } catch (e, st) {
       AppLogger.talker.warning(
         'FirestoreSync: Failed to upsert invitation $invitationId',
+        e,
+        st,
+      );
+    }
+  }
+
+  /// Fetch the trip associated with an invitation so the UI can display
+  /// trip details (title, destination, etc.) in the notification card.
+  Future<void> _syncTripForInvitation(
+    Map<String, dynamic> invitationData,
+  ) async {
+    final tripId = invitationData['tripId'] as String?;
+    if (tripId == null) return;
+
+    // Check if trip already exists locally
+    final existing = await (_db.select(
+      _db.trips,
+    )..where((t) => t.id.equals(tripId))).getSingleOrNull();
+    if (existing != null) return; // Already synced
+
+    // Fetch from Firestore
+    try {
+      final tripDoc = await _firestore.collection('trips').doc(tripId).get();
+      if (tripDoc.exists) {
+        await _upsertTripToLocal(tripId, tripDoc.data()!);
+        _listenToItineraryItems(tripId);
+      }
+    } catch (e, st) {
+      AppLogger.talker.warning(
+        'FirestoreSync: Failed to fetch trip $tripId for invitation',
+        e,
+        st,
+      );
+    }
+
+    // Also fetch the inviter's user data so names/avatars display correctly
+    final invitedByUserId = invitationData['invitedByUserId'] as String?;
+    if (invitedByUserId != null) {
+      await _syncUserForInvitation(invitedByUserId);
+    }
+  }
+
+  /// Fetch a user's profile so inviter names display in invitation cards.
+  Future<void> _syncUserForInvitation(String userId) async {
+    // Check if user already exists locally
+    final existing = await (_db.select(
+      _db.users,
+    )..where((u) => u.id.equals(userId))).getSingleOrNull();
+    if (existing != null) return; // Already synced
+
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        final data = userDoc.data()!;
+        final now = DateTime.now();
+        final companion = UsersCompanion.insert(
+          id: userId,
+          email: data['email'] as String? ?? '',
+          displayName: drift.Value(data['displayName'] as String?),
+          photoUrl: drift.Value(data['photoUrl'] as String?),
+          bio: drift.Value(data['bio'] as String?),
+          location: drift.Value(data['location'] as String?),
+          isProfileComplete: drift.Value(
+            data['isProfileComplete'] as bool? ?? false,
+          ),
+          hasAgreedToRules: drift.Value(
+            data['hasAgreedToRules'] as bool? ?? false,
+          ),
+          createdAt: _parseTimestamp(data['createdAt']) ?? now,
+          updatedAt: _parseTimestamp(data['updatedAt']) ?? now,
+          lastSyncedAt: drift.Value(now),
+        );
+        await _db
+            .into(_db.users)
+            .insert(companion, mode: drift.InsertMode.insertOrReplace);
+        AppLogger.talker.debug(
+          'FirestoreSync: Synced user $userId for invitation',
+        );
+      }
+    } catch (e, st) {
+      AppLogger.talker.warning(
+        'FirestoreSync: Failed to fetch user $userId for invitation',
         e,
         st,
       );

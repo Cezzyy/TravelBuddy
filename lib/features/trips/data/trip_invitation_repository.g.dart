@@ -55,4 +55,4 @@ final class TripInvitationRepositoryProvider
 }
 
 String _$tripInvitationRepositoryHash() =>
-    r'673c91569bf097bc289140a42c25911bb691b843';
+    r'77199d7735fee48a875634b1e2ddc2f2a70e1674';

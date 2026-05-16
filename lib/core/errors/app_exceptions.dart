@@ -47,16 +47,20 @@ class AuthException extends AppException {
 }
 
 enum AuthErrorType {
-  invalidCredentials('The email or password you entered is incorrect.'),
-  emailAlreadyInUse('An account with this email already exists.'),
-  weakPassword('Your password is too weak. Use a stronger password.'),
-  userNotFound('No account found with this email.'),
-  userDisabled('This account has been disabled.'),
-  tooManyRequests('Too many attempts. Please try again later.'),
-  networkError('A network error occurred. Check your connection.'),
-  googleSignInFailed('Google sign-in was cancelled or failed.'),
-  signOutFailed('Failed to sign out. Please try again.'),
-  unknown('An unexpected error occurred. Please try again.');
+  invalidCredentials('The email or password is incorrect. Please try again.'),
+  emailAlreadyInUse(
+    'This email is already registered. Try signing in instead.',
+  ),
+  weakPassword('Please choose a stronger password with at least 6 characters.'),
+  userNotFound('We couldn\'t find an account with this email.'),
+  userDisabled('This account is no longer active. Contact support for help.'),
+  tooManyRequests(
+    'Too many failed attempts. Please wait a few minutes and try again.',
+  ),
+  networkError('Connection problem. Check your internet and try again.'),
+  googleSignInFailed('Google sign-in didn\'t complete. Please try again.'),
+  signOutFailed('Something went wrong signing out. Please try again.'),
+  unknown('Something went wrong. Please try again.');
 
   final String userMessage;
   const AuthErrorType(this.userMessage);

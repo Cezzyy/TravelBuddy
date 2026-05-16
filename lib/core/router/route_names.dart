@@ -30,7 +30,10 @@ abstract class RoutePaths {
   static const travelPreferences = '/profile/travel-preferences';
   static const editProfile = '/profile/edit';
 
-  // Trip invitation routes
+  // Notification routes
+  static const notifications = '/notifications';
+
+  // Trip invitation routes (legacy — kept for reference)
   static const tripInvitations = '/trips/invitations';
 }
 
@@ -64,6 +67,9 @@ abstract class RouteNames {
   static const travelPreferences = 'travel-preferences';
   static const editProfile = 'edit-profile';
 
-  // Trip invitation routes
+  // Notification routes
+  static const notifications = 'notifications';
+
+  // Trip invitation routes (legacy — kept for reference)
   static const tripInvitations = 'trip-invitations';
 }

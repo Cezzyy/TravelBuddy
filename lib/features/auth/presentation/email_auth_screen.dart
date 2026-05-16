@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/errors/app_exceptions.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/validators.dart';
 import 'providers/auth_provider.dart';
@@ -69,10 +70,13 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
     if (authState.hasError && mounted) {
       final error = authState.error;
 
-      // Extract clean error message (remove any exception prefixes)
-      String errorMessage = error.toString();
-      if (errorMessage.startsWith('Exception: ')) {
-        errorMessage = errorMessage.substring('Exception: '.length);
+      // Extract user-friendly message from AppException
+      String errorMessage;
+      if (error is AppException) {
+        errorMessage = error.userMessage;
+      } else {
+        final appException = convertException(error!);
+        errorMessage = appException.userMessage;
       }
 
       setState(() {
@@ -80,11 +84,9 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
       });
 
       // If sign-up fails because account exists, suggest signing in instead
-      if (_isSignUp && errorMessage.contains('already exists')) {
+      if (_isSignUp && errorMessage.contains('already registered')) {
         setState(() {
           _isSignUp = false;
-          _errorMessage =
-              'This email is already registered. Please sign in instead.';
         });
       }
     }

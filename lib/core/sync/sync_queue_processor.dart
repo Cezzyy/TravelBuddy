@@ -234,6 +234,19 @@ class SyncQueueProcessor {
       // Convert ISO strings back to Firestore-compatible format
       final data = _convertTimestamps(payload);
       data['updatedAt'] = FieldValue.serverTimestamp();
+
+      // Ensure ownerId is always present — Firestore security rules require
+      // it for create authorization, and partial payloads from updates
+      // may not include it.
+      if (!data.containsKey('ownerId')) {
+        final trip = await (_db.select(
+          _db.trips,
+        )..where((t) => t.id.equals(item.recordId))).getSingleOrNull();
+        if (trip != null) {
+          data['ownerId'] = trip.ownerId;
+        }
+      }
+
       await docRef.set(data, SetOptions(merge: true));
     }
   }
@@ -252,6 +265,18 @@ class SyncQueueProcessor {
     } else {
       final data = _convertTimestamps(payload);
       data['updatedAt'] = FieldValue.serverTimestamp();
+
+      // Ensure tripId is always present — Firestore security rules require
+      // it for authorization checks on itinerary items.
+      if (!data.containsKey('tripId')) {
+        final itineraryItem = await (_db.select(
+          _db.itineraryItems,
+        )..where((i) => i.id.equals(item.recordId))).getSingleOrNull();
+        if (itineraryItem != null) {
+          data['tripId'] = itineraryItem.tripId;
+        }
+      }
+
       await docRef.set(data, SetOptions(merge: true));
     }
   }
@@ -270,6 +295,19 @@ class SyncQueueProcessor {
     } else {
       final data = _convertTimestamps(payload);
       data['updatedAt'] = FieldValue.serverTimestamp();
+
+      // Ensure authorId is always present — Firestore security rules require
+      // it for create/update authorization, and partial payloads from updates
+      // may not include it.
+      if (!data.containsKey('authorId')) {
+        final guide = await (_db.select(
+          _db.guides,
+        )..where((g) => g.id.equals(item.recordId))).getSingleOrNull();
+        if (guide != null) {
+          data['authorId'] = guide.authorId;
+        }
+      }
+
       await docRef.set(data, SetOptions(merge: true));
     }
   }
@@ -290,6 +328,18 @@ class SyncQueueProcessor {
     } else {
       final data = _convertTimestamps(payload);
       data['updatedAt'] = FieldValue.serverTimestamp();
+
+      // Ensure guideId is always present — Firestore security rules require
+      // it for create authorization via isGuideAuthor().
+      if (!data.containsKey('guideId')) {
+        final itineraryItem = await (_db.select(
+          _db.guideItineraryItems,
+        )..where((i) => i.id.equals(item.recordId))).getSingleOrNull();
+        if (itineraryItem != null) {
+          data['guideId'] = itineraryItem.guideId;
+        }
+      }
+
       await docRef.set(data, SetOptions(merge: true));
     }
   }
